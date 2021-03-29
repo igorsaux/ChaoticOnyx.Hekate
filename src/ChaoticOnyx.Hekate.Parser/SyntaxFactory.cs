@@ -1,6 +1,8 @@
 ﻿#region
 
+using System;
 using System.Globalization;
+using ChaoticOnyx.Hekate.Parser.ChaoticOnyx.Tools.StyleCop;
 
 #endregion
 
@@ -9,166 +11,187 @@ namespace ChaoticOnyx.Hekate.Parser
     /// <summary>
     ///     API для создания токенов.
     /// </summary>
-    public static class SyntaxFactory
+    public class SyntaxFactory : IDisposable
     {
-        public static SyntaxToken WhiteSpace(string space)
+        public readonly CodeStyle Style;
+
+        private SyntaxFactory(CodeStyle style)
+        {
+            Style = style;
+        }
+
+        public static SyntaxFactory CreateFactory(CodeStyle style)
+        {
+            return new(style);
+        }
+
+        public SyntaxToken WhiteSpace(string space)
         {
             return new(SyntaxKind.WhiteSpace, space);
         }
 
-        public static SyntaxToken EndOfLine(string ending = "\n")
+        public SyntaxToken EndOfLine(string ending = "\n")
         {
             return new(SyntaxKind.EndOfLine, ending);
         }
 
-        public static SyntaxToken EndOfFile()
+        public SyntaxToken EndOfFile(string ending = "\n")
         {
-            return new(SyntaxKind.EndOfFile, "");
+            SyntaxToken token = new(SyntaxKind.EndOfFile, string.Empty);
+
+            if (Style.LastEmptyLine)
+            {
+                token.WithLeads(EndOfLine(ending));
+            }
+            
+            return token;
         }
 
-        public static SyntaxToken SingleLineComment(string text, string ending = "\n")
+        public SyntaxToken SingleLineComment(string text, string ending = "\n")
         {
             text = $"//{text}";
 
             return new SyntaxToken(SyntaxKind.SingleLineComment, text).WithTrails(EndOfLine(ending));
         }
 
-        public static SyntaxToken MultiLineComment(string text)
+        public SyntaxToken MultiLineComment(string text)
         {
             text = $"/*{text}*/";
 
             return new(SyntaxKind.MultiLineComment, text);
         }
 
-        public static SyntaxToken Identifier(string name)
+        public SyntaxToken Identifier(string name)
         {
             return new(SyntaxKind.Identifier, name);
         }
 
-        public static SyntaxToken TextLiteral(string text)
+        public SyntaxToken TextLiteral(string text)
         {
             return new(SyntaxKind.TextLiteral, $"\"{text}\"");
         }
 
-        public static SyntaxToken NumericalLiteral(int number)
+        public SyntaxToken NumericalLiteral(int number)
         {
             return new(SyntaxKind.NumericalLiteral, number.ToString());
         }
 
-        public static SyntaxToken NumericalLiteral(float number)
+        public SyntaxToken NumericalLiteral(float number)
         {
             return new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
         }
 
-        public static SyntaxToken NumericalLiteral(double number)
+        public SyntaxToken NumericalLiteral(double number)
         {
             return new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
         }
 
-        public static SyntaxToken PathLiteral(string path)
+        public SyntaxToken PathLiteral(string path)
         {
             return new(SyntaxKind.PathLiteral, $"'{path}'");
         }
 
-        public static SyntaxToken ForKeyword()
+        public SyntaxToken ForKeyword()
         {
             return new(SyntaxKind.ForKeyword, "for");
         }
 
-        public static SyntaxToken NewKeyword()
+        public SyntaxToken NewKeyword()
         {
             return new(SyntaxKind.NewKeyword, "new");
         }
 
-        public static SyntaxToken GlobalKeyword()
+        public SyntaxToken GlobalKeyword()
         {
             return new(SyntaxKind.GlobalKeyword, "global");
         }
 
-        public static SyntaxToken ThrowKeyword()
+        public SyntaxToken ThrowKeyword()
         {
             return new(SyntaxKind.ThrowKeyword, "throw");
         }
 
-        public static SyntaxToken CatchKeyword()
+        public SyntaxToken CatchKeyword()
         {
             return new(SyntaxKind.CatchKeyword, "catch");
         }
 
-        public static SyntaxToken TryKeyword()
+        public SyntaxToken TryKeyword()
         {
             return new(SyntaxKind.TryKeyword, "try");
         }
 
-        public static SyntaxToken VarKeyword()
+        public SyntaxToken VarKeyword()
         {
             return new(SyntaxKind.VarKeyword, "var");
         }
 
-        public static SyntaxToken VerbKeyword()
+        public SyntaxToken VerbKeyword()
         {
             return new(SyntaxKind.VerbKeyword, "verb");
         }
 
-        public static SyntaxToken ProcKeyword()
+        public SyntaxToken ProcKeyword()
         {
             return new(SyntaxKind.ProcKeyword, "proc");
         }
 
-        public static SyntaxToken InKeyword()
+        public SyntaxToken InKeyword()
         {
             return new(SyntaxKind.InKeyword, "in");
         }
 
-        public static SyntaxToken IfKeyword()
+        public SyntaxToken IfKeyword()
         {
             return new(SyntaxKind.IfKeyword, "if");
         }
 
-        public static SyntaxToken ElseKeyword()
+        public SyntaxToken ElseKeyword()
         {
             return new(SyntaxKind.ElseKeyword, "else");
         }
 
-        public static SyntaxToken SetKeyword()
+        public SyntaxToken SetKeyword()
         {
             return new(SyntaxKind.SetKeyword, "set");
         }
 
-        public static SyntaxToken AsKeyword()
+        public SyntaxToken AsKeyword()
         {
             return new(SyntaxKind.AsKeyword, "as");
         }
 
-        public static SyntaxToken WhileKeyword()
+        public SyntaxToken WhileKeyword()
         {
             return new(SyntaxKind.WhileKeyword, "while");
         }
 
-        public static SyntaxToken DefineDirective(string ending = "\n")
+        public SyntaxToken DefineDirective(string ending = "\n")
         {
             return new SyntaxToken(SyntaxKind.DefineDirective, "#define").WithTrails(EndOfLine(ending));
         }
 
-        public static SyntaxToken IncludeDirective(string ending = "\n")
+        public SyntaxToken IncludeDirective(string ending = "\n")
         {
             return new SyntaxToken(SyntaxKind.IncludeDirective, "#include").WithTrails(EndOfLine(ending));
         }
 
-        public static SyntaxToken IfDefDirective(string ending = "\n")
+        public SyntaxToken IfDefDirective(string ending = "\n")
         {
             return new SyntaxToken(SyntaxKind.IfDefDirective, "#ifdef").WithTrails(EndOfLine(ending));
         }
 
-        public static SyntaxToken IfNDefDirective(string ending = "\n")
+        public SyntaxToken IfNDefDirective(string ending = "\n")
         {
             return new SyntaxToken(SyntaxKind.IfNDefDirective, "#ifndef").WithTrails(EndOfLine(ending));
         }
 
-        public static SyntaxToken EndIfDirective(string ending = "\n")
+        public SyntaxToken EndIfDirective(string ending = "\n")
         {
             return new SyntaxToken(SyntaxKind.EndIfDirective, "#endif").WithTrails(EndOfLine(ending));
         }
+
+        public void Dispose() { }
     }
 
     public static class SyntaxTokenExtensions

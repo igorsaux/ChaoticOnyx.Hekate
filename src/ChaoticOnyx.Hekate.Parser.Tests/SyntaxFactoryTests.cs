@@ -1,5 +1,6 @@
 ﻿#region
 
+using ChaoticOnyx.Hekate.Parser.ChaoticOnyx.Tools.StyleCop;
 using Xunit;
 
 #endregion
@@ -8,12 +9,14 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 {
     public class SyntaxFactoryTests
     {
+        private readonly SyntaxFactory _factory = SyntaxFactory.CreateFactory(CodeStyle.Default);
+
         [Fact]
         public void SingleLineCommentTest()
         {
             // Arrange
             var expected = "// This is a comment\n";
-            var token    = SyntaxFactory.SingleLineComment(" This is a comment");
+            var token    = _factory.SingleLineComment(" This is a comment");
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -28,7 +31,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "/*\n  Hello!\n*/";
-            var token    = SyntaxFactory.MultiLineComment("\n  Hello!\n");
+            var token    = _factory.MultiLineComment("\n  Hello!\n");
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -43,7 +46,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "var";
-            var token    = SyntaxFactory.Identifier("var");
+            var token    = _factory.Identifier("var");
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -58,7 +61,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "\"Test\"";
-            var token    = SyntaxFactory.TextLiteral("Test");
+            var token    = _factory.TextLiteral("Test");
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -76,11 +79,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 
             SyntaxToken[] tokens =
             {
-                SyntaxFactory.NumericalLiteral(12)
-                             .WithTrails(SyntaxFactory.WhiteSpace(" ")),
-                SyntaxFactory.NumericalLiteral(7.8)
-                             .WithTrails(SyntaxFactory.WhiteSpace(" ")),
-                SyntaxFactory.NumericalLiteral((float) 12.9)
+                _factory.NumericalLiteral(12)
+                        .WithTrails(_factory.WhiteSpace(" ")),
+                _factory.NumericalLiteral(7.8)
+                        .WithTrails(_factory.WhiteSpace(" ")),
+                _factory.NumericalLiteral((float) 12.9)
             };
 
             // Act
@@ -96,7 +99,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "'sound/mysound.ogg'";
-            var token    = SyntaxFactory.PathLiteral("sound/mysound.ogg");
+            var token    = _factory.PathLiteral("sound/mysound.ogg");
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -111,7 +114,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "for";
-            var token    = SyntaxFactory.ForKeyword();
+            var token    = _factory.ForKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -126,7 +129,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "new";
-            var token    = SyntaxFactory.NewKeyword();
+            var token    = _factory.NewKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -141,7 +144,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "global";
-            var token    = SyntaxFactory.GlobalKeyword();
+            var token    = _factory.GlobalKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -156,7 +159,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "throw";
-            var token    = SyntaxFactory.ThrowKeyword();
+            var token    = _factory.ThrowKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -171,7 +174,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "catch";
-            var token    = SyntaxFactory.CatchKeyword();
+            var token    = _factory.CatchKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -186,7 +189,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "try";
-            var token    = SyntaxFactory.TryKeyword();
+            var token    = _factory.TryKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -201,7 +204,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "var";
-            var token    = SyntaxFactory.VarKeyword();
+            var token    = _factory.VarKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -216,7 +219,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "verb";
-            var token    = SyntaxFactory.VerbKeyword();
+            var token    = _factory.VerbKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -231,7 +234,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "proc";
-            var token    = SyntaxFactory.ProcKeyword();
+            var token    = _factory.ProcKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -246,7 +249,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "in";
-            var token    = SyntaxFactory.InKeyword();
+            var token    = _factory.InKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -261,7 +264,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "if";
-            var token    = SyntaxFactory.IfKeyword();
+            var token    = _factory.IfKeyword();
 
             // Act
             var unit  = new CompilationUnit(token);
@@ -276,7 +279,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "else";
-            var token    = SyntaxFactory.ElseKeyword();
+            var token    = _factory.ElseKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -291,7 +294,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "set";
-            var token    = SyntaxFactory.SetKeyword();
+            var token    = _factory.SetKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -306,7 +309,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "as";
-            var token    = SyntaxFactory.AsKeyword();
+            var token    = _factory.AsKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -321,7 +324,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "while";
-            var token    = SyntaxFactory.WhileKeyword();
+            var token    = _factory.WhileKeyword();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -336,7 +339,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "#define\n";
-            var token    = SyntaxFactory.DefineDirective();
+            var token    = _factory.DefineDirective();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -351,7 +354,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "#include\n";
-            var token    = SyntaxFactory.IncludeDirective();
+            var token    = _factory.IncludeDirective();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -366,7 +369,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "#ifdef\n";
-            var token    = SyntaxFactory.IfDefDirective();
+            var token    = _factory.IfDefDirective();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -381,7 +384,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "#ifndef\n";
-            var token    = SyntaxFactory.IfNDefDirective();
+            var token    = _factory.IfNDefDirective();
 
             // Act
             var unit   = new CompilationUnit(token);
@@ -396,7 +399,7 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         {
             // Arrange
             var expected = "#endif\n";
-            var token    = SyntaxFactory.EndIfDirective();
+            var token    = _factory.EndIfDirective();
 
             // Act
             var unit   = new CompilationUnit(token);
