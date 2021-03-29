@@ -195,17 +195,18 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
         [InlineData(SyntaxKind.ElseKeyword)]
         [InlineData(SyntaxKind.SetKeyword)]
         [InlineData(SyntaxKind.AsKeyword)]
+        [InlineData(SyntaxKind.WhileKeyword)]
         public void KeywordParsing(SyntaxKind kind)
         {
             // Arrange
-            CompilationUnit unit = new("for new global throw catch try var verb proc in if else set as");
+            CompilationUnit unit = new("for new global throw catch try var verb proc in if else set as while");
 
             // Act
             unit.Parse();
             var tokens = unit.Lexer.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 15);
+            Assert.True(tokens.Count == 16);
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
         }
 

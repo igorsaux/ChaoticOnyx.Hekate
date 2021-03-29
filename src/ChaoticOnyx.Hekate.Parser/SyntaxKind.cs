@@ -47,6 +47,7 @@
         ElseKeyword,
         SetKeyword,
         AsKeyword,
+        WhileKeyword,
 
         #endregion
 
