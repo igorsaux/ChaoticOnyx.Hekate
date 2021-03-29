@@ -338,6 +338,7 @@ namespace ChaoticOnyx.Hekate.Parser
                 "else"   => SyntaxKind.ElseKeyword,
                 "set"    => SyntaxKind.SetKeyword,
                 "as"     => SyntaxKind.AsKeyword,
+                "while"  => SyntaxKind.WhileKeyword,
                 _        => SyntaxKind.Identifier
             };
         }
