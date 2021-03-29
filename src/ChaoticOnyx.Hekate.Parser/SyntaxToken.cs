@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -32,6 +33,8 @@ namespace ChaoticOnyx.Hekate.Parser
         {
             get;
         }
+
+        public string FullText => GetFullText();
 
         /// <summary>
         ///     Длина содержимого токена с учётом хвостовых и лидирующих токенов.
@@ -129,6 +132,25 @@ namespace ChaoticOnyx.Hekate.Parser
         public void AddTrailTokens(params SyntaxToken[] tokens)
         {
             _trailTokens.AddRange(tokens);
+        }
+
+        public string GetFullText()
+        {
+            StringBuilder builder = new();
+
+            foreach (var lead in _leadTokens)
+            {
+                builder.Append(lead.FullText);
+            }
+
+            builder.Append(Text);
+
+            foreach (var trail in _trailTokens)
+            {
+                builder.Append(trail.FullText);
+            }
+
+            return builder.ToString();
         }
 
         public override string ToString()

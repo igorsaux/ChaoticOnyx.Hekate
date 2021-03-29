@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 #endregion
@@ -31,12 +32,23 @@ namespace ChaoticOnyx.Hekate.Parser
         public ReadOnlyCollection<CodeIssue> Issues => _issues.AsReadOnly();
 
         /// <summary>
-        ///     Создание нового лексера.
+        ///     Создание нового лексера из текста.
         /// </summary>
         /// <param name="source">Исходный код единицы компиляции.</param>
         public Lexer(string source)
         {
             _source = new(source);
+        }
+
+        /// <summary>
+        ///     Создание нового лексера из набора токенов.
+        /// </summary>
+        /// <param name="tokens">Набор токенов.</param>
+        public Lexer(params SyntaxToken[] tokens)
+        {
+            _tokens = tokens.ToList();
+            _source = new(Emit());
+            Parse();
         }
 
         /// <summary>
@@ -56,6 +68,22 @@ namespace ChaoticOnyx.Hekate.Parser
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        ///     Превращение последовательности токенов в текст.
+        /// </summary>
+        /// <returns></returns>
+        public string Emit()
+        {
+            StringBuilder builder = new();
+
+            foreach (var token in _tokens)
+            {
+                builder.Append(token.FullText);
+            }
+
+            return builder.ToString();
         }
 
         /// <summary>

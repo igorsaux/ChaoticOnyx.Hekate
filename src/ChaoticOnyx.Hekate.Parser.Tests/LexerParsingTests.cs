@@ -20,7 +20,6 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Act
             unit.Parse();
             var tokens = unit.Lexer.Tokens;
-
             Assert.True(tokens.Count == 1);
 
             Assert.True(tokens[0]

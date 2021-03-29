@@ -6,7 +6,7 @@
     public record CodeIssue
     {
         public readonly object[]    Arguments;
-        public readonly string     Id;
+        public readonly string      Id;
         public readonly SyntaxToken Token;
 
         /// <summary>
