@@ -117,7 +117,7 @@ namespace ChaoticOnyx.Hekate.Parser
         /// <param name="args">Дополнительные аргументы, используются для форматирования сообщения об проблеме.</param>
         private void MakeIssue(string id, SyntaxToken token, params object[] args)
         {
-            _issues.Add(new(id, token, args));
+            _issues.Add(new(id, token, _source.FilePosition, args));
         }
 
         /// <summary>
@@ -524,6 +524,11 @@ namespace ChaoticOnyx.Hekate.Parser
                         break;
                     case ' ':
                     case '\t':
+                    case '\v':
+                    case '\f':
+                    case '\u00A0':
+                    case '\uFEFF':
+                    case '\u001A':
                         SkipWhiteSpaces();
                         trivia.Add(CreateToken(SyntaxKind.WhiteSpace));
 

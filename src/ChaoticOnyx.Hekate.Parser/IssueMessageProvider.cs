@@ -21,7 +21,15 @@ namespace ChaoticOnyx.Hekate.Parser
             var issueId = issue.Id.ToUpper();
             var format  = resources.GetString(issueId);
             Debug.Assert(format != null, $"Key {issueId} not localized.");
-            result.AppendFormat(format, issue.Arguments);
+
+            if (issue.Arguments.Length == 0)
+            {
+                result.Append(format);
+            }
+            else
+            {
+                result.AppendFormat(format, issue.Arguments);
+            }
 
             return result.ToString();
         }

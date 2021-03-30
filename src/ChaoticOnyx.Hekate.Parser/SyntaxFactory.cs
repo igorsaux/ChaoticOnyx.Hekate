@@ -166,29 +166,249 @@ namespace ChaoticOnyx.Hekate.Parser
             return new(SyntaxKind.WhileKeyword, "while");
         }
 
-        public SyntaxToken DefineDirective(string ending = "\n")
+        public SyntaxToken DefineDirective()
         {
-            return new SyntaxToken(SyntaxKind.DefineDirective, "#define").WithTrails(EndOfLine(ending));
+            return new SyntaxToken(SyntaxKind.DefineDirective, "#define");
         }
 
-        public SyntaxToken IncludeDirective(string ending = "\n")
+        public SyntaxToken IncludeDirective()
         {
-            return new SyntaxToken(SyntaxKind.IncludeDirective, "#include").WithTrails(EndOfLine(ending));
+            return new SyntaxToken(SyntaxKind.IncludeDirective, "#include");
         }
 
-        public SyntaxToken IfDefDirective(string ending = "\n")
+        public SyntaxToken IfDefDirective()
         {
-            return new SyntaxToken(SyntaxKind.IfDefDirective, "#ifdef").WithTrails(EndOfLine(ending));
+            return new SyntaxToken(SyntaxKind.IfDefDirective, "#ifdef");
         }
 
-        public SyntaxToken IfNDefDirective(string ending = "\n")
+        public SyntaxToken IfNDefDirective()
         {
-            return new SyntaxToken(SyntaxKind.IfNDefDirective, "#ifndef").WithTrails(EndOfLine(ending));
+            return new SyntaxToken(SyntaxKind.IfNDefDirective, "#ifndef");
         }
 
-        public SyntaxToken EndIfDirective(string ending = "\n")
+        public SyntaxToken EndIfDirective()
         {
-            return new SyntaxToken(SyntaxKind.EndIfDirective, "#endif").WithTrails(EndOfLine(ending));
+            return new SyntaxToken(SyntaxKind.EndIfDirective, "#endif");
+        }
+
+        public SyntaxToken Slash()
+        {
+            return new(SyntaxKind.Slash, "/");
+        }
+
+        public SyntaxToken BackwardSlashEqual()
+        {
+            return new(SyntaxKind.BackwardSlashEqual, "\\=");
+        }
+
+        public SyntaxToken SlashEqual()
+        {
+            return new(SyntaxKind.SlashEqual, "/=");
+        }
+
+        public SyntaxToken Asterisk()
+        {
+            return new(SyntaxKind.Asterisk, "*");
+        }
+
+        public SyntaxToken AsteriskEqual()
+        {
+            return new(SyntaxKind.AsteriskEqual, "*=");
+        }
+
+        public SyntaxToken DoubleAsterisk()
+        {
+            return new(SyntaxKind.DoubleAsterisk, "**");
+        }
+
+        public SyntaxToken Equal()
+        {
+            return new(SyntaxKind.Equal, "=");
+        }
+
+        public SyntaxToken DoubleEqual()
+        {
+            return new(SyntaxKind.DoubleEqual, "==");
+        }
+
+        public SyntaxToken ExclamationEqual()
+        {
+            return new(SyntaxKind.ExclamationEqual, "!=");
+        }
+
+        public SyntaxToken Exclamation()
+        {
+            return new(SyntaxKind.Exclamation, "!");
+        }
+
+        public SyntaxToken Greater()
+        {
+            return new(SyntaxKind.Greater, ">");
+        }
+
+        public SyntaxToken DoubleGreater()
+        {
+            return new(SyntaxKind.DoubleGreater, ">>");
+        }
+
+        public SyntaxToken DoubleGreaterEqual()
+        {
+            return new(SyntaxKind.DoubleGreaterEqual, ">>=");
+        }
+
+        public SyntaxToken GreaterEqual()
+        {
+            return new(SyntaxKind.GreaterEqual, ">=");
+        }
+
+        public SyntaxToken Lesser()
+        {
+            return new(SyntaxKind.Lesser, "<");
+        }
+
+        public SyntaxToken DoubleLesser()
+        {
+            return new(SyntaxKind.DoubleLesser, "<<");
+        }
+
+        public SyntaxToken DoubleLesserEqual()
+        {
+            return new(SyntaxKind.DoubleLesserEqual, "<<=");
+        }
+
+        public SyntaxToken LesserEqual()
+        {
+            return new(SyntaxKind.LesserEqual, "<=");
+        }
+
+        public SyntaxToken OpenParentheses()
+        {
+            return new(SyntaxKind.OpenParenthesis, "(");
+        }
+
+        public SyntaxToken CloseParentheses()
+        {
+            return new(SyntaxKind.CloseParenthesis, ")");
+        }
+
+        public SyntaxToken OpenBrace()
+        {
+            return new(SyntaxKind.OpenBrace, "{");
+        }
+
+        public SyntaxToken CloseBrace()
+        {
+            return new(SyntaxKind.CloseBrace, "}");
+        }
+
+        public SyntaxToken OpenBracket()
+        {
+            return new(SyntaxKind.OpenBracket, "[");
+        }
+
+        public SyntaxToken CloseBracket()
+        {
+            return new(SyntaxKind.CloseBracket, "]");
+        }
+
+        public SyntaxToken Plus()
+        {
+            return new(SyntaxKind.Plus, "+");
+        }
+
+        public SyntaxToken PlusEqual()
+        {
+            return new(SyntaxKind.PlusEqual, "+=");
+        }
+
+        public SyntaxToken DoublePlus()
+        {
+            return new(SyntaxKind.DoublePlus, "++");
+        }
+
+        public SyntaxToken Minus()
+        {
+            return new(SyntaxKind.Minus, "-");
+        }
+
+        public SyntaxToken MinusEqual()
+        {
+            return new(SyntaxKind.MinusEqual, "-=");
+        }
+
+        public SyntaxToken DoubleMinus()
+        {
+            return new(SyntaxKind.DoubleMinus, "--");
+        }
+
+        public SyntaxToken Comma()
+        {
+            return new(SyntaxKind.Comma, ",");
+        }
+
+        public SyntaxToken Percent()
+        {
+            return new(SyntaxKind.Percent, "%");
+        }
+
+        public SyntaxToken PercentEqual()
+        {
+            return new(SyntaxKind.PercentEqual, "%=");
+        }
+
+        public SyntaxToken Ampersand()
+        {
+            return new(SyntaxKind.Ampersand, "&");
+        }
+
+        public SyntaxToken DoubleAmpersand()
+        {
+            return new(SyntaxKind.DoubleAmpersand, "&&");
+        }
+
+        public SyntaxToken AmpersandEqual()
+        {
+            return new(SyntaxKind.AmpersandEqual, "&=");
+        }
+
+        public SyntaxToken Colon()
+        {
+            return new(SyntaxKind.Colon, ":");
+        }
+
+        public SyntaxToken Question()
+        {
+            return new(SyntaxKind.Question, "?");
+        }
+
+        public SyntaxToken Caret()
+        {
+            return new(SyntaxKind.Caret, "^");
+        }
+
+        public SyntaxToken CaretEqual()
+        {
+            return new(SyntaxKind.CaretEqual, "^=");
+        }
+
+        public SyntaxToken Bar()
+        {
+            return new(SyntaxKind.Bar, "|");
+        }
+
+        public SyntaxToken DoubleBar()
+        {
+            return new(SyntaxKind.DoubleBar, "||");
+        }
+
+        public SyntaxToken BarEqual()
+        {
+            return new(SyntaxKind.BarEqual, "|=");
+        }
+
+        public SyntaxToken Dot()
+        {
+            return new(SyntaxKind.Dot, ".");
         }
 
         public void Dispose() { }

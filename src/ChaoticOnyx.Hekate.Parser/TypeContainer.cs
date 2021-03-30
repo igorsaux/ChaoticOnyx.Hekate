@@ -67,7 +67,7 @@ namespace ChaoticOnyx.Hekate.Parser
         /// <summary>
         ///     Устанавливает отступ в начало коллекции.
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             Offset = 0;
             Start();
@@ -76,7 +76,7 @@ namespace ChaoticOnyx.Hekate.Parser
         /// <summary>
         ///     Устанавливает позицию на текущий отступ.
         /// </summary>
-        public void Start()
+        public virtual void Start()
         {
             Position = Offset;
         }
@@ -85,7 +85,7 @@ namespace ChaoticOnyx.Hekate.Parser
         ///     Возвращает элемент на текущем отступе и увеличивает отступ на единицу.
         /// </summary>
         /// <returns></returns>
-        public T Read()
+        public virtual T Read()
         {
             return List[Offset++];
         }
@@ -95,7 +95,7 @@ namespace ChaoticOnyx.Hekate.Parser
         /// </summary>
         /// <param name="offset">Количество шагов от текущего отступа.</param>
         /// <returns>Возвращает null если указанный отступ выходит за конец коллекции.</returns>
-        public T? Peek(int offset = 1)
+        public virtual T? Peek(int offset = 1)
         {
             var result = Offset + offset - 1;
 
@@ -106,7 +106,7 @@ namespace ChaoticOnyx.Hekate.Parser
         ///     Передвигает отступ на указанное количество шагов.
         /// </summary>
         /// <param name="offset">Количество шагов</param>
-        public void Advance(int offset = 1)
+        public virtual void Advance(int offset = 1)
         {
             Offset += offset;
         }
