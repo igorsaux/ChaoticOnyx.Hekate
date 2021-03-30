@@ -20,7 +20,9 @@
                     Operators         = true,
                     InBrackets        = false,
                     InParentheses     = false,
-                    MethodParentheses = false
+                    MethodParentheses = false,
+                    AfterComma        = true,
+                    BeforeComma       = false
                 },
                 Parentheses =
                 {
@@ -254,6 +256,24 @@
             ///     a + b / a+b
             /// </summary>
             public bool Operators
+            {
+                get;
+                set;
+            } = true;
+
+            /// <summary>
+            ///     a ,b / a,b
+            /// </summary>
+            public bool BeforeComma
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            ///     a, b / a,b
+            /// </summary>
+            public bool AfterComma
             {
                 get;
                 set;

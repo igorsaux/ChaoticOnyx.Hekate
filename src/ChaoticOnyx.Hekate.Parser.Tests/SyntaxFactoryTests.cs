@@ -1,6 +1,5 @@
 ﻿#region
 
-using System;
 using ChaoticOnyx.Hekate.Parser.ChaoticOnyx.Tools.StyleCop;
 using Xunit;
 
@@ -416,11 +415,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "/";
             var token    = _factory.Slash();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -431,11 +430,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "\\=";
             var token    = _factory.BackwardSlashEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -446,11 +445,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "/=";
             var token    = _factory.SlashEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -461,11 +460,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "*";
             var token    = _factory.Asterisk();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -476,11 +475,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "*=";
             var token    = _factory.AsteriskEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -491,11 +490,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "**";
             var token    = _factory.DoubleAsterisk();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -506,11 +505,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "=";
             var token    = _factory.Equal();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -521,11 +520,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "==";
             var token    = _factory.DoubleEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -536,11 +535,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "!=";
             var token    = _factory.ExclamationEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -551,11 +550,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "!";
             var token    = _factory.Exclamation();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -566,11 +565,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ">";
             var token    = _factory.Greater();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -581,11 +580,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ">>";
             var token    = _factory.DoubleGreater();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -596,11 +595,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ">>=";
             var token    = _factory.DoubleGreaterEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -611,11 +610,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ">=";
             var token    = _factory.GreaterEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -626,11 +625,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "<";
             var token    = _factory.Lesser();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -641,11 +640,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "<<";
             var token    = _factory.DoubleLesser();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -656,11 +655,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "<<=";
             var token    = _factory.DoubleLesserEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -671,11 +670,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "<=";
             var token    = _factory.LesserEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -686,11 +685,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "(";
             var token    = _factory.OpenParentheses();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -701,11 +700,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ")";
             var token    = _factory.CloseParentheses();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -716,11 +715,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "{";
             var token    = _factory.OpenBrace();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -731,11 +730,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "}";
             var token    = _factory.CloseBrace();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -746,11 +745,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "[";
             var token    = _factory.OpenBracket();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -761,11 +760,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "]";
             var token    = _factory.CloseBracket();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -776,11 +775,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "+";
             var token    = _factory.Plus();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -791,11 +790,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "+=";
             var token    = _factory.PlusEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -806,11 +805,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "++";
             var token    = _factory.DoublePlus();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -821,11 +820,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "-";
             var token    = _factory.Minus();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -836,11 +835,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "-=";
             var token    = _factory.MinusEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -851,11 +850,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "--";
             var token    = _factory.DoubleMinus();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -866,11 +865,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ",";
             var token    = _factory.Comma();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -881,11 +880,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "%";
             var token    = _factory.Percent();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -896,11 +895,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "%=";
             var token    = _factory.PercentEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -911,11 +910,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "&";
             var token    = _factory.Ampersand();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -926,11 +925,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "&&";
             var token    = _factory.DoubleAmpersand();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -941,11 +940,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "&=";
             var token    = _factory.AmpersandEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -956,11 +955,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ":";
             var token    = _factory.Colon();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -971,11 +970,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "?";
             var token    = _factory.Question();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -986,11 +985,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "^";
             var token    = _factory.Caret();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -1001,11 +1000,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "^=";
             var token    = _factory.CaretEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -1016,11 +1015,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "|";
             var token    = _factory.Bar();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -1031,11 +1030,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "||";
             var token    = _factory.DoubleBar();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -1046,11 +1045,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = "|=";
             var token    = _factory.BarEqual();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }
@@ -1061,11 +1060,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Arrange
             var expected = ".";
             var token    = _factory.Dot();
-            
+
             // Act
             var unit   = new CompilationUnit(token);
             var result = unit.Emit();
-            
+
             // Assert
             Assert.Equal(expected, result);
         }

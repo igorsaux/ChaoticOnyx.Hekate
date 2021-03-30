@@ -88,7 +88,8 @@ namespace ChaoticOnyx.Hekate.Parser
             Position = position;
         }
 
-        public SyntaxToken(SyntaxKind kind, string text, int position, FileLine filePosition) : this(kind, text, position)
+        public SyntaxToken(SyntaxKind kind, string text, int position, FileLine filePosition) : this(
+            kind, text, position)
         {
             FilePosition = filePosition;
         }

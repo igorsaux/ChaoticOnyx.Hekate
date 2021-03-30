@@ -268,5 +268,25 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
             // Assert
             Assert.Equal(expectedCount, count);
         }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(8)]
+        public void TabSizeTest(int tabSize)
+        {
+            // Arrange
+            var text = "\t\tvar";
+            var unit = new CompilationUnit(text, tabSize);
+            var tabs = text.Count(c => c == '\t');
+
+            // Act
+            unit.Parse();
+            var token = unit.Lexer.Tokens[0];
+
+            // Assert
+            Assert.True(token.FilePosition.Column == 1 + tabs * tabSize);
+        }
     }
 }

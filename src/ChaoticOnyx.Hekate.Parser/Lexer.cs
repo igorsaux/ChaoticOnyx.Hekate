@@ -35,19 +35,21 @@ namespace ChaoticOnyx.Hekate.Parser
         ///     Создание нового лексера из текста.
         /// </summary>
         /// <param name="source">Исходный код единицы компиляции.</param>
-        public Lexer(string source)
+        public Lexer(string source, int tabWidth = 4)
         {
-            _source = new(source);
+            _source = new(source, tabWidth);
         }
 
         /// <summary>
         ///     Создание нового лексера из набора токенов.
         /// </summary>
         /// <param name="tokens">Набор токенов.</param>
-        public Lexer(params SyntaxToken[] tokens)
+        public Lexer(params SyntaxToken[] tokens) : this(4, tokens) { }
+
+        public Lexer(int tabWidth, params SyntaxToken[] tokens)
         {
             _tokens = tokens.ToList();
-            _source = new(Emit());
+            _source = new(Emit(), tabWidth);
             Parse();
         }
 

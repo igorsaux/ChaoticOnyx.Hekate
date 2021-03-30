@@ -43,7 +43,7 @@ namespace ChaoticOnyx.Hekate.Parser
             {
                 token.WithLeads(EndOfLine(ending));
             }
-            
+
             return token;
         }
 
@@ -168,27 +168,27 @@ namespace ChaoticOnyx.Hekate.Parser
 
         public SyntaxToken DefineDirective()
         {
-            return new SyntaxToken(SyntaxKind.DefineDirective, "#define");
+            return new(SyntaxKind.DefineDirective, "#define");
         }
 
         public SyntaxToken IncludeDirective()
         {
-            return new SyntaxToken(SyntaxKind.IncludeDirective, "#include");
+            return new(SyntaxKind.IncludeDirective, "#include");
         }
 
         public SyntaxToken IfDefDirective()
         {
-            return new SyntaxToken(SyntaxKind.IfDefDirective, "#ifdef");
+            return new(SyntaxKind.IfDefDirective, "#ifdef");
         }
 
         public SyntaxToken IfNDefDirective()
         {
-            return new SyntaxToken(SyntaxKind.IfNDefDirective, "#ifndef");
+            return new(SyntaxKind.IfNDefDirective, "#ifndef");
         }
 
         public SyntaxToken EndIfDirective()
         {
-            return new SyntaxToken(SyntaxKind.EndIfDirective, "#endif");
+            return new(SyntaxKind.EndIfDirective, "#endif");
         }
 
         public SyntaxToken Slash()
