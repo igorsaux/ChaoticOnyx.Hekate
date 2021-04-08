@@ -47,7 +47,6 @@ namespace ChaoticOnyx.Hekate.Parser
 		{
 			_tokens = tokens.ToList();
 			_source = new TextContainer(Emit(), tabWidth);
-			Parse();
 		}
 
 		/// <summary>
