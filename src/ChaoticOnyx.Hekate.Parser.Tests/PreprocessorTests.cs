@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace ChaoticOnyx.Hekate.Parser.Tests
@@ -10,116 +10,132 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void UnknownMacrosDefinitionTest()
 		{
 			// Arrange
-			var tokens       = new CompilationUnit("#undef macro").Parse();
-			var preprocessor = new Preprocessor(tokens);
-			
+			IList<SyntaxToken> tokens       = new CompilationUnit("#undef macro").Parse();
+			var                preprocessor = new Preprocessor(tokens);
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Issues.Count == 1);
-			Assert.True(preprocessor.Issues.First().Id == IssuesId.UnknownMacrosDefinition);
-			Assert.True(preprocessor.Issues.First().Token.Text == "macro");
+
+			Assert.True(preprocessor.Issues.First()
+									.Id == IssuesId.UnknownMacrosDefinition);
+
+			Assert.True(preprocessor.Issues.First()
+									.Token.Text == "macro");
 		}
 
 		[Fact]
 		public void MissingEndIfForIfDefTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#ifdef debug
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#ifdef debug
 #define macro").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Issues.Count == 1);
-			Assert.True(preprocessor.Issues.First().Id == IssuesId.EndIfNotFound);
+
+			Assert.True(preprocessor.Issues.First()
+									.Id == IssuesId.EndIfNotFound);
 		}
 
 		[Fact]
 		public void MissingEndIfForIfNDefTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#ifndef debug
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#ifndef debug
 #define macro").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Issues.Count == 1);
-			Assert.True(preprocessor.Issues.First().Id == IssuesId.EndIfNotFound);
+
+			Assert.True(preprocessor.Issues.First()
+									.Id == IssuesId.EndIfNotFound);
 		}
 
 		[Fact]
 		public void ExtraEndIf()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#ifdef debug
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#ifdef debug
 #define macro
 #endif
 #endif").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Issues.Count == 1);
-			Assert.True(preprocessor.Issues.First().Id == IssuesId.ExtraEndIf);
+
+			Assert.True(preprocessor.Issues.First()
+									.Id == IssuesId.ExtraEndIf);
 		}
 
 		[Fact]
 		public void IncludeTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#include 'code/file1.dm'
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#include 'code/file1.dm'
 #include 'code/file2.dm'").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Includes.Count == 2);
-			Assert.True(preprocessor.Includes[0].Text == "'code/file1.dm'");
-			Assert.True(preprocessor.Includes[1].Text == "'code/file2.dm'");
+
+			Assert.True(preprocessor.Includes[0]
+									.Text == "'code/file1.dm'");
+
+			Assert.True(preprocessor.Includes[1]
+									.Text == "'code/file2.dm'");
 		}
 
 		[Fact]
 		public void DefineTest()
 		{
 			// Arrange
-			var tokens       = new CompilationUnit("#define macro").Parse();
-			var preprocessor = new Preprocessor(tokens);
-			
+			IList<SyntaxToken> tokens       = new CompilationUnit("#define macro").Parse();
+			var                preprocessor = new Preprocessor(tokens);
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Defines.Count == 1);
-			Assert.True(preprocessor.Defines[0].Text == "macro");
+
+			Assert.True(preprocessor.Defines[0]
+									.Text == "macro");
 		}
 
 		[Fact]
 		public void DefineAndUndefineTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#define macro
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#define macro
 #undef macro").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Defines.Count == 0);
 		}
@@ -128,36 +144,40 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void IfdefDefineTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#define debug
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#define debug
 #ifdef debug
 #define macro
 #endif").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Defines.Count == 2);
-			Assert.True(preprocessor.Defines[0].Text == "debug");
-			Assert.True(preprocessor.Defines[1].Text == "macro");
+
+			Assert.True(preprocessor.Defines[0]
+									.Text == "debug");
+
+			Assert.True(preprocessor.Defines[1]
+									.Text == "macro");
 		}
 
 		[Fact]
 		public void IfdefUndefTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#define debug
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#define debug
 #ifdef debug
 #undef debug
 #endif").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Defines.Count == 0);
 		}
@@ -166,34 +186,36 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void IfNDefDefineTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#ifndef debug
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#ifndef debug
 #define debug
 #endif").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Defines.Count == 1);
-			Assert.True(preprocessor.Defines[0].Text == "debug");
+
+			Assert.True(preprocessor.Defines[0]
+									.Text == "debug");
 		}
 
 		[Fact]
 		public void IfNDefUndefTest()
 		{
 			// Arrange
-			var tokens = new CompilationUnit(@"#define macro
+			IList<SyntaxToken> tokens = new CompilationUnit(@"#define macro
 #ifndef debug
 #undef macro
 #endif").Parse();
 
 			var preprocessor = new Preprocessor(tokens);
-			
+
 			// Act
 			preprocessor.Preprocess();
-			
+
 			// Assert
 			Assert.True(preprocessor.Defines.Count == 0);
 		}

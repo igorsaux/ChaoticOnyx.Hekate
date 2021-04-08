@@ -5,11 +5,11 @@ namespace ChaoticOnyx.Hekate.Parser
 {
 	public sealed class Preprocessor
 	{
-		private readonly Stack<SyntaxToken>         _ifs      = new();
 		private readonly List<SyntaxToken>          _defines  = new();
+		private readonly Stack<SyntaxToken>         _ifs      = new();
 		private readonly List<SyntaxToken>          _includes = new();
+		private readonly List<CodeIssue>            _issues   = new();
 		private readonly TypeContainer<SyntaxToken> _tokens;
-		private readonly List<CodeIssue>            _issues = new();
 
 		public IReadOnlyCollection<CodeIssue> Issues   => _issues.AsReadOnly();
 		public IList<SyntaxToken>             Includes => _includes;
@@ -18,7 +18,7 @@ namespace ChaoticOnyx.Hekate.Parser
 		public Preprocessor(IList<SyntaxToken> tokens) { _tokens = new TypeContainer<SyntaxToken>(tokens); }
 
 		/// <summary>
-		///		Производит препроцессинг токенов.
+		///     Производит препроцессинг токенов.
 		/// </summary>
 		public void Preprocess()
 		{
@@ -26,7 +26,7 @@ namespace ChaoticOnyx.Hekate.Parser
 			_defines.Clear();
 			_includes.Clear();
 			_issues.Clear();
-			
+
 			while (!_tokens.IsEnd)
 			{
 				SyntaxToken  token = _tokens.Read();
@@ -46,22 +46,16 @@ namespace ChaoticOnyx.Hekate.Parser
 						break;
 					case SyntaxKind.IfDefDirective:
 						_ifs.Push(token);
-						
-						if (_defines.Any(t => t.Text == next.Text))
-						{
-							break;
-						}
+
+						if (_defines.Any(t => t.Text == next.Text)) { break; }
 
 						SkipIf();
 
 						break;
 					case SyntaxKind.IfNDefDirective:
 						_ifs.Push(token);
-						
-						if (_defines.Count == 0 || _defines.Any(t => t.Text != next.Text))
-						{
-							break;
-						}
+
+						if (_defines.Count == 0 || _defines.Any(t => t.Text != next.Text)) { break; }
 
 						SkipIf();
 
@@ -69,11 +63,8 @@ namespace ChaoticOnyx.Hekate.Parser
 					case SyntaxKind.UndefDirective:
 						SyntaxToken? define = _defines.Find(t => t.Text == next.Text);
 
-						if (define != null)
-						{
-							_defines.Remove(define);
-						}
-						
+						if (define != null) { _defines.Remove(define); }
+
 						_issues.Add(new CodeIssue(IssuesId.UnknownMacrosDefinition, next, next.Text));
 
 						break;
@@ -84,7 +75,7 @@ namespace ChaoticOnyx.Hekate.Parser
 
 							break;
 						}
-						
+
 						_ifs.Pop();
 
 						break;
@@ -93,13 +84,13 @@ namespace ChaoticOnyx.Hekate.Parser
 
 			if (_ifs.Count > 0)
 			{
-				var last = _ifs.Last();
+				SyntaxToken? last = _ifs.Last();
 				_issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
 			}
 		}
-		
+
 		/// <summary>
-		///		Пропускает все токены до первого нахождение #endif.
+		///     Пропускает все токены до первого нахождение #endif.
 		/// </summary>
 		/// <returns>Возвращает true - если #endif был найден.</returns>
 		private void SkipIf()
@@ -108,16 +99,10 @@ namespace ChaoticOnyx.Hekate.Parser
 			{
 				SyntaxToken? token = _tokens.Peek();
 
-				if (token == null)
-				{
-					return;
-				}
-				
-				if (token.Kind == SyntaxKind.EndIfDirective)
-				{
-					return;
-				}
-				
+				if (token == null) { return; }
+
+				if (token.Kind == SyntaxKind.EndIfDirective) { return; }
+
 				_tokens.Advance();
 			}
 		}
