@@ -40,10 +40,9 @@ obj
 hello_world()
 ";
 
-			var unit = new CompilationUnit(expected);
+			CompilationUnit unit = CompilationUnit.FromSource(expected);
 
 			// Act
-			unit.Parse();
 			string result = unit.Emit();
 
 			// Assert

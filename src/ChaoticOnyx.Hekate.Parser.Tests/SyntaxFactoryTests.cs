@@ -19,8 +19,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.SingleLineComment(" This is a comment");
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -34,8 +34,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.MultiLineComment("\n  Hello!\n");
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -49,8 +49,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Identifier("var");
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -64,8 +64,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.TextLiteral("Test");
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -87,8 +87,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			};
 
 			// Act
-			var    unit   = new CompilationUnit(tokens);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromTokens(tokens);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -102,8 +102,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.PathLiteral("sound/mysound.ogg");
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -117,8 +117,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.ForKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -132,8 +132,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.NewKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -147,8 +147,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.GlobalKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -162,8 +162,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.ThrowKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -177,8 +177,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.CatchKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -192,8 +192,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.TryKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -207,8 +207,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.VarKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -222,8 +222,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.VerbKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -237,8 +237,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.ProcKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -252,8 +252,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.InKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -267,8 +267,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.IfKeyword();
 
 			// Act
-			var    unit  = new CompilationUnit(token);
-			string resul = unit.Emit();
+			CompilationUnit unit  = CompilationUnit.FromToken(token);
+			string          resul = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, resul);
@@ -282,8 +282,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.ElseKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -297,8 +297,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.SetKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -312,8 +312,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.AsKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -327,8 +327,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.WhileKeyword();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -342,8 +342,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DefineDirective();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -357,8 +357,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.IncludeDirective();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -372,8 +372,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.IfDefDirective();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -387,8 +387,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.IfNDefDirective();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -402,8 +402,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.EndIfDirective();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -417,8 +417,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Slash();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -432,8 +432,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.BackwardSlashEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -447,8 +447,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.SlashEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -462,8 +462,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Asterisk();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -477,8 +477,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.AsteriskEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -492,8 +492,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleAsterisk();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -507,8 +507,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Equal();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -522,8 +522,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -537,8 +537,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.ExclamationEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -552,8 +552,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Exclamation();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -567,8 +567,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Greater();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -582,8 +582,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleGreater();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -597,8 +597,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleGreaterEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -612,8 +612,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.GreaterEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -627,8 +627,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Lesser();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -642,8 +642,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleLesser();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -657,8 +657,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleLesserEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -672,8 +672,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.LesserEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -687,8 +687,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.OpenParentheses();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -702,8 +702,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.CloseParentheses();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -717,8 +717,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.OpenBrace();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -732,8 +732,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.CloseBrace();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -747,8 +747,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.OpenBracket();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -762,8 +762,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.CloseBracket();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -777,8 +777,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Plus();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -792,8 +792,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.PlusEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -807,8 +807,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoublePlus();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -822,8 +822,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Minus();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -837,8 +837,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.MinusEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -852,8 +852,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleMinus();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -867,8 +867,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Comma();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -882,8 +882,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Percent();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -897,8 +897,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.PercentEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -912,8 +912,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Ampersand();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -927,8 +927,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleAmpersand();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -942,8 +942,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.AmpersandEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -957,8 +957,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Colon();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -972,8 +972,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Question();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -987,8 +987,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Caret();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -1002,8 +1002,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.CaretEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -1017,8 +1017,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Bar();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -1032,8 +1032,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.DoubleBar();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -1047,8 +1047,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.BarEqual();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);
@@ -1062,8 +1062,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			SyntaxToken token    = _factory.Dot();
 
 			// Act
-			var    unit   = new CompilationUnit(token);
-			string result = unit.Emit();
+			CompilationUnit unit   = CompilationUnit.FromToken(token);
+			string          result = unit.Emit();
 
 			// Assert
 			Assert.Equal(expected, result);

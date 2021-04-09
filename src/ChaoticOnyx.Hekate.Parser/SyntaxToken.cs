@@ -72,11 +72,7 @@ namespace ChaoticOnyx.Hekate.Parser
 		/// <param name="position">Позиция токена.</param>
 		public SyntaxToken(SyntaxKind kind, string text, int position) : this(kind, text) { Position = position; }
 
-		public SyntaxToken(SyntaxKind kind, string text, int position, FileLine filePosition) : this(
-			kind, text, position)
-		{
-			FilePosition = filePosition;
-		}
+		public SyntaxToken(SyntaxKind kind, string text, int position, FileLine filePosition) : this(kind, text, position) { FilePosition = filePosition; }
 
 		/// <summary>
 		///     Создание нового токена.

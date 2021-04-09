@@ -33,16 +33,11 @@
 					Throw = true,
 					While = true
 				},
-				Naming =
-				{
-					Methods   = NamingConvention.Pascal,
-					Paths     = NamingConvention.Underscored,
-					Variables = NamingConvention.Camel
-				},
+				Naming        = { Methods = NamingConvention.Pascal, Paths = NamingConvention.Underscored, Variables = NamingConvention.Camel },
 				LastEmptyLine = true
 			};
 
-			public bool LastEmptyLine = true;
+			public bool LastEmptyLine { get; init; } = true;
 
 			public CodeStyleSpaces Spaces { get; init; } = new();
 

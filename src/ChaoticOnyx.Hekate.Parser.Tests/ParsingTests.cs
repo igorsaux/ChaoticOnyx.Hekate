@@ -8,12 +8,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 	{
 		private static CompilationUnitNode ParseText(string text)
 		{
-			var unit = new CompilationUnit(text);
-			unit.Parse();
+			CompilationUnit unit = CompilationUnit.FromSource(text);
 
 			return unit.Parser.Root;
 		}
-		
+
 		[Theory]
 		[InlineData("/datum/mytype/type")]
 		[InlineData("datum/mytype/type")]
@@ -26,9 +25,9 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		{
 			// Arrange
 			// Act
-			CompilationUnitNode             root = ParseText(text);
-			DeclarationNode type = root.Declarations[0];
-			
+			CompilationUnitNode root = ParseText(text);
+			DeclarationNode     type = root.Declarations[0];
+
 			// Assert
 			Assert.Equal(1, root.Declarations.Count);
 			Assert.True(type.Kind == NodeKind.TypeDeclaration);
@@ -62,9 +61,9 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		{
 			// Arrange
 			// Act
-			CompilationUnitNode root = ParseText(text);
+			CompilationUnitNode root     = ParseText(text);
 			DeclarationNode     variable = root.Declarations.First(d => d.Kind == NodeKind.VariableDeclaration);
-			
+
 			// Assert
 			Assert.Equal(expectedDeclarations, root.Declarations.Count);
 			Assert.True(variable.Kind == NodeKind.VariableDeclaration);

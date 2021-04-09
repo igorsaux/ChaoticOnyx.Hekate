@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ChaoticOnyx.Hekate.Parser
+﻿namespace ChaoticOnyx.Hekate.Parser
 {
 	public static class SyntaxKindExtensions
 	{

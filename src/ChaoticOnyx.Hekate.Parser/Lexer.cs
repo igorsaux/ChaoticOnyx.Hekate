@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 #endregion
@@ -17,13 +16,12 @@ namespace ChaoticOnyx.Hekate.Parser
 		private readonly List<CodeIssue>   _issues          = new();
 		private readonly List<SyntaxToken> _leadTokensCache = new();
 		private readonly TextContainer     _source;
-		private readonly List<SyntaxToken> _tokens           = new();
 		private readonly List<SyntaxToken> _trailTokensCache = new();
 
 		/// <summary>
 		///     Токены в единице компиляции.
 		/// </summary>
-		public IList<SyntaxToken> Tokens => _tokens.AsReadOnly();
+		public IList<SyntaxToken> Tokens { get; }
 
 		/// <summary>
 		///     Проблемы обнаруженные в единице компиляции.
@@ -34,18 +32,21 @@ namespace ChaoticOnyx.Hekate.Parser
 		///     Создание нового лексера из текста.
 		/// </summary>
 		/// <param name="source">Исходный код единицы компиляции.</param>
-		/// <param name="tabWidth">Ширина таба в файле.</param>
-		public Lexer(string source, int tabWidth = 4) { _source = new TextContainer(source, tabWidth); }
+		/// <param name="tabWidth">Ширина табуляции в файле.</param>
+		public Lexer(string source, int tabWidth = 4)
+		{
+			Tokens  = new List<SyntaxToken>();
+			_source = new TextContainer(source, tabWidth);
+		}
 
 		/// <summary>
 		///     Создание нового лексера из набора токенов.
 		/// </summary>
 		/// <param name="tokens">Набор токенов.</param>
-		public Lexer(params SyntaxToken[] tokens) : this(4, tokens) { }
-
-		public Lexer(int tabWidth, params SyntaxToken[] tokens)
+		/// <param name="tabWidth">Ширина табуляции в файле.</param>
+		public Lexer(IList<SyntaxToken> tokens, int tabWidth = 4)
 		{
-			_tokens = tokens.ToList();
+			Tokens  = tokens;
 			_source = new TextContainer(Emit(), tabWidth);
 		}
 
@@ -99,12 +100,12 @@ namespace ChaoticOnyx.Hekate.Parser
 		/// </summary>
 		public void Parse()
 		{
-			_tokens.Clear();
+			Tokens.Clear();
 
 			while (true)
 			{
 				SyntaxToken token = Lex();
-				_tokens.Add(token);
+				Tokens.Add(token);
 
 				if (token.Kind == SyntaxKind.EndOfFile) { return; }
 			}
@@ -118,7 +119,7 @@ namespace ChaoticOnyx.Hekate.Parser
 		{
 			StringBuilder builder = new();
 
-			foreach (var token in _tokens) { builder.Append(token.FullText); }
+			foreach (var token in Tokens) { builder.Append(token.FullText); }
 
 			return builder.ToString();
 		}
@@ -153,10 +154,7 @@ namespace ChaoticOnyx.Hekate.Parser
 		/// <param name="id">Идентификатор проблемы.</param>
 		/// <param name="token">Токен, с которым связана проблема.</param>
 		/// <param name="args">Дополнительные аргументы, используются для форматирования сообщения об проблеме.</param>
-		private void MakeIssue(string id, SyntaxToken token, params object[] args)
-		{
-			_issues.Add(new CodeIssue(id, token, _source.OffsetFilePosition, args));
-		}
+		private void MakeIssue(string id, SyntaxToken token, params object[] args) { _issues.Add(new CodeIssue(id, token, _source.OffsetFilePosition, args)); }
 
 		/// <summary>
 		///     Парсинг одного токена.
@@ -168,8 +166,8 @@ namespace ChaoticOnyx.Hekate.Parser
 
 			if (_source.IsEnd) { return CreateTokenAndAdvance(SyntaxKind.EndOfFile, 0); }
 
-			char        ch            = _source.Peek();
-			var         parsingResult = false;
+			char        ch = _source.Peek();
+			bool        parsingResult;
 			SyntaxToken token;
 			char        next = _source.Peek(2);
 
@@ -183,8 +181,6 @@ namespace ChaoticOnyx.Hekate.Parser
 					}
 
 					return CreateTokenAndAdvance(SyntaxKind.Slash, 1);
-
-					;
 				case '\\':
 					switch (next)
 					{
@@ -432,10 +428,7 @@ namespace ChaoticOnyx.Hekate.Parser
 			return new SyntaxToken(kind, _source.LexemeText, _source.Position, _source.LexemeFilePosition);
 		}
 
-		private SyntaxToken CreateToken(SyntaxKind kind)
-		{
-			return new(kind, _source.LexemeText, _source.Position, _source.LexemeFilePosition);
-		}
+		private SyntaxToken CreateToken(SyntaxKind kind) { return new(kind, _source.LexemeText, _source.Position, _source.LexemeFilePosition); }
 
 		/// <summary>
 		///     Парсинг ведущих и хвостовых токенов.
@@ -577,7 +570,7 @@ namespace ChaoticOnyx.Hekate.Parser
 		{
 			var result = new StringBuilder();
 
-			foreach (var token in _tokens) { result.Append($"{token.Text}"); }
+			foreach (var token in Tokens) { result.Append($"{token.Text}"); }
 
 			return result.ToString();
 		}

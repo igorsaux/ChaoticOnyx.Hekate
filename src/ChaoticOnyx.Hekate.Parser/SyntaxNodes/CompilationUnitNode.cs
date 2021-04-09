@@ -9,9 +9,6 @@ namespace ChaoticOnyx.Hekate.Parser.SyntaxNodes
 
 		public CompilationUnitNode() : base(NodeKind.CompilationUnit) { }
 
-		public void AddDeclaration(DeclarationNode declaration)
-		{
-			_declarations.Add(declaration);
-		}
+		public void AddDeclaration(DeclarationNode declaration) { _declarations.Add(declaration); }
 	}
 }

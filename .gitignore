@@ -341,3 +341,4 @@ healthchecksdb
 
 # Sonarqube
 .sonarqube
+sonar_scan.ps1

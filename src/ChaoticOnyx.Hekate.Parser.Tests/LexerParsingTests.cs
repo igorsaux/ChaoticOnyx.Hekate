@@ -14,13 +14,14 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void CommentParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new(@"/* MultiLine Comment*/
-
-// SingleLine Comment");
-
 			// Act
-			unit.Parse();
+			CompilationUnit unit = CompilationUnit.FromSource(@"/* MultiLine Comment*/
+
+// SingleLine Comment", modes: ParsingModes.None);
+
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
+
+			// Assert
 			Assert.True(tokens.Count == 1);
 
 			Assert.True(tokens[0]
@@ -45,10 +46,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void IdentifierParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new("literal");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("literal", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -65,10 +64,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void NumericalLiteralParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new("123");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("123", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -85,10 +82,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void FloatNumericalLiteralParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new("123.55");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("123.55", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -105,10 +100,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void TextLiteralParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new("\"TextLiteral\"");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("\"TextLiteral\"", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -122,10 +115,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void PathLiteralParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new("\'PathLiteral/file.dm\'");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("\'PathLiteral/file.dm\'", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -139,10 +130,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void SpacesParsing()
 		{
 			// Arrange
-			CompilationUnit unit = new(@"    // Comment");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource(@"    // Comment", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -170,10 +159,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void DirectiveParsing(SyntaxKind kind)
 		{
 			// Arrange
-			CompilationUnit unit = new("#include #ifndef #ifdef #endif #define #undef");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("#include #ifndef #ifdef #endif #define #undef", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -200,10 +187,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void KeywordParsing(SyntaxKind kind)
 		{
 			// Arrange
-			CompilationUnit unit = new("for new global throw catch try var verb proc in if else set as while");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("for new global throw catch try var verb proc in if else set as while", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert
@@ -258,12 +243,8 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void CheckTokenParsing(SyntaxKind kind, int expectedCount = 1)
 		{
 			// Arrange
-			CompilationUnit unit =
-				new(
-					"* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ .");
-
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ .", modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 			int                count  = tokens.Count(token => token.Kind == kind);
 
@@ -280,12 +261,11 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		{
 			// Arrange
 			var text = "\t\tvar";
-			var unit = new CompilationUnit(text, tabSize);
 			int tabs = text.Count(c => c == '\t');
 
 			// Act
-			unit.Parse();
-			SyntaxToken token = unit.Lexer.Tokens[0];
+			CompilationUnit unit  = CompilationUnit.FromSource(text, tabSize, ParsingModes.None);
+			SyntaxToken     token = unit.Lexer.Tokens[0];
 
 			// Assert
 			Assert.True(token.FilePosition.Column == 1 + tabs * tabSize);
@@ -295,13 +275,10 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 		public void EscapedTextTest()
 		{
 			// Arrange
-			var text =
-				@"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""";
-
-			var unit = new CompilationUnit(text);
+			var text = @"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""";
 
 			// Act
-			unit.Parse();
+			CompilationUnit    unit   = CompilationUnit.FromSource(text, modes: ParsingModes.None);
 			IList<SyntaxToken> tokens = unit.Lexer.Tokens;
 
 			// Assert

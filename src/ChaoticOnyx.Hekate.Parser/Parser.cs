@@ -8,28 +8,31 @@ namespace ChaoticOnyx.Hekate.Parser
 {
 	public sealed class Parser
 	{
-		private readonly List<CodeIssue>             _issues = new();
-		private          TypeContainer<SyntaxToken>? _tokens;
+		private readonly List<CodeIssue>            _issues = new();
+		private readonly TypeContainer<SyntaxToken> _tokens;
 
 		public CompilationUnitNode? Root { get; private set; }
 
 		public IReadOnlyCollection<CodeIssue> Issues => _issues.AsReadOnly();
 
+		private Parser(IList<SyntaxToken>? tokens = null) { _tokens = new TypeContainer<SyntaxToken>(tokens ?? new List<SyntaxToken>()); }
+
+		public static Parser WithTokens(IList<SyntaxToken> tokens) { return new(tokens); }
+
+		public static Parser WithoutTokens() { return new(); }
+
 		/// <summary>
 		///     Производит парсинг токенов.
 		/// </summary>
-		/// <param name="tokens">Токены.</param>
 		/// <returns>Синтаксическое дерево.</returns>
-		public void Parse(IList<SyntaxToken> tokens)
+		public void Parse()
 		{
-			_tokens = new TypeContainer<SyntaxToken>(tokens);
-			Root    = new CompilationUnitNode();
+			Root = new CompilationUnitNode();
 			ParseBody();
 		}
 
 		private void ParseDeclaration()
 		{
-			_ = _tokens ?? throw new InvalidOperationException($"{nameof(_tokens)} is null.");
 			_tokens.Start();
 			List<SyntaxToken> path            = new();
 			var               declarationInfo = new DeclarationParsingInfo { Kind = NodeKind.TypeDeclaration };
@@ -37,7 +40,6 @@ namespace ChaoticOnyx.Hekate.Parser
 			while (!_tokens.IsEnd)
 			{
 				SyntaxToken? token = _tokens.Peek();
-				SyntaxToken? next  = _tokens.Peek(2);
 
 				if (token is null) { return; }
 
@@ -47,10 +49,7 @@ namespace ChaoticOnyx.Hekate.Parser
 				{
 					case SyntaxKind.Slash:
 						if (path.LastOrDefault()
-								?.Kind == SyntaxKind.Slash)
-						{
-							_issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token));
-						}
+								?.Kind == SyntaxKind.Slash) { _issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token)); }
 
 						path.Add(token);
 
@@ -120,24 +119,18 @@ namespace ChaoticOnyx.Hekate.Parser
 
 		private void ParseBody()
 		{
-			_ = _tokens ?? throw new InvalidOperationException($"{nameof(_tokens)} is null.");
-
 			while (!_tokens.IsEnd)
 			{
 				_tokens.Start();
 				SyntaxToken? token = _tokens.Peek();
-				SyntaxToken? next  = _tokens.Peek(2);
+				SyntaxToken? next  = _tokens.Peek();
 
 				if (token is null) { return; }
 
 				switch (token.Kind)
 				{
 					case SyntaxKind.Slash:
-						if (next is
-						{
-							Kind: SyntaxKind.Identifier or SyntaxKind.VerbKeyword or SyntaxKind.ProcKeyword or
-							SyntaxKind.VarKeyword
-						}) { ParseDeclaration(); }
+						if (next is { Kind: SyntaxKind.Identifier or SyntaxKind.VerbKeyword or SyntaxKind.ProcKeyword or SyntaxKind.VarKeyword }) { ParseDeclaration(); }
 
 						break;
 					case SyntaxKind.VarKeyword:
@@ -150,7 +143,7 @@ namespace ChaoticOnyx.Hekate.Parser
 					case SyntaxKind.EndOfFile:
 						return;
 				}
-				
+
 				_tokens.Advance();
 			}
 		}

@@ -1,63 +1,66 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ChaoticOnyx.Hekate.Parser
 {
 	/// <summary>
-	///     Минимальная единица компиляции.
+	///     Результат парсинга.
 	/// </summary>
-	public class CompilationUnit
+	public sealed record CompilationUnit
 	{
-		/// <summary>
-		///     Лексер для данной единицы компиляции.
-		/// </summary>
-		public Lexer Lexer { get; }
-		
-		public Parser Parser { get; }
+		public readonly Lexer        Lexer;
+		public readonly Parser       Parser;
+		public readonly Preprocessor Preprocessor;
 
-		/// <summary>
-		///     Создание новой единцы компиляции из текста.
-		/// </summary>
-		/// <param name="source">Исходный код данной единицы.</param>
-		/// <param name="tabWidth">Ширина таба.</param>
-		public CompilationUnit(string source, int tabWidth = 4)
+		private CompilationUnit(Lexer lexer, Preprocessor preprocessor, Parser parser)
 		{
-			Lexer  = new Lexer(source, tabWidth);
-			Parser = new Parser();
+			Lexer        = lexer;
+			Preprocessor = preprocessor;
+			Parser       = parser;
 		}
 
-		/// <summary>
-		///     Создание новой единицы компиляции из набора токенов.
-		/// </summary>
-		/// <param name="tokens">Набор токенов.</param>
-		public CompilationUnit(params SyntaxToken[] tokens) : this(4, tokens) { }
-
-		public CompilationUnit(int tabWidth, params SyntaxToken[] tokens)
+		public static CompilationUnit FromSource(string source, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
 		{
-			Lexer  = new Lexer(tabWidth, tokens);
-			Parser = new Parser();
+			var lexer = new Lexer(source, tabWidth);
+			lexer.Parse();
+
+			return Create(lexer, modes);
 		}
 
-		/// <summary>
-		///     Осуществление парсинга данной единцы компиляции.
-		/// </summary>
-		public void Parse()
+		public static CompilationUnit FromTokens(IList<SyntaxToken> tokens, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
 		{
-			Lexer.Parse();
-			Parser.Parse(Lexer.Tokens);
+			var lexer = new Lexer(tokens, tabWidth);
+
+			return Create(lexer, modes);
 		}
 
-		public IReadOnlyCollection<CodeIssue> GetIssues()
+		public static CompilationUnit FromToken(SyntaxToken token, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
+		{
+			var lexer = new Lexer(new Collection<SyntaxToken> { token }, tabWidth);
+
+			return Create(lexer, modes);
+		}
+
+		private static CompilationUnit Create(Lexer lexer, ParsingModes modes)
+		{
+			Preprocessor preprocessor = modes.HasFlag(ParsingModes.WithPreprocessor) ? Preprocessor.WithTokens(lexer.Tokens) : Preprocessor.WithoutTokens();
+			Parser       parser       = modes.HasFlag(ParsingModes.WithSemantic) ? Parser.WithTokens(lexer.Tokens) : Parser.WithoutTokens();
+			preprocessor.Preprocess();
+			parser.Parse();
+
+			return new CompilationUnit(lexer, preprocessor, parser);
+		}
+
+		public ICollection<CodeIssue> GetIssues()
 		{
 			List<CodeIssue> issues = new();
 			issues.AddRange(Lexer.Issues);
+			issues.AddRange(Preprocessor.Issues);
 			issues.AddRange(Parser.Issues);
 
-			return issues.AsReadOnly();
+			return issues;
 		}
-		
-		/// <summary>
-		///     Осуществляет превращение в текст.
-		/// </summary>
+
 		public string Emit() { return Lexer.Emit(); }
 	}
 }

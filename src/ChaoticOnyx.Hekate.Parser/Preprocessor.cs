@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace ChaoticOnyx.Hekate.Parser
 {
+	public sealed record PreprocessorWithTokens(IList<SyntaxToken> Tokens);
+
 	public sealed class Preprocessor
 	{
 		private readonly List<SyntaxToken>          _defines  = new();
@@ -15,7 +17,11 @@ namespace ChaoticOnyx.Hekate.Parser
 		public IList<SyntaxToken>             Includes => _includes;
 		public IList<SyntaxToken>             Defines  => _defines;
 
-		public Preprocessor(IList<SyntaxToken> tokens) { _tokens = new TypeContainer<SyntaxToken>(tokens); }
+		private Preprocessor(IList<SyntaxToken>? tokens = null) { _tokens = new TypeContainer<SyntaxToken>(tokens ?? new List<SyntaxToken>()); }
+
+		public static Preprocessor WithTokens(IList<SyntaxToken> tokens) { return new(tokens); }
+
+		public static Preprocessor WithoutTokens() { return new(); }
 
 		/// <summary>
 		///     Производит препроцессинг токенов.
@@ -84,7 +90,7 @@ namespace ChaoticOnyx.Hekate.Parser
 
 			if (_ifs.Count > 0)
 			{
-				SyntaxToken? last = _ifs.Last();
+				SyntaxToken last = _ifs.Last();
 				_issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
 			}
 		}

@@ -11,7 +11,7 @@ namespace ChaoticOnyx.Hekate.Parser
 	/// <summary>
 	///     API для создания токенов.
 	/// </summary>
-	public class SyntaxFactory : IDisposable
+	public sealed class SyntaxFactory : IDisposable
 	{
 		public readonly CodeStyle Style;
 
@@ -52,15 +52,9 @@ namespace ChaoticOnyx.Hekate.Parser
 
 		public SyntaxToken NumericalLiteral(int number) { return new(SyntaxKind.NumericalLiteral, number.ToString()); }
 
-		public SyntaxToken NumericalLiteral(float number)
-		{
-			return new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
-		}
+		public SyntaxToken NumericalLiteral(float number) { return new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture)); }
 
-		public SyntaxToken NumericalLiteral(double number)
-		{
-			return new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
-		}
+		public SyntaxToken NumericalLiteral(double number) { return new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture)); }
 
 		public SyntaxToken PathLiteral(string path) { return new(SyntaxKind.PathLiteral, $"'{path}'"); }
 
