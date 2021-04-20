@@ -7,8 +7,8 @@ namespace ChaoticOnyx.Hekate.Parser.SyntaxNodes
 		public string             Name     => Token?.Text ?? string.Empty;
 		public IList<SyntaxToken> FullPath { get; }
 
-		protected DeclarationNode(SyntaxToken token, NodeKind kind) : base(token, kind) { FullPath = new List<SyntaxToken>(); }
+		protected DeclarationNode(SyntaxToken token) : base(token) { FullPath = new List<SyntaxToken>(); }
 
-		protected DeclarationNode(SyntaxToken token, NodeKind kind, IList<SyntaxToken> fullPath) : base(token, kind) { FullPath = fullPath; }
+		protected DeclarationNode(SyntaxToken token, IList<SyntaxToken> fullPath) : base(token) { FullPath = fullPath; }
 	}
 }

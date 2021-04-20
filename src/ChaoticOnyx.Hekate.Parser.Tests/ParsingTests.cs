@@ -30,7 +30,6 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 
 			// Assert
 			Assert.Equal(1, root.Declarations.Count);
-			Assert.True(type.Kind == NodeKind.TypeDeclaration);
 			Assert.True(type is TypeDeclarationNode { Name: "type" });
 			Assert.Contains(type.FullPath, t => t.Text == "datum");
 			Assert.Contains(type.FullPath, t => t.Text == "mytype");
@@ -62,11 +61,10 @@ namespace ChaoticOnyx.Hekate.Parser.Tests
 			// Arrange
 			// Act
 			CompilationUnitNode root     = ParseText(text);
-			DeclarationNode     variable = root.Declarations.First(d => d.Kind == NodeKind.VariableDeclaration);
+			DeclarationNode     variable = root.Declarations.First(d => d is VariableDeclarationNode);
 
 			// Assert
 			Assert.Equal(expectedDeclarations, root.Declarations.Count);
-			Assert.True(variable.Kind == NodeKind.VariableDeclaration);
 			Assert.True(variable is VariableDeclarationNode { Name: "a" });
 		}
 	}

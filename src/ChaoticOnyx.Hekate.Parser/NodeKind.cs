@@ -8,6 +8,9 @@
 		VariableDeclaration,
 		MethodDeclaration,
 		VerbDeclaration,
-		ProcDeclaration
+		ProcDeclaration,
+		BinaryExpression,
+		Expression,
+		Variable
 	}
 }

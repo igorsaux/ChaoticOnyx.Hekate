@@ -4,6 +4,6 @@ namespace ChaoticOnyx.Hekate.Parser.SyntaxNodes
 {
 	public sealed class VariableDeclarationNode : DeclarationNode
 	{
-		public VariableDeclarationNode(SyntaxToken token, IList<SyntaxToken> fullPath) : base(token, NodeKind.VariableDeclaration, fullPath) { }
+		public VariableDeclarationNode(SyntaxToken token, IList<SyntaxToken> fullPath) : base(token, fullPath) { }
 	}
 }

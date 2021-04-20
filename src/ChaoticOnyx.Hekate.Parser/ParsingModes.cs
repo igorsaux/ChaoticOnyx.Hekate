@@ -6,23 +6,23 @@ namespace ChaoticOnyx.Hekate.Parser
 	public enum ParsingModes
 	{
 		/// <summary>
-		///		Используется только лексер.
+		///     Используется только лексер.
 		/// </summary>
 		None = 0,
-		
+
 		/// <summary>
-		///		Также используется семантический парсер.
+		///     Также используется семантический парсер.
 		/// </summary>
-		WithSemantic     = 1 << 0,
-		
+		WithSemantic = 1 << 0,
+
 		/// <summary>
-		///		Также используется препроцессор.
+		///     Также используется препроцессор.
 		/// </summary>
 		WithPreprocessor = 1 << 1,
-		
+
 		/// <summary>
-		///		Полный парсинг.
+		///     Полный парсинг.
 		/// </summary>
-		Full             = WithSemantic | WithPreprocessor
+		Full = WithSemantic | WithPreprocessor
 	}
 }

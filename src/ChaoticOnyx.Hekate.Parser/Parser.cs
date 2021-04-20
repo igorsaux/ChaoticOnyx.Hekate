@@ -24,7 +24,6 @@ namespace ChaoticOnyx.Hekate.Parser
 		/// <summary>
 		///     Производит парсинг токенов.
 		/// </summary>
-		/// <returns>Синтаксическое дерево.</returns>
 		public void Parse()
 		{
 			Root = new CompilationUnitNode();
@@ -107,6 +106,10 @@ namespace ChaoticOnyx.Hekate.Parser
 						CreateDeclaration(declarationInfo, path.ToImmutableList());
 
 						break;
+					case SyntaxKind.Equal:
+						CreateDeclaration(declarationInfo, path.ToImmutableList());
+
+						break;
 					default:
 						_issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token));
 
@@ -114,6 +117,27 @@ namespace ChaoticOnyx.Hekate.Parser
 				}
 
 				_tokens.Advance();
+			}
+		}
+
+		private void ParseExpression()
+		{
+			throw new NotImplementedException();
+		}
+
+		private void ParseIdentifierUsage()
+		{
+			_tokens.Start();
+
+			while (!_tokens.IsEnd)
+			{
+				SyntaxToken? start = _tokens.Peek();
+				SyntaxToken? next  = _tokens.Peek(2);
+
+				switch (start.Kind)
+				{
+					
+				}
 			}
 		}
 
@@ -136,8 +160,11 @@ namespace ChaoticOnyx.Hekate.Parser
 					case SyntaxKind.VarKeyword:
 					case SyntaxKind.ProcKeyword:
 					case SyntaxKind.VerbKeyword:
-					case SyntaxKind.Identifier:
 						ParseDeclaration();
+
+						break;
+					case SyntaxKind.Identifier:
+						ParseExpression();
 
 						break;
 					case SyntaxKind.EndOfFile:
@@ -187,6 +214,12 @@ namespace ChaoticOnyx.Hekate.Parser
 			public NodeKind     Kind;
 
 			public DeclarationParsingInfo() { Kind = NodeKind.Declaration; }
+		}
+
+		private sealed class ExpressionParsingInfo
+		{
+			public NodeKind          Kind;
+			public List<SyntaxToken> values = new();
 		}
 	}
 }

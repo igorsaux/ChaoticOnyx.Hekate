@@ -9,17 +9,21 @@ namespace ChaoticOnyx.Hekate.Parser
 	public sealed record CompilationUnit
 	{
 		public readonly Lexer        Lexer;
+		public readonly ParsingModes Modes;
 		public readonly Parser       Parser;
 		public readonly Preprocessor Preprocessor;
 
-		private CompilationUnit(Lexer lexer, Preprocessor preprocessor, Parser parser)
+		private CompilationUnit(Lexer lexer, Preprocessor preprocessor, Parser parser, ParsingModes modes)
 		{
 			Lexer        = lexer;
 			Preprocessor = preprocessor;
 			Parser       = parser;
+			Modes        = modes;
 		}
 
-		public static CompilationUnit FromSource(string source, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
+		public static CompilationUnit FromSource(string       source,
+												 int          tabWidth = 4,
+												 ParsingModes modes    = ParsingModes.Full)
 		{
 			var lexer = new Lexer(source, tabWidth);
 			lexer.Parse();
@@ -27,14 +31,18 @@ namespace ChaoticOnyx.Hekate.Parser
 			return Create(lexer, modes);
 		}
 
-		public static CompilationUnit FromTokens(IList<SyntaxToken> tokens, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
+		public static CompilationUnit FromTokens(IList<SyntaxToken> tokens,
+												 int                tabWidth = 4,
+												 ParsingModes       modes    = ParsingModes.Full)
 		{
 			var lexer = new Lexer(tokens, tabWidth);
 
 			return Create(lexer, modes);
 		}
 
-		public static CompilationUnit FromToken(SyntaxToken token, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
+		public static CompilationUnit FromToken(SyntaxToken  token,
+												int          tabWidth = 4,
+												ParsingModes modes    = ParsingModes.Full)
 		{
 			var lexer = new Lexer(new Collection<SyntaxToken> { token }, tabWidth);
 
@@ -43,12 +51,18 @@ namespace ChaoticOnyx.Hekate.Parser
 
 		private static CompilationUnit Create(Lexer lexer, ParsingModes modes)
 		{
-			Preprocessor preprocessor = modes.HasFlag(ParsingModes.WithPreprocessor) ? Preprocessor.WithTokens(lexer.Tokens) : Preprocessor.WithoutTokens();
-			Parser       parser       = modes.HasFlag(ParsingModes.WithSemantic) ? Parser.WithTokens(lexer.Tokens) : Parser.WithoutTokens();
+			Preprocessor preprocessor = modes.HasFlag(ParsingModes.WithPreprocessor)
+				? Preprocessor.WithTokens(lexer.Tokens)
+				: Preprocessor.WithoutTokens();
+
+			Parser parser = modes.HasFlag(ParsingModes.WithSemantic)
+				? Parser.WithTokens(lexer.Tokens)
+				: Parser.WithoutTokens();
+
 			preprocessor.Preprocess();
 			parser.Parse();
 
-			return new CompilationUnit(lexer, preprocessor, parser);
+			return new CompilationUnit(lexer, preprocessor, parser, modes);
 		}
 
 		public ICollection<CodeIssue> GetIssues()
