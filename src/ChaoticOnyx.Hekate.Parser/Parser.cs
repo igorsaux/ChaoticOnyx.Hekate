@@ -6,220 +6,234 @@ using ChaoticOnyx.Hekate.Parser.SyntaxNodes;
 
 namespace ChaoticOnyx.Hekate.Parser
 {
-	public sealed class Parser
-	{
-		private readonly List<CodeIssue>            _issues = new();
-		private readonly TypeContainer<SyntaxToken> _tokens;
+    public sealed class Parser
+    {
+        private readonly List<CodeIssue>            _issues = new();
+        private readonly TypeContainer<SyntaxToken> _tokens;
 
-		public CompilationUnitNode? Root { get; private set; }
+        public CompilationUnitNode? Root { get; private set; }
 
-		public IReadOnlyCollection<CodeIssue> Issues => _issues.AsReadOnly();
+        public IReadOnlyCollection<CodeIssue> Issues => _issues.AsReadOnly();
 
-		private Parser(IList<SyntaxToken>? tokens = null) { _tokens = new TypeContainer<SyntaxToken>(tokens ?? new List<SyntaxToken>()); }
+        private Parser(IList<SyntaxToken>? tokens = null) => _tokens = new TypeContainer<SyntaxToken>(tokens ?? new List<SyntaxToken>());
 
-		public static Parser WithTokens(IList<SyntaxToken> tokens) { return new(tokens); }
+        public static Parser WithTokens(IList<SyntaxToken> tokens) => new(tokens);
 
-		public static Parser WithoutTokens() { return new(); }
+        public static Parser WithoutTokens() => new();
 
-		/// <summary>
-		///     Производит парсинг токенов.
-		/// </summary>
-		public void Parse()
-		{
-			Root = new CompilationUnitNode();
-			ParseBody();
-		}
+        /// <summary>
+        ///     Производит парсинг токенов.
+        /// </summary>
+        public void Parse()
+        {
+            Root = new CompilationUnitNode();
+            ParseBody();
+        }
 
-		private void ParseDeclaration()
-		{
-			_tokens.Start();
-			List<SyntaxToken> path            = new();
-			var               declarationInfo = new DeclarationParsingInfo { Kind = NodeKind.TypeDeclaration };
+        private void ParseDeclaration()
+        {
+            _tokens.Start();
+            List<SyntaxToken> path = new();
 
-			while (!_tokens.IsEnd)
-			{
-				SyntaxToken? token = _tokens.Peek();
+            DeclarationParsingInfo? declarationInfo = new()
+            {
+                Kind = NodeKind.TypeDeclaration
+            };
 
-				if (token is null) { return; }
+            while (!_tokens.IsEnd)
+            {
+                SyntaxToken? token = _tokens.Peek();
 
-				bool isBegin = path.All(t => t.Kind != SyntaxKind.Identifier);
+                if (token is null)
+                {
+                    return;
+                }
 
-				switch (token.Kind)
-				{
-					case SyntaxKind.Slash:
-						if (path.LastOrDefault()
-								?.Kind == SyntaxKind.Slash) { _issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token)); }
+                bool isBegin = path.All(t => t.Kind != SyntaxKind.Identifier);
 
-						path.Add(token);
+                switch (token.Kind)
+                {
+                    case SyntaxKind.Slash:
+                        if (path.LastOrDefault()
+                                ?.Kind
+                            == SyntaxKind.Slash)
+                        {
+                            _issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token));
+                        }
 
-						break;
-					case SyntaxKind.Identifier:
-						declarationInfo.Head = token;
-						path.Add(token);
+                        path.Add(token);
 
-						break;
-					case SyntaxKind.ProcKeyword:
-						if (isBegin)
-						{
-							declarationInfo.Kind = NodeKind.ProcDeclaration;
-							path.Add(token);
-						}
-						else
-						{
-							CreateDeclaration(declarationInfo, path.ToImmutableList());
-							declarationInfo.Kind = NodeKind.ProcDeclaration;
-							path.Add(token);
-						}
+                        break;
+                    case SyntaxKind.Identifier:
+                        declarationInfo.Head = token;
+                        path.Add(token);
 
-						break;
-					case SyntaxKind.VerbKeyword:
-						if (isBegin)
-						{
-							declarationInfo.Kind = NodeKind.VerbDeclaration;
-							path.Add(token);
-						}
-						else
-						{
-							CreateDeclaration(declarationInfo, path.ToImmutableList());
-							declarationInfo.Kind = NodeKind.VerbDeclaration;
-							path.Add(token);
-						}
+                        break;
+                    case SyntaxKind.ProcKeyword:
+                        if (isBegin)
+                        {
+                            declarationInfo.Kind = NodeKind.ProcDeclaration;
+                            path.Add(token);
+                        }
+                        else
+                        {
+                            CreateDeclaration(declarationInfo, path.ToImmutableList());
+                            declarationInfo.Kind = NodeKind.ProcDeclaration;
+                            path.Add(token);
+                        }
 
-						break;
-					case SyntaxKind.VarKeyword:
-						if (isBegin)
-						{
-							declarationInfo.Kind = NodeKind.VariableDeclaration;
-							path.Add(token);
-						}
-						else
-						{
-							CreateDeclaration(declarationInfo, path.ToImmutableList());
-							declarationInfo.Kind = NodeKind.VariableDeclaration;
-							path.Add(token);
-						}
+                        break;
+                    case SyntaxKind.VerbKeyword:
+                        if (isBegin)
+                        {
+                            declarationInfo.Kind = NodeKind.VerbDeclaration;
+                            path.Add(token);
+                        }
+                        else
+                        {
+                            CreateDeclaration(declarationInfo, path.ToImmutableList());
+                            declarationInfo.Kind = NodeKind.VerbDeclaration;
+                            path.Add(token);
+                        }
 
-						break;
-					case SyntaxKind.EndOfFile:
-						if (path.Count == 0) { return; }
+                        break;
+                    case SyntaxKind.VarKeyword:
+                        if (isBegin)
+                        {
+                            declarationInfo.Kind = NodeKind.VariableDeclaration;
+                            path.Add(token);
+                        }
+                        else
+                        {
+                            CreateDeclaration(declarationInfo, path.ToImmutableList());
+                            declarationInfo.Kind = NodeKind.VariableDeclaration;
+                            path.Add(token);
+                        }
 
-						CreateDeclaration(declarationInfo, path.ToImmutableList());
+                        break;
+                    case SyntaxKind.EndOfFile:
+                        if (path.Count == 0)
+                        {
+                            return;
+                        }
 
-						break;
-					case SyntaxKind.Equal:
-						CreateDeclaration(declarationInfo, path.ToImmutableList());
+                        CreateDeclaration(declarationInfo, path.ToImmutableList());
 
-						break;
-					default:
-						_issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token));
+                        break;
+                    case SyntaxKind.Equal:
+                        CreateDeclaration(declarationInfo, path.ToImmutableList());
 
-						return;
-				}
+                        break;
+                    default:
+                        _issues.Add(new CodeIssue(IssuesId.UnexpectedToken, token));
 
-				_tokens.Advance();
-			}
-		}
+                        return;
+                }
 
-		private void ParseExpression()
-		{
-			throw new NotImplementedException();
-		}
+                _tokens.Advance();
+            }
+        }
 
-		private void ParseIdentifierUsage()
-		{
-			_tokens.Start();
+        private void ParseExpression() => throw new NotImplementedException();
 
-			while (!_tokens.IsEnd)
-			{
-				SyntaxToken? start = _tokens.Peek();
-				SyntaxToken? next  = _tokens.Peek(2);
+        private void ParseIdentifierUsage()
+        {
+            _tokens.Start();
 
-				switch (start.Kind)
-				{
-					
-				}
-			}
-		}
+            while (!_tokens.IsEnd)
+            {
+                SyntaxToken? start = _tokens.Peek();
+                SyntaxToken? next  = _tokens.Peek(2);
 
-		private void ParseBody()
-		{
-			while (!_tokens.IsEnd)
-			{
-				_tokens.Start();
-				SyntaxToken? token = _tokens.Peek();
-				SyntaxToken? next  = _tokens.Peek();
+                switch (start.Kind) { }
+            }
+        }
 
-				if (token is null) { return; }
+        private void ParseBody()
+        {
+            while (!_tokens.IsEnd)
+            {
+                _tokens.Start();
+                SyntaxToken? token = _tokens.Peek();
+                SyntaxToken? next  = _tokens.Peek();
 
-				switch (token.Kind)
-				{
-					case SyntaxKind.Slash:
-						if (next is { Kind: SyntaxKind.Identifier or SyntaxKind.VerbKeyword or SyntaxKind.ProcKeyword or SyntaxKind.VarKeyword }) { ParseDeclaration(); }
+                if (token is null)
+                {
+                    return;
+                }
 
-						break;
-					case SyntaxKind.VarKeyword:
-					case SyntaxKind.ProcKeyword:
-					case SyntaxKind.VerbKeyword:
-						ParseDeclaration();
+                switch (token.Kind)
+                {
+                    case SyntaxKind.Slash:
+                        if (next is { Kind: SyntaxKind.Identifier or SyntaxKind.VerbKeyword or SyntaxKind.ProcKeyword or SyntaxKind.VarKeyword })
+                        {
+                            ParseDeclaration();
+                        }
 
-						break;
-					case SyntaxKind.Identifier:
-						ParseExpression();
+                        break;
+                    case SyntaxKind.VarKeyword:
+                    case SyntaxKind.ProcKeyword:
+                    case SyntaxKind.VerbKeyword:
+                        ParseDeclaration();
 
-						break;
-					case SyntaxKind.EndOfFile:
-						return;
-				}
+                        break;
+                    case SyntaxKind.Identifier:
+                        ParseExpression();
 
-				_tokens.Advance();
-			}
-		}
+                        break;
+                    case SyntaxKind.EndOfFile:
+                        return;
+                }
 
-		private void CreateDeclaration(DeclarationParsingInfo info, IList<SyntaxToken> path)
-		{
-			_ = info.Head ?? throw new InvalidOperationException($"{nameof(info.Head)} is null.");
+                _tokens.Advance();
+            }
+        }
 
-			switch (info.Kind)
-			{
-				case NodeKind.TypeDeclaration:
-					AddDeclaration(new TypeDeclarationNode(info.Head, path));
+        private void CreateDeclaration(DeclarationParsingInfo info, IList<SyntaxToken> path)
+        {
+            _ = info.Head ?? throw new InvalidOperationException($"{nameof(info.Head)} is null.");
 
-					break;
-				case NodeKind.VariableDeclaration:
-					AddDeclaration(new VariableDeclarationNode(info.Head, path));
+            switch (info.Kind)
+            {
+                case NodeKind.TypeDeclaration:
+                    AddDeclaration(new TypeDeclarationNode(info.Head, path));
 
-					break;
-				case NodeKind.VerbDeclaration:
-					AddDeclaration(new VerbDeclarationNode(info.Head, path));
+                    break;
+                case NodeKind.VariableDeclaration:
+                    AddDeclaration(new VariableDeclarationNode(info.Head, path));
 
-					break;
-				case NodeKind.ProcDeclaration:
-					AddDeclaration(new ProcDeclarationNode(info.Head, path));
+                    break;
+                case NodeKind.VerbDeclaration:
+                    AddDeclaration(new VerbDeclarationNode(info.Head, path));
 
-					break;
-				default:
-					throw new InvalidOperationException($"{info.Kind} is not declaration kind.");
-			}
-		}
+                    break;
+                case NodeKind.ProcDeclaration:
+                    AddDeclaration(new ProcDeclarationNode(info.Head, path));
 
-		private void AddDeclaration(DeclarationNode declaration)
-		{
-			_ = Root ?? throw new InvalidOperationException($"{nameof(Root)} is null");
-			Root.Declarations.Add(declaration);
-		}
+                    break;
+                default:
+                    throw new InvalidOperationException($"{info.Kind} is not declaration kind.");
+            }
+        }
 
-		private sealed class DeclarationParsingInfo
-		{
-			public SyntaxToken? Head;
-			public NodeKind     Kind;
+        private void AddDeclaration(DeclarationNode declaration)
+        {
+            _ = Root ?? throw new InvalidOperationException($"{nameof(Root)} is null");
+            Root.Declarations.Add(declaration);
+        }
 
-			public DeclarationParsingInfo() { Kind = NodeKind.Declaration; }
-		}
+        private sealed class DeclarationParsingInfo
+        {
+            public SyntaxToken? Head;
+            public NodeKind     Kind;
 
-		private sealed class ExpressionParsingInfo
-		{
-			public NodeKind          Kind;
-			public List<SyntaxToken> values = new();
-		}
-	}
+            public DeclarationParsingInfo() => Kind = NodeKind.Declaration;
+        }
+
+        private sealed class ExpressionParsingInfo
+        {
+            public NodeKind          Kind;
+            public List<SyntaxToken> values = new();
+        }
+    }
 }

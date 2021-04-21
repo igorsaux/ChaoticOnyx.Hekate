@@ -2,8 +2,8 @@
 
 namespace ChaoticOnyx.Hekate.Parser.SyntaxNodes
 {
-	public class VerbDeclarationNode : DeclarationNode
-	{
-		public VerbDeclarationNode(SyntaxToken token, IList<SyntaxToken> fullPath) : base(token, fullPath) { }
-	}
+    public class VerbDeclarationNode : DeclarationNode
+    {
+        public VerbDeclarationNode(SyntaxToken token, IList<SyntaxToken> fullPath) : base(token, fullPath) { }
+    }
 }
