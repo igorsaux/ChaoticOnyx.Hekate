@@ -4,8 +4,6 @@ using System.Linq;
 
 namespace ChaoticOnyx.Hekate.Parser
 {
-    public sealed record PreprocessorWithTokens(IList<SyntaxToken> Tokens);
-
     public sealed class Preprocessor
     {
         private readonly List<SyntaxToken>          _defines  = new();
