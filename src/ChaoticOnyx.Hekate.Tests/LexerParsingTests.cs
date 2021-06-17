@@ -184,6 +184,20 @@ namespace ChaoticOnyx.Hekate.Tests
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
         }
 
+        [Fact]
+        public void ConcatDirectiveParsing()
+        {
+            // Arrange
+            // Act
+            CompilationUnit             unit   = CompilationUnit.FromSource("#define TEST(X) ##x");
+            IImmutableList<SyntaxToken> tokens = unit.Lexer.Tokens;
+
+            // Assert
+            Assert.True(tokens.Count == 8);
+            Assert.True(tokens[6].Kind == SyntaxKind.Identifier);
+            Assert.True(tokens[5].Kind == SyntaxKind.ConcatDirective);
+        }
+
         [Theory]
         [InlineData(SyntaxKind.ForKeyword)]
         [InlineData(SyntaxKind.NewKeyword)]

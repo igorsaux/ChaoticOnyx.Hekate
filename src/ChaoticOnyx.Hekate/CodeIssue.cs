@@ -25,7 +25,7 @@ namespace ChaoticOnyx.Hekate
         }
 
         /// <summary>
-        ///     Создаёт и форматирует сообщение об ошибке в формате filePath:line:column message.
+        ///     Создаёт и форматирует сообщение об ошибке в формате filePath:line:column [id]: message.
         /// </summary>
         /// <param name="filePath">Путь до файла.</param>
         /// <param name="message">Сообщение для вывода.</param>
@@ -34,7 +34,7 @@ namespace ChaoticOnyx.Hekate
         {
             var           position = Token.FilePosition;
             StringBuilder sb       = new(message.Length);
-            sb.Append($"{filePath}:{position.Line.ToString()}:{position.Column.ToString()} ");
+            sb.Append($"{filePath}:{position.Line.ToString()}:{position.Column.ToString()} [{Id}]: ");
             sb.AppendFormat(message, Arguments);
 
             return sb.ToString();
