@@ -11,7 +11,7 @@ namespace ChaoticOnyx.Hekate.Tests
     public class LexerIssuesTests
     {
         [Fact]
-        public void Dm0001ErrorSingleQuote()
+        public void Dm0001SingleQuote()
         {
             // Arrange
             // Act
@@ -27,7 +27,7 @@ namespace ChaoticOnyx.Hekate.Tests
         }
 
         [Fact]
-        public void Dm0001ErrorDoubleQuote()
+        public void Dm0001DoubleQuote()
         {
             // Arrange
             // Act
@@ -43,7 +43,7 @@ namespace ChaoticOnyx.Hekate.Tests
         }
 
         [Fact]
-        public void Dm0001ErrorMultiLineComment()
+        public void Dm0001MultiLineComment()
         {
             // Arrange
             // Act
@@ -59,7 +59,7 @@ namespace ChaoticOnyx.Hekate.Tests
         }
 
         [Fact]
-        public void Dm0002Error()
+        public void Dm0002UnexpectedToken()
         {
             // Arrange
             // Act
@@ -75,7 +75,7 @@ namespace ChaoticOnyx.Hekate.Tests
         }
 
         [Fact]
-        public void Dm0003Error()
+        public void Dm0003UnknownDirective()
         {
             // Arrange
             // Act

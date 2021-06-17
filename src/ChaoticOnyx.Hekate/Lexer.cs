@@ -159,7 +159,7 @@ namespace ChaoticOnyx.Hekate
         /// <param name="id">Идентификатор проблемы.</param>
         /// <param name="token">Токен, с которым связана проблема.</param>
         /// <param name="args">Дополнительные аргументы, используются для форматирования сообщения об проблеме.</param>
-        private void MakeIssue(string id, SyntaxToken token, params object[] args) => _issues.Add(new CodeIssue(id, token, _source.OffsetFilePosition, args));
+        private void MakeIssue(string id, SyntaxToken token, params object[] args) => _issues.Add(new CodeIssue(id, token, args));
 
         /// <summary>
         ///     Парсинг одного токена.
@@ -330,16 +330,26 @@ namespace ChaoticOnyx.Hekate
                     return CreateTokenAndAdvance(SyntaxKind.Comma, 1);
                 case '#':
                     _source.Advance();
+
+                    if (next == '#')
+                    {
+                        _source.Advance();
+
+                        return CreateToken(SyntaxKind.ConcatDirective);
+                    }
+
                     ParseIdentifier();
                     token = CreateToken(SyntaxKind.Directive);
                     SetDirectiveKind(token);
 
-                    if (token.Kind == SyntaxKind.Directive)
+                    if (token.Kind != SyntaxKind.Directive)
                     {
-                        MakeIssue(IssuesId.UnknownDirective, token, token.Text);
+                        return token;
                     }
 
-                    return token;
+                    MakeIssue(IssuesId.UnknownDirective, token, token.Text);
+
+                        return token;
                 case ';':
                     return CreateTokenAndAdvance(SyntaxKind.Semicolon, 1);
             }
