@@ -256,11 +256,12 @@ namespace ChaoticOnyx.Hekate.Tests
         [InlineData(SyntaxKind.TextLiteral)]
         [InlineData(SyntaxKind.SlashEqual)]
         [InlineData(SyntaxKind.Slash)]
+        [InlineData(SyntaxKind.Semicolon)]
         public void CheckTokenParsing(SyntaxKind kind, int expectedCount = 1)
         {
             // Arrange
             // Act
-            CompilationUnit             unit   = CompilationUnit.FromSource("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ .", modes: ParsingModes.None);
+            CompilationUnit             unit   = CompilationUnit.FromSource("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ . ;", modes: ParsingModes.None);
             IImmutableList<SyntaxToken> tokens = unit.Lexer.Tokens;
             int                         count  = tokens.Count(token => token.Kind == kind);
 
