@@ -13,27 +13,4 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Update="resources\ParserResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>DmParserResources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="resources\ParserResources.ru.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ParserResources.ru.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="resources\ParserResources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ParserResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="resources\ParserResources.ru.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
 </Project>
