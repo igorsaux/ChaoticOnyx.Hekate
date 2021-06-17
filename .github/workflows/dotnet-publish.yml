@@ -19,7 +19,7 @@ jobs:
     - name: Publish
       uses: brandedoutcast/publish-nuget@v2.5.5
       with:
-        PROJECT_FILE_PATH: ./src/ChaoticOnyx.Hekate.Parser/ChaoticOnyx.Hekate.Parser.csproj
+        PROJECT_FILE_PATH: ./src/ChaoticOnyx.Hekate/ChaoticOnyx.Hekate.csproj
         VERSION_REGEX: '^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$'
         TAG_FORMAT: '*'
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}        
