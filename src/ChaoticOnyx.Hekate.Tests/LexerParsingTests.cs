@@ -265,12 +265,14 @@ namespace ChaoticOnyx.Hekate.Tests
         [InlineData(SyntaxKind.Bar)]
         [InlineData(SyntaxKind.DoubleBar)]
         [InlineData(SyntaxKind.BarEqual)]
-        [InlineData(SyntaxKind.Unknown, 1)]
+        [InlineData(SyntaxKind.Unknown, 0)]
         [InlineData(SyntaxKind.PathLiteral)]
         [InlineData(SyntaxKind.TextLiteral)]
         [InlineData(SyntaxKind.SlashEqual)]
         [InlineData(SyntaxKind.Slash)]
         [InlineData(SyntaxKind.Semicolon)]
+        [InlineData(SyntaxKind.Backslash)]
+        [InlineData(SyntaxKind.BackSlashEqual)]
         public void CheckTokenParsing(SyntaxKind kind, int expectedCount = 1)
         {
             // Arrange

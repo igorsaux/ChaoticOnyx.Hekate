@@ -182,21 +182,17 @@ namespace ChaoticOnyx.Hekate
             switch (ch)
             {
                 case '/':
-                    switch (next)
+                    return next switch
                     {
-                        case '=':
-                            return CreateTokenAndAdvance(SyntaxKind.SlashEqual, 2);
-                    }
-
-                    return CreateTokenAndAdvance(SyntaxKind.Slash, 1);
+                        '=' => CreateTokenAndAdvance(SyntaxKind.SlashEqual, 2),
+                        _   => CreateTokenAndAdvance(SyntaxKind.Slash, 1)
+                    };
                 case '\\':
-                    switch (next)
+                    return next switch
                     {
-                        case '=':
-                            return CreateTokenAndAdvance(SyntaxKind.BackwardSlashEqual, 2);
-                    }
-
-                    break;
+                        '=' => CreateTokenAndAdvance(SyntaxKind.BackSlashEqual, 2),
+                        _   => CreateTokenAndAdvance(SyntaxKind.Backslash, 1)
+                    };
                 case '*':
                     return next switch
                     {
@@ -349,7 +345,7 @@ namespace ChaoticOnyx.Hekate
 
                     MakeIssue(IssuesId.UnknownDirective, token, token.Text);
 
-                        return token;
+                    return token;
                 case ';':
                     return CreateTokenAndAdvance(SyntaxKind.Semicolon, 1);
             }
@@ -440,16 +436,14 @@ namespace ChaoticOnyx.Hekate
                 char ch   = _source.Read();
                 char next = _source.Peek();
 
-                if (ch == '\\' && next == '\"')
+                switch (ch)
                 {
-                    _source.Advance();
+                    case '\\' when next == '\"':
+                        _source.Advance();
 
-                    continue;
-                }
-
-                if (ch == '\"')
-                {
-                    return true;
+                        continue;
+                    case '\"':
+                        return true;
                 }
             }
         }
@@ -639,7 +633,7 @@ namespace ChaoticOnyx.Hekate
 
         public override string ToString()
         {
-            StringBuilder? result = new();
+            StringBuilder result = new();
 
             foreach (var token in _tokens)
             {
