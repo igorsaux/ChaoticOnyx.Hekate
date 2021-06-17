@@ -10,20 +10,18 @@ namespace ChaoticOnyx.Hekate.Parser
     {
         public readonly Lexer        Lexer;
         public readonly ParsingModes Modes;
-        public readonly Parser       Parser;
         public readonly Preprocessor Preprocessor;
 
-        private CompilationUnit(Lexer lexer, Preprocessor preprocessor, Parser parser, ParsingModes modes)
+        private CompilationUnit(Lexer lexer, Preprocessor preprocessor, ParsingModes modes)
         {
             Lexer        = lexer;
             Preprocessor = preprocessor;
-            Parser       = parser;
             Modes        = modes;
         }
 
         public static CompilationUnit FromSource(string source, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
         {
-            Lexer? lexer = new(source, tabWidth);
+            Lexer lexer = new(source, tabWidth);
             lexer.Parse();
 
             return Create(lexer, modes);
@@ -31,14 +29,14 @@ namespace ChaoticOnyx.Hekate.Parser
 
         public static CompilationUnit FromTokens(IList<SyntaxToken> tokens, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
         {
-            Lexer? lexer = new(tokens, tabWidth);
+            Lexer lexer = new(tokens, tabWidth);
 
             return Create(lexer, modes);
         }
 
         public static CompilationUnit FromToken(SyntaxToken token, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
         {
-            Lexer? lexer = new(new Collection<SyntaxToken>
+            Lexer lexer = new(new Collection<SyntaxToken>
             {
                 token
             }, tabWidth);
@@ -52,14 +50,9 @@ namespace ChaoticOnyx.Hekate.Parser
                 ? Preprocessor.WithTokens(lexer.Tokens)
                 : Preprocessor.WithoutTokens();
 
-            Parser parser = modes.HasFlag(ParsingModes.WithSemantic)
-                ? Parser.WithTokens(lexer.Tokens)
-                : Parser.WithoutTokens();
-
             preprocessor.Preprocess();
-            parser.Parse();
 
-            return new CompilationUnit(lexer, preprocessor, parser, modes);
+            return new CompilationUnit(lexer, preprocessor, modes);
         }
 
         public ICollection<CodeIssue> GetIssues()
@@ -67,7 +60,6 @@ namespace ChaoticOnyx.Hekate.Parser
             List<CodeIssue> issues = new();
             issues.AddRange(Lexer.Issues);
             issues.AddRange(Preprocessor.Issues);
-            issues.AddRange(Parser.Issues);
 
             return issues;
         }
