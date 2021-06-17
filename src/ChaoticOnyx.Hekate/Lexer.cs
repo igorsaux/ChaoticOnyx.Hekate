@@ -340,6 +340,8 @@ namespace ChaoticOnyx.Hekate
                     }
 
                     return token;
+                case ';':
+                    return CreateTokenAndAdvance(SyntaxKind.Semicolon, 1);
             }
 
             _source.Advance();

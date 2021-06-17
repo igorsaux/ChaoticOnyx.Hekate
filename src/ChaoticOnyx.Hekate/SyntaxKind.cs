@@ -109,6 +109,7 @@ namespace ChaoticOnyx.Hekate
         DoubleBar,
         BarEqual,
         Dot,
+        Semicolon,
 
         #endregion
     }
