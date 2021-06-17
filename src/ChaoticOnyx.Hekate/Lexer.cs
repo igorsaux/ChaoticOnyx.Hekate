@@ -65,6 +65,7 @@ namespace ChaoticOnyx.Hekate
                 "ifndef"  => SyntaxKind.IfNDefDirective,
                 "endif"   => SyntaxKind.EndIfDirective,
                 "undef"   => SyntaxKind.UndefDirective,
+                "else"    => SyntaxKind.ElseDirective,
                 _         => SyntaxKind.Directive
             };
 

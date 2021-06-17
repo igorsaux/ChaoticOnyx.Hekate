@@ -237,5 +237,55 @@ namespace ChaoticOnyx.Hekate.Tests
             // Assert
             Assert.True(preprocessor.Defines.Count == 0);
         }
+
+        [Fact]
+        public void ElseTest()
+        {
+            // Arrange
+            IImmutableList<SyntaxToken> tokens = ParseText(@"#ifdef DEBUG
+#define DEBUG_DEFINE
+#else
+#define NOT_DEBUG_DEFINE
+#define NOT_DEBUG_DEFINE2
+#endif");
+
+            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+
+            // Act
+            preprocessor.Preprocess();
+
+            // Assert
+            Assert.True(preprocessor.Issues.Count == 0);
+            Assert.True(preprocessor.Defines.Count == 2);
+            Assert.True(preprocessor.Defines[0].Text == "NOT_DEBUG_DEFINE");
+            Assert.True(preprocessor.Defines[1].Text == "NOT_DEBUG_DEFINE2");
+        }
+
+        [Fact]
+        public void NestedIfTest()
+        {
+            // Arrange
+            IImmutableList<SyntaxToken> tokens = ParseText(@"#define TEST
+#ifdef DEBUG
+#define DEBUG
+#else
+#ifdef TEST
+#define TEST_DEFINE
+#endif
+#define NOT_DEBUG_DEFINE
+#endif");
+
+            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+
+            // Act
+            preprocessor.Preprocess();
+
+            // Assert
+            Assert.True(preprocessor.Issues.Count == 0);
+            Assert.True(preprocessor.Defines.Count == 3);
+            Assert.True(preprocessor.Defines[0].Text == "TEST");
+            Assert.True(preprocessor.Defines[1].Text == "TEST_DEFINE");
+            Assert.True(preprocessor.Defines[2].Text == "NOT_DEBUG_DEFINE");
+        }
     }
 }
