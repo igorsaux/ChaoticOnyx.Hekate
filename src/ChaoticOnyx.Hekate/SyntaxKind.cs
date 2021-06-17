@@ -67,7 +67,7 @@ namespace ChaoticOnyx.Hekate
         #region Symbols
 
         Slash,
-        BackwardSlashEqual,
+        BackSlashEqual,
         SlashEqual,
         Asterisk,
         AsteriskEqual,
@@ -111,6 +111,7 @@ namespace ChaoticOnyx.Hekate
         BarEqual,
         Dot,
         Semicolon,
+        Backslash
 
         #endregion
     }

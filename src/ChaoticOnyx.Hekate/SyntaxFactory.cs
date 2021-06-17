@@ -102,7 +102,7 @@ namespace ChaoticOnyx.Hekate
 
         public SyntaxToken Slash() => new(SyntaxKind.Slash, "/");
 
-        public SyntaxToken BackwardSlashEqual() => new(SyntaxKind.BackwardSlashEqual, "\\=");
+        public SyntaxToken BackwardSlashEqual() => new(SyntaxKind.BackSlashEqual, "\\=");
 
         public SyntaxToken SlashEqual() => new(SyntaxKind.SlashEqual, "/=");
 
