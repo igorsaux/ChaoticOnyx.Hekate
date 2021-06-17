@@ -59,6 +59,7 @@ namespace ChaoticOnyx.Hekate
         IfNDefDirective,
         EndIfDirective,
         UndefDirective,
+        ElseDirective,
 
         #endregion
 

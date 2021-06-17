@@ -96,18 +96,29 @@ namespace ChaoticOnyx.Hekate
                         _ifs.Pop();
 
                         break;
+                    case SyntaxKind.ElseDirective:
+                        if (_ifs.Count == 0)
+                        {
+                            _issues.Add(new CodeIssue(IssuesId.UnexpectedElse, token));
+                        }
+
+                        continue;
+                    default:
+                        continue;
                 }
             }
 
-            if (_ifs.Count > 0)
+            if (_ifs.Count <= 0)
             {
-                SyntaxToken last = _ifs.Last();
-                _issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
+                return;
             }
+
+            SyntaxToken last = _ifs.Last();
+            _issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
         }
 
         /// <summary>
-        ///     Пропускает все токены до первого нахождение #endif.
+        ///     Пропускает все токены до первого нахождение #endif или #else.
         /// </summary>
         /// <returns>Возвращает true - если #endif был найден.</returns>
         private void SkipIf()
@@ -121,7 +132,7 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
 
-                if (token.Kind == SyntaxKind.EndIfDirective)
+                if (token.Kind is SyntaxKind.EndIfDirective or SyntaxKind.ElseDirective)
                 {
                     return;
                 }

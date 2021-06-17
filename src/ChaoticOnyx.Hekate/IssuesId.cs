@@ -11,5 +11,6 @@
         public const string UnknownMacrosDefinition = "DM1001";
         public const string EndIfNotFound           = "DM1002";
         public const string ExtraEndIf              = "DM1003";
+        public const string UnexpectedElse          = "DM1004";
     }
 }
