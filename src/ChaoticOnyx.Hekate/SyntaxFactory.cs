@@ -1,6 +1,5 @@
 ﻿#region
 
-using System;
 using System.Globalization;
 
 #endregion
@@ -10,185 +9,159 @@ namespace ChaoticOnyx.Hekate
     /// <summary>
     ///     API для создания токенов.
     /// </summary>
-    public sealed class SyntaxFactory : IDisposable
+    public sealed class SyntaxFactory
     {
-        public readonly CodeStyle Style;
+        public static SyntaxToken ElseDirective = new(SyntaxKind.ElseDirective, "#else");
 
-        private SyntaxFactory(CodeStyle style) => Style = style;
+        public static SyntaxToken WhiteSpace(string space) => new(SyntaxKind.WhiteSpace, space);
 
-        public static SyntaxFactory CreateFactory(CodeStyle style) => new(style);
+        public static SyntaxToken EndOfLine(string ending = "\n") => new(SyntaxKind.EndOfLine, ending);
 
-        public SyntaxToken WhiteSpace(string space) => new(SyntaxKind.WhiteSpace, space);
+        public static SyntaxToken MultiLineComment(string text) => new(SyntaxKind.MultiLineComment, $"/*{text}*/");
 
-        public SyntaxToken EndOfLine(string ending = "\n") => new(SyntaxKind.EndOfLine, ending);
+        public static SyntaxToken Identifier(string name) => new(SyntaxKind.Identifier, name);
 
-        public SyntaxToken EndOfFile(string ending = "\n")
-        {
-            SyntaxToken token = new(SyntaxKind.EndOfFile, string.Empty);
+        public static SyntaxToken NumericalLiteral(float number) => new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
 
-            if (Style.LastEmptyLine)
-            {
-                token.WithLeads(EndOfLine(ending));
-            }
+        public static SyntaxToken PathLiteral(string path) => new(SyntaxKind.PathLiteral, $"'{path}'");
 
-            return token;
-        }
+        public static SyntaxToken ForKeyword() => new(SyntaxKind.ForKeyword, "for");
 
-        public SyntaxToken SingleLineComment(string text, string ending = "\n")
-        {
-            text = $"//{text}";
+        public static SyntaxToken NewKeyword() => new(SyntaxKind.NewKeyword, "new");
 
-            return new SyntaxToken(SyntaxKind.SingleLineComment, text).WithTrails(EndOfLine(ending));
-        }
+        public static SyntaxToken GlobalKeyword() => new(SyntaxKind.GlobalKeyword, "global");
 
-        public SyntaxToken MultiLineComment(string text)
-        {
-            text = $"/*{text}*/";
+        public static SyntaxToken ThrowKeyword() => new(SyntaxKind.ThrowKeyword, "throw");
 
-            return new SyntaxToken(SyntaxKind.MultiLineComment, text);
-        }
+        public static SyntaxToken CatchKeyword() => new(SyntaxKind.CatchKeyword, "catch");
 
-        public SyntaxToken Identifier(string name) => new(SyntaxKind.Identifier, name);
+        public static SyntaxToken VarKeyword() => new(SyntaxKind.VarKeyword, "var");
 
-        public SyntaxToken TextLiteral(string text) => new(SyntaxKind.TextLiteral, $"\"{text}\"");
+        public static SyntaxToken VerbKeyword() => new(SyntaxKind.VerbKeyword, "verb");
 
-        public SyntaxToken NumericalLiteral(int number) => new(SyntaxKind.NumericalLiteral, number.ToString());
+        public static SyntaxToken ProcKeyword() => new(SyntaxKind.ProcKeyword, "proc");
 
-        public SyntaxToken NumericalLiteral(float number) => new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
+        public static SyntaxToken InKeyword() => new(SyntaxKind.InKeyword, "in");
 
-        public SyntaxToken NumericalLiteral(double number) => new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
+        public static SyntaxToken IfKeyword() => new(SyntaxKind.IfKeyword, "if");
 
-        public SyntaxToken PathLiteral(string path) => new(SyntaxKind.PathLiteral, $"'{path}'");
+        public static SyntaxToken ElseKeyword() => new(SyntaxKind.ElseKeyword, "else");
 
-        public SyntaxToken ForKeyword() => new(SyntaxKind.ForKeyword, "for");
+        public static SyntaxToken AsKeyword() => new(SyntaxKind.AsKeyword, "as");
 
-        public SyntaxToken NewKeyword() => new(SyntaxKind.NewKeyword, "new");
+        public static SyntaxToken WhileKeyword() => new(SyntaxKind.WhileKeyword, "while");
 
-        public SyntaxToken GlobalKeyword() => new(SyntaxKind.GlobalKeyword, "global");
+        public static SyntaxToken IfDefDirective() => new(SyntaxKind.IfDefDirective, "#ifdef");
 
-        public SyntaxToken ThrowKeyword() => new(SyntaxKind.ThrowKeyword, "throw");
+        public static SyntaxToken IfNDefDirective() => new(SyntaxKind.IfNDefDirective, "#ifndef");
 
-        public SyntaxToken CatchKeyword() => new(SyntaxKind.CatchKeyword, "catch");
+        public static SyntaxToken EndIfDirective() => new(SyntaxKind.EndIfDirective, "#endif");
 
-        public SyntaxToken TryKeyword() => new(SyntaxKind.TryKeyword, "try");
+        public static SyntaxToken Slash() => new(SyntaxKind.Slash, "/");
 
-        public SyntaxToken VarKeyword() => new(SyntaxKind.VarKeyword, "var");
+        public static SyntaxToken SlashEqual() => new(SyntaxKind.SlashEqual, "/=");
 
-        public SyntaxToken VerbKeyword() => new(SyntaxKind.VerbKeyword, "verb");
+        public static SyntaxToken Asterisk() => new(SyntaxKind.Asterisk, "*");
 
-        public SyntaxToken ProcKeyword() => new(SyntaxKind.ProcKeyword, "proc");
+        public static SyntaxToken AsteriskEqual() => new(SyntaxKind.AsteriskEqual, "*=");
 
-        public SyntaxToken InKeyword() => new(SyntaxKind.InKeyword, "in");
+        public static SyntaxToken DoubleAsterisk() => new(SyntaxKind.DoubleAsterisk, "**");
 
-        public SyntaxToken IfKeyword() => new(SyntaxKind.IfKeyword, "if");
+        public static SyntaxToken Equal() => new(SyntaxKind.Equal, "=");
 
-        public SyntaxToken ElseKeyword() => new(SyntaxKind.ElseKeyword, "else");
+        public static SyntaxToken DoubleEqual() => new(SyntaxKind.DoubleEqual, "==");
 
-        public SyntaxToken SetKeyword() => new(SyntaxKind.SetKeyword, "set");
+        public static SyntaxToken ExclamationEqual() => new(SyntaxKind.ExclamationEqual, "!=");
 
-        public SyntaxToken AsKeyword() => new(SyntaxKind.AsKeyword, "as");
+        public static SyntaxToken Exclamation() => new(SyntaxKind.Exclamation, "!");
 
-        public SyntaxToken WhileKeyword() => new(SyntaxKind.WhileKeyword, "while");
+        public static SyntaxToken Greater() => new(SyntaxKind.Greater, ">");
 
-        public SyntaxToken DefineDirective() => new(SyntaxKind.DefineDirective, "#define");
+        public static SyntaxToken DoubleGreater() => new(SyntaxKind.DoubleGreater, ">>");
 
-        public SyntaxToken IncludeDirective() => new(SyntaxKind.IncludeDirective, "#include");
+        public static SyntaxToken DoubleGreaterEqual() => new(SyntaxKind.DoubleGreaterEqual, ">>=");
 
-        public SyntaxToken IfDefDirective() => new(SyntaxKind.IfDefDirective, "#ifdef");
+        public static SyntaxToken GreaterEqual() => new(SyntaxKind.GreaterEqual, ">=");
 
-        public SyntaxToken IfNDefDirective() => new(SyntaxKind.IfNDefDirective, "#ifndef");
+        public static SyntaxToken Lesser() => new(SyntaxKind.Lesser, "<");
 
-        public SyntaxToken EndIfDirective() => new(SyntaxKind.EndIfDirective, "#endif");
+        public static SyntaxToken DoubleLesser() => new(SyntaxKind.DoubleLesser, "<<");
 
-        public SyntaxToken Slash() => new(SyntaxKind.Slash, "/");
+        public static SyntaxToken DoubleLesserEqual() => new(SyntaxKind.DoubleLesserEqual, "<<=");
 
-        public SyntaxToken BackwardSlashEqual() => new(SyntaxKind.BackSlashEqual, "\\=");
+        public static SyntaxToken LesserEqual() => new(SyntaxKind.LesserEqual, "<=");
 
-        public SyntaxToken SlashEqual() => new(SyntaxKind.SlashEqual, "/=");
+        public static SyntaxToken OpenParentheses() => new(SyntaxKind.OpenParenthesis, "(");
 
-        public SyntaxToken Asterisk() => new(SyntaxKind.Asterisk, "*");
+        public static SyntaxToken CloseParentheses() => new(SyntaxKind.CloseParenthesis, ")");
 
-        public SyntaxToken AsteriskEqual() => new(SyntaxKind.AsteriskEqual, "*=");
+        public static SyntaxToken OpenBrace() => new(SyntaxKind.OpenBrace, "{");
 
-        public SyntaxToken DoubleAsterisk() => new(SyntaxKind.DoubleAsterisk, "**");
+        public static SyntaxToken CloseBrace() => new(SyntaxKind.CloseBrace, "}");
 
-        public SyntaxToken Equal() => new(SyntaxKind.Equal, "=");
+        public static SyntaxToken OpenBracket() => new(SyntaxKind.OpenBracket, "[");
 
-        public SyntaxToken DoubleEqual() => new(SyntaxKind.DoubleEqual, "==");
+        public static SyntaxToken CloseBracket() => new(SyntaxKind.CloseBracket, "]");
 
-        public SyntaxToken ExclamationEqual() => new(SyntaxKind.ExclamationEqual, "!=");
+        public static SyntaxToken Plus() => new(SyntaxKind.Plus, "+");
 
-        public SyntaxToken Exclamation() => new(SyntaxKind.Exclamation, "!");
+        public static SyntaxToken PlusEqual() => new(SyntaxKind.PlusEqual, "+=");
 
-        public SyntaxToken Greater() => new(SyntaxKind.Greater, ">");
+        public static SyntaxToken DoublePlus() => new(SyntaxKind.DoublePlus, "++");
 
-        public SyntaxToken DoubleGreater() => new(SyntaxKind.DoubleGreater, ">>");
+        public static SyntaxToken Minus() => new(SyntaxKind.Minus, "-");
 
-        public SyntaxToken DoubleGreaterEqual() => new(SyntaxKind.DoubleGreaterEqual, ">>=");
+        public static SyntaxToken MinusEqual() => new(SyntaxKind.MinusEqual, "-=");
 
-        public SyntaxToken GreaterEqual() => new(SyntaxKind.GreaterEqual, ">=");
+        public static SyntaxToken Comma() => new(SyntaxKind.Comma, ",");
 
-        public SyntaxToken Lesser() => new(SyntaxKind.Lesser, "<");
+        public static SyntaxToken Percent() => new(SyntaxKind.Percent, "%");
 
-        public SyntaxToken DoubleLesser() => new(SyntaxKind.DoubleLesser, "<<");
+        public static SyntaxToken PercentEqual() => new(SyntaxKind.PercentEqual, "%=");
 
-        public SyntaxToken DoubleLesserEqual() => new(SyntaxKind.DoubleLesserEqual, "<<=");
+        public static SyntaxToken DoubleAmpersand() => new(SyntaxKind.DoubleAmpersand, "&&");
 
-        public SyntaxToken LesserEqual() => new(SyntaxKind.LesserEqual, "<=");
+        public static SyntaxToken AmpersandEqual() => new(SyntaxKind.AmpersandEqual, "&=");
 
-        public SyntaxToken OpenParentheses() => new(SyntaxKind.OpenParenthesis, "(");
+        public static SyntaxToken Colon() => new(SyntaxKind.Colon, ":");
 
-        public SyntaxToken CloseParentheses() => new(SyntaxKind.CloseParenthesis, ")");
+        public static SyntaxToken Caret() => new(SyntaxKind.Caret, "^");
 
-        public SyntaxToken OpenBrace() => new(SyntaxKind.OpenBrace, "{");
+        public static SyntaxToken CaretEqual() => new(SyntaxKind.CaretEqual, "^=");
 
-        public SyntaxToken CloseBrace() => new(SyntaxKind.CloseBrace, "}");
+        public static SyntaxToken Bar() => new(SyntaxKind.Bar, "|");
 
-        public SyntaxToken OpenBracket() => new(SyntaxKind.OpenBracket, "[");
+        public static SyntaxToken DoubleBar() => new(SyntaxKind.DoubleBar, "||");
 
-        public SyntaxToken CloseBracket() => new(SyntaxKind.CloseBracket, "]");
+        public static SyntaxToken BarEqual() => new(SyntaxKind.BarEqual, "|=");
 
-        public SyntaxToken Plus() => new(SyntaxKind.Plus, "+");
+        public static SyntaxToken Dot() => new(SyntaxKind.Dot, ".");
 
-        public SyntaxToken PlusEqual() => new(SyntaxKind.PlusEqual, "+=");
+        public static SyntaxToken EndOfFile(string ending = "\n") => new(SyntaxKind.EndOfFile, string.Empty);
 
-        public SyntaxToken DoublePlus() => new(SyntaxKind.DoublePlus, "++");
+        public static SyntaxToken SingleLineComment(string text, string ending = "\n") => new SyntaxToken(SyntaxKind.SingleLineComment, $"//{text}").WithTrails(EndOfLine(ending));
 
-        public SyntaxToken Minus() => new(SyntaxKind.Minus, "-");
+        public static SyntaxToken TextLiteral(string text) => new(SyntaxKind.TextLiteral, $"\"{text}\"");
 
-        public SyntaxToken MinusEqual() => new(SyntaxKind.MinusEqual, "-=");
+        public static SyntaxToken NumericalLiteral(int number) => new(SyntaxKind.NumericalLiteral, number.ToString());
 
-        public SyntaxToken DoubleMinus() => new(SyntaxKind.DoubleMinus, "--");
+        public static SyntaxToken NumericalLiteral(double number) => new(SyntaxKind.NumericalLiteral, number.ToString(CultureInfo.InvariantCulture));
 
-        public SyntaxToken Comma() => new(SyntaxKind.Comma, ",");
+        public static SyntaxToken TryKeyword() => new(SyntaxKind.TryKeyword, "try");
 
-        public SyntaxToken Percent() => new(SyntaxKind.Percent, "%");
+        public static SyntaxToken SetKeyword() => new(SyntaxKind.SetKeyword, "set");
 
-        public SyntaxToken PercentEqual() => new(SyntaxKind.PercentEqual, "%=");
+        public static SyntaxToken DefineDirective() => new(SyntaxKind.DefineDirective, "#define");
 
-        public SyntaxToken Ampersand() => new(SyntaxKind.Ampersand, "&");
+        public static SyntaxToken IncludeDirective() => new(SyntaxKind.IncludeDirective, "#include");
 
-        public SyntaxToken DoubleAmpersand() => new(SyntaxKind.DoubleAmpersand, "&&");
+        public static SyntaxToken BackwardSlashEqual() => new(SyntaxKind.BackSlashEqual, "\\=");
 
-        public SyntaxToken AmpersandEqual() => new(SyntaxKind.AmpersandEqual, "&=");
+        public static SyntaxToken DoubleMinus() => new(SyntaxKind.DoubleMinus, "--");
 
-        public SyntaxToken Colon() => new(SyntaxKind.Colon, ":");
+        public static SyntaxToken Ampersand() => new(SyntaxKind.Ampersand, "&");
 
-        public SyntaxToken Question() => new(SyntaxKind.Question, "?");
-
-        public SyntaxToken Caret() => new(SyntaxKind.Caret, "^");
-
-        public SyntaxToken CaretEqual() => new(SyntaxKind.CaretEqual, "^=");
-
-        public SyntaxToken Bar() => new(SyntaxKind.Bar, "|");
-
-        public SyntaxToken DoubleBar() => new(SyntaxKind.DoubleBar, "||");
-
-        public SyntaxToken BarEqual() => new(SyntaxKind.BarEqual, "|=");
-
-        public SyntaxToken Dot() => new(SyntaxKind.Dot, ".");
-
-        public void Dispose() { }
+        public static SyntaxToken Question() => new(SyntaxKind.Question, "?");
     }
 
     public static class SyntaxTokenExtensions

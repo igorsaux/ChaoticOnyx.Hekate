@@ -9,8 +9,9 @@ namespace ChaoticOnyx.Hekate.Tests
         private static IImmutableList<SyntaxToken> ParseText(string text)
         {
             CompilationUnit unit = CompilationUnit.FromSource(text);
+            unit.Parse(PreprocessorContext.Empty);
 
-            return unit.Lexer.Tokens;
+            return unit.Tokens;
         }
 
         [Fact]
@@ -18,19 +19,19 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             IImmutableList<SyntaxToken> tokens       = ParseText("#undef macro");
-            Preprocessor                preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor                preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            preprocessor.Preprocess(tokens);
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 1);
 
-            Assert.True(preprocessor.Issues.First()
+            Assert.True(preprocessor.Issues[0]
                                     .Id
                         == IssuesId.UnknownMacrosDefinition);
 
-            Assert.True(preprocessor.Issues.First()
+            Assert.True(preprocessor.Issues[0]
                                     .Token.Text
                         == "macro");
         }
@@ -42,15 +43,15 @@ namespace ChaoticOnyx.Hekate.Tests
             IImmutableList<SyntaxToken> tokens = ParseText(@"#ifdef debug
 #define macro");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            preprocessor.Preprocess(tokens);
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 1);
 
-            Assert.True(preprocessor.Issues.First()
+            Assert.True(preprocessor.Issues[0]
                                     .Id
                         == IssuesId.EndIfNotFound);
         }
@@ -62,15 +63,15 @@ namespace ChaoticOnyx.Hekate.Tests
             IImmutableList<SyntaxToken> tokens = ParseText(@"#ifndef debug
 #define macro");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            preprocessor.Preprocess(tokens);
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 1);
 
-            Assert.True(preprocessor.Issues.First()
+            Assert.True(preprocessor.Issues[0]
                                     .Id
                         == IssuesId.EndIfNotFound);
         }
@@ -84,15 +85,15 @@ namespace ChaoticOnyx.Hekate.Tests
 #endif
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            preprocessor.Preprocess(tokens);
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 1);
 
-            Assert.True(preprocessor.Issues.First()
+            Assert.True(preprocessor.Issues[0]
                                     .Id
                         == IssuesId.ExtraEndIf);
         }
@@ -104,20 +105,20 @@ namespace ChaoticOnyx.Hekate.Tests
             IImmutableList<SyntaxToken> tokens = ParseText(@"#include 'code/file1.dm'
 #include 'code/file2.dm'");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Includes.Count == 2);
+            Assert.True(context.Includes.Count == 2);
 
-            Assert.True(preprocessor.Includes[0]
-                                    .Text
+            Assert.True(context.Includes[0]
+                               .Text
                         == "'code/file1.dm'");
 
-            Assert.True(preprocessor.Includes[1]
-                                    .Text
+            Assert.True(context.Includes[1]
+                               .Text
                         == "'code/file2.dm'");
         }
 
@@ -126,16 +127,16 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             IImmutableList<SyntaxToken> tokens       = ParseText("#define macro");
-            Preprocessor                preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor                preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Defines.Count == 1);
+            Assert.True(context.Defines.Count == 1);
 
-            Assert.True(preprocessor.Defines[0]
-                                    .Text
+            Assert.True(context.Defines[0]
+                               .Text
                         == "macro");
         }
 
@@ -146,13 +147,13 @@ namespace ChaoticOnyx.Hekate.Tests
             IImmutableList<SyntaxToken> tokens = ParseText(@"#define macro
 #undef macro");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Defines.Count == 0);
+            Assert.True(context.Defines.Count == 0);
         }
 
         [Fact]
@@ -164,20 +165,20 @@ namespace ChaoticOnyx.Hekate.Tests
 #define macro
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Defines.Count == 2);
+            Assert.True(context.Defines.Count == 2);
 
-            Assert.True(preprocessor.Defines[0]
-                                    .Text
+            Assert.True(context.Defines[0]
+                               .Text
                         == "debug");
 
-            Assert.True(preprocessor.Defines[1]
-                                    .Text
+            Assert.True(context.Defines[1]
+                               .Text
                         == "macro");
         }
 
@@ -190,13 +191,13 @@ namespace ChaoticOnyx.Hekate.Tests
 #undef debug
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Defines.Count == 0);
+            Assert.True(context.Defines.Count == 0);
         }
 
         [Fact]
@@ -207,16 +208,16 @@ namespace ChaoticOnyx.Hekate.Tests
 #define debug
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Defines.Count == 1);
+            Assert.True(context.Defines.Count == 1);
 
-            Assert.True(preprocessor.Defines[0]
-                                    .Text
+            Assert.True(context.Defines[0]
+                               .Text
                         == "debug");
         }
 
@@ -229,13 +230,13 @@ namespace ChaoticOnyx.Hekate.Tests
 #undef macro
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Defines.Count == 0);
+            Assert.True(context.Defines.Count == 0);
         }
 
         [Fact]
@@ -249,16 +250,22 @@ namespace ChaoticOnyx.Hekate.Tests
 #define NOT_DEBUG_DEFINE2
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 0);
-            Assert.True(preprocessor.Defines.Count == 2);
-            Assert.True(preprocessor.Defines[0].Text == "NOT_DEBUG_DEFINE");
-            Assert.True(preprocessor.Defines[1].Text == "NOT_DEBUG_DEFINE2");
+            Assert.True(context.Defines.Count == 2);
+
+            Assert.True(context.Defines[0]
+                               .Text
+                        == "NOT_DEBUG_DEFINE");
+
+            Assert.True(context.Defines[1]
+                               .Text
+                        == "NOT_DEBUG_DEFINE2");
         }
 
         [Fact]
@@ -275,17 +282,54 @@ namespace ChaoticOnyx.Hekate.Tests
 #define NOT_DEBUG_DEFINE
 #endif");
 
-            Preprocessor preprocessor = Preprocessor.WithTokens(tokens);
+            Preprocessor preprocessor = new();
 
             // Act
-            preprocessor.Preprocess();
+            PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 0);
-            Assert.True(preprocessor.Defines.Count == 3);
-            Assert.True(preprocessor.Defines[0].Text == "TEST");
-            Assert.True(preprocessor.Defines[1].Text == "TEST_DEFINE");
-            Assert.True(preprocessor.Defines[2].Text == "NOT_DEBUG_DEFINE");
+            Assert.True(context.Defines.Count == 3);
+
+            Assert.True(context.Defines[0]
+                               .Text
+                        == "TEST");
+
+            Assert.True(context.Defines[1]
+                               .Text
+                        == "TEST_DEFINE");
+
+            Assert.True(context.Defines[2]
+                               .Text
+                        == "NOT_DEBUG_DEFINE");
+        }
+
+        [Fact]
+        public void ContextTest()
+        {
+            IImmutableList<SyntaxToken> tokens = ParseText(@"#define TEST
+#ifdef TEST
+#define DEBUG
+#endif");
+
+            IImmutableList<SyntaxToken> tokens2 = ParseText(@"#ifdef DEBUG
+#define GOOD
+#endif
+#undef TEST");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            PreprocessorContext context1 = preprocessor.Preprocess(tokens);
+            PreprocessorContext context2 = preprocessor.Preprocess(tokens2, context1);
+
+            // Assert
+            Assert.True(preprocessor.Issues.Count == 0);
+            Assert.True(context2.Defines.Count == 2);
+
+            Assert.True(context2.Defines[1]
+                                .Text
+                        == "GOOD");
         }
     }
 }

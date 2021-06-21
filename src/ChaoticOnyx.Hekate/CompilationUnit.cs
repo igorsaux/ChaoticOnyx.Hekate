@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace ChaoticOnyx.Hekate
 {
@@ -8,60 +8,68 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public sealed record CompilationUnit
     {
-        public readonly Lexer        Lexer;
-        public readonly ParsingModes Modes;
-        public readonly Preprocessor Preprocessor;
+        /// <summary>
+        ///     Лексер, используемый в этой единице компиляции.
+        /// </summary>
+        public Lexer Lexer { get; }
 
-        private CompilationUnit(Lexer lexer, Preprocessor preprocessor, ParsingModes modes)
+        /// <summary>
+        ///     Препроцессор, используемый в этой единице компиляции.
+        /// </summary>
+        public Preprocessor Preprocessor { get; }
+
+        /// <summary>
+        ///     Контекст препроцессора на момент конца файла.
+        /// </summary>
+        public PreprocessorContext Context { get; private set; }
+
+        /// <summary>
+        ///     Токены в этой единице компиляции.
+        /// </summary>
+        public IImmutableList<SyntaxToken> Tokens => Lexer.Tokens;
+
+        private CompilationUnit(Lexer lexer, Preprocessor preprocessor)
         {
             Lexer        = lexer;
             Preprocessor = preprocessor;
-            Modes        = modes;
+            Context      = PreprocessorContext.Empty;
         }
 
-        public static CompilationUnit FromSource(string source, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
+        public static CompilationUnit FromSource(string source, Preprocessor? preprocessor = null, int tabWidth = 4) => Create(new Lexer(source, tabWidth), preprocessor ?? new Preprocessor());
+
+        public static CompilationUnit FromTokens(IImmutableList<SyntaxToken> tokens, Preprocessor? preprocessor = null, int tabWidth = 4) => Create(new Lexer(tokens, tabWidth), preprocessor ?? new Preprocessor());
+
+        public static CompilationUnit FromToken(SyntaxToken token, Preprocessor? preprocessor = null, int tabWidth = 4)
         {
-            Lexer lexer = new(source, tabWidth);
-            lexer.Parse();
-
-            return Create(lexer, modes);
-        }
-
-        public static CompilationUnit FromTokens(IList<SyntaxToken> tokens, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
-        {
-            Lexer lexer = new(tokens, tabWidth);
-
-            return Create(lexer, modes);
-        }
-
-        public static CompilationUnit FromToken(SyntaxToken token, int tabWidth = 4, ParsingModes modes = ParsingModes.Full)
-        {
-            Lexer lexer = new(new Collection<SyntaxToken>
+            Lexer lexer = new(new List<SyntaxToken>
             {
                 token
-            }, tabWidth);
+            }.ToImmutableList(), tabWidth);
 
-            return Create(lexer, modes);
+            return Create(new Lexer(new List<SyntaxToken>
+            {
+                token
+            }.ToImmutableList(), tabWidth), preprocessor ?? new Preprocessor());
         }
 
-        private static CompilationUnit Create(Lexer lexer, ParsingModes modes)
+        private static CompilationUnit Create(Lexer lexer, Preprocessor preprocessor) => new(lexer, preprocessor);
+
+        /// <summary>
+        ///     Производит парсинг и возвращает контекст препроцессора на конец файла.
+        /// </summary>
+        public void Parse(PreprocessorContext? context = null)
         {
-            Preprocessor preprocessor = modes.HasFlag(ParsingModes.Full)
-                ? Preprocessor.WithTokens(lexer.Tokens)
-                : Preprocessor.WithoutTokens();
-
-            preprocessor.Preprocess();
-
-            return new CompilationUnit(lexer, preprocessor, modes);
+            Lexer.Parse();
+            Context = Preprocessor.Preprocess(Tokens, context ?? PreprocessorContext.Empty);
         }
 
-        public ICollection<CodeIssue> GetIssues()
+        public IImmutableList<CodeIssue> GetIssues()
         {
             List<CodeIssue> issues = new();
             issues.AddRange(Lexer.Issues);
             issues.AddRange(Preprocessor.Issues);
 
-            return issues;
+            return issues.ToImmutableList();
         }
 
         public string Emit() => Lexer.Emit();

@@ -4,33 +4,34 @@ using System.Linq;
 
 namespace ChaoticOnyx.Hekate
 {
+    /// <summary>
+    ///     Препроцессирует набор токенов и возвращает итоговый контекст.
+    /// </summary>
     public sealed class Preprocessor
     {
-        private readonly List<SyntaxToken>          _defines  = new();
         private readonly Stack<SyntaxToken>         _ifs      = new();
-        private readonly List<SyntaxToken>          _includes = new();
         private readonly List<CodeIssue>            _issues   = new();
-        private readonly TypeContainer<SyntaxToken> _tokens;
+        private          List<SyntaxToken>          _defines  = new();
+        private          List<SyntaxToken>          _includes = new();
+        private          TypeContainer<SyntaxToken> _tokens   = new();
 
-        public IReadOnlyCollection<CodeIssue> Issues   => _issues.AsReadOnly();
-        public IImmutableList<SyntaxToken>    Includes => _includes.ToImmutableList();
-        public IImmutableList<SyntaxToken>    Defines  => _defines.ToImmutableList();
+        public IImmutableList<CodeIssue> Issues => _issues.ToImmutableList();
 
-        private Preprocessor(IImmutableList<SyntaxToken>? tokens = null) => _tokens = new TypeContainer<SyntaxToken>(tokens?.ToList() ?? new List<SyntaxToken>());
-
-        public static Preprocessor WithTokens(IImmutableList<SyntaxToken> tokens) => new(tokens);
-
-        public static Preprocessor WithoutTokens() => new();
+        /// <summary>
+        ///     Текущий контекст препроцессора.
+        /// </summary>
+        public PreprocessorContext Context => new(_includes.ToImmutableList(), _defines.ToImmutableList());
 
         /// <summary>
         ///     Производит препроцессинг токенов.
         /// </summary>
-        public void Preprocess()
+        public PreprocessorContext Preprocess(IImmutableList<SyntaxToken> tokens, PreprocessorContext? context = null)
         {
-            _ifs.Clear();
-            _defines.Clear();
+            _tokens       = new TypeContainer<SyntaxToken>(tokens.ToList());
+            (_, _defines) = context ?? PreprocessorContext.Empty;
             _includes.Clear();
             _issues.Clear();
+            _ifs.Clear();
 
             while (!_tokens.IsEnd)
             {
@@ -80,6 +81,8 @@ namespace ChaoticOnyx.Hekate
                         if (define != null)
                         {
                             _defines.Remove(define);
+
+                            break;
                         }
 
                         _issues.Add(new CodeIssue(IssuesId.UnknownMacrosDefinition, next, next.Text));
@@ -110,11 +113,13 @@ namespace ChaoticOnyx.Hekate
 
             if (_ifs.Count <= 0)
             {
-                return;
+                return new PreprocessorContext(_includes.ToImmutableList(), _defines.ToImmutableList());
             }
 
             SyntaxToken last = _ifs.Last();
             _issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
+
+            return new PreprocessorContext(_includes.ToImmutableList(), _defines.ToImmutableList());
         }
 
         /// <summary>

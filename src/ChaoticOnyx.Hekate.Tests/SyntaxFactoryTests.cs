@@ -1,5 +1,7 @@
 ﻿#region
 
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using Xunit;
 
 #endregion
@@ -8,14 +10,12 @@ namespace ChaoticOnyx.Hekate.Tests
 {
     public class SyntaxFactoryTests
     {
-        private readonly SyntaxFactory _factory = SyntaxFactory.CreateFactory(CodeStyle.Default);
-
         [Fact]
         public void SingleLineCommentTest()
         {
             // Arrange
             string      expected = "// This is a comment\n";
-            SyntaxToken token    = _factory.SingleLineComment(" This is a comment");
+            SyntaxToken token    = SyntaxFactory.SingleLineComment(" This is a comment");
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -30,7 +30,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "/*\n  Hello!\n*/";
-            SyntaxToken token    = _factory.MultiLineComment("\n  Hello!\n");
+            SyntaxToken token    = SyntaxFactory.MultiLineComment("\n  Hello!\n");
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -45,7 +45,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "var";
-            SyntaxToken token    = _factory.Identifier("var");
+            SyntaxToken token    = SyntaxFactory.Identifier("var");
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -60,7 +60,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "\"Test\"";
-            SyntaxToken token    = _factory.TextLiteral("Test");
+            SyntaxToken token    = SyntaxFactory.TextLiteral("Test");
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -76,18 +76,19 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "12 7.8 12.9";
 
-            SyntaxToken[] tokens =
+            List<SyntaxToken> tokens = new()
             {
-                _factory.NumericalLiteral(12)
-                        .WithTrails(_factory.WhiteSpace(" ")),
-                _factory.NumericalLiteral(7.8)
-                        .WithTrails(_factory.WhiteSpace(" ")),
-                _factory.NumericalLiteral((float)12.9)
+                SyntaxFactory.NumericalLiteral(12)
+                             .WithTrails(SyntaxFactory.WhiteSpace(" ")),
+                SyntaxFactory.NumericalLiteral(7.8)
+                             .WithTrails(SyntaxFactory.WhiteSpace(" ")),
+                SyntaxFactory.NumericalLiteral((float)12.9)
             };
 
             // Act
-            CompilationUnit unit   = CompilationUnit.FromTokens(tokens);
-            string          result = unit.Emit();
+            CompilationUnit unit = CompilationUnit.FromTokens(tokens.ToImmutableList());
+            unit.Parse();
+            string result = unit.Emit();
 
             // Assert
             Assert.Equal(expected, result);
@@ -98,7 +99,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "'sound/mysound.ogg'";
-            SyntaxToken token    = _factory.PathLiteral("sound/mysound.ogg");
+            SyntaxToken token    = SyntaxFactory.PathLiteral("sound/mysound.ogg");
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -113,7 +114,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "for";
-            SyntaxToken token    = _factory.ForKeyword();
+            SyntaxToken token    = SyntaxFactory.ForKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -128,7 +129,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "new";
-            SyntaxToken token    = _factory.NewKeyword();
+            SyntaxToken token    = SyntaxFactory.NewKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -143,7 +144,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "global";
-            SyntaxToken token    = _factory.GlobalKeyword();
+            SyntaxToken token    = SyntaxFactory.GlobalKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -158,7 +159,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "throw";
-            SyntaxToken token    = _factory.ThrowKeyword();
+            SyntaxToken token    = SyntaxFactory.ThrowKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -173,7 +174,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "catch";
-            SyntaxToken token    = _factory.CatchKeyword();
+            SyntaxToken token    = SyntaxFactory.CatchKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -188,7 +189,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "try";
-            SyntaxToken token    = _factory.TryKeyword();
+            SyntaxToken token    = SyntaxFactory.TryKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -203,7 +204,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "var";
-            SyntaxToken token    = _factory.VarKeyword();
+            SyntaxToken token    = SyntaxFactory.VarKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -218,7 +219,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "verb";
-            SyntaxToken token    = _factory.VerbKeyword();
+            SyntaxToken token    = SyntaxFactory.VerbKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -233,7 +234,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "proc";
-            SyntaxToken token    = _factory.ProcKeyword();
+            SyntaxToken token    = SyntaxFactory.ProcKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -248,7 +249,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "in";
-            SyntaxToken token    = _factory.InKeyword();
+            SyntaxToken token    = SyntaxFactory.InKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -263,7 +264,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "if";
-            SyntaxToken token    = _factory.IfKeyword();
+            SyntaxToken token    = SyntaxFactory.IfKeyword();
 
             // Act
             CompilationUnit unit  = CompilationUnit.FromToken(token);
@@ -278,7 +279,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "else";
-            SyntaxToken token    = _factory.ElseKeyword();
+            SyntaxToken token    = SyntaxFactory.ElseKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -293,7 +294,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "set";
-            SyntaxToken token    = _factory.SetKeyword();
+            SyntaxToken token    = SyntaxFactory.SetKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -308,7 +309,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "as";
-            SyntaxToken token    = _factory.AsKeyword();
+            SyntaxToken token    = SyntaxFactory.AsKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -323,7 +324,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "while";
-            SyntaxToken token    = _factory.WhileKeyword();
+            SyntaxToken token    = SyntaxFactory.WhileKeyword();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -338,7 +339,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "#define";
-            SyntaxToken token    = _factory.DefineDirective();
+            SyntaxToken token    = SyntaxFactory.DefineDirective();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -353,7 +354,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "#include";
-            SyntaxToken token    = _factory.IncludeDirective();
+            SyntaxToken token    = SyntaxFactory.IncludeDirective();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -368,7 +369,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "#ifdef";
-            SyntaxToken token    = _factory.IfDefDirective();
+            SyntaxToken token    = SyntaxFactory.IfDefDirective();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -383,7 +384,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "#ifndef";
-            SyntaxToken token    = _factory.IfNDefDirective();
+            SyntaxToken token    = SyntaxFactory.IfNDefDirective();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -398,7 +399,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "#endif";
-            SyntaxToken token    = _factory.EndIfDirective();
+            SyntaxToken token    = SyntaxFactory.EndIfDirective();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -413,7 +414,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "/";
-            SyntaxToken token    = _factory.Slash();
+            SyntaxToken token    = SyntaxFactory.Slash();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -428,7 +429,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "\\=";
-            SyntaxToken token    = _factory.BackwardSlashEqual();
+            SyntaxToken token    = SyntaxFactory.BackwardSlashEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -443,7 +444,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "/=";
-            SyntaxToken token    = _factory.SlashEqual();
+            SyntaxToken token    = SyntaxFactory.SlashEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -458,7 +459,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "*";
-            SyntaxToken token    = _factory.Asterisk();
+            SyntaxToken token    = SyntaxFactory.Asterisk();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -473,7 +474,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "*=";
-            SyntaxToken token    = _factory.AsteriskEqual();
+            SyntaxToken token    = SyntaxFactory.AsteriskEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -488,7 +489,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "**";
-            SyntaxToken token    = _factory.DoubleAsterisk();
+            SyntaxToken token    = SyntaxFactory.DoubleAsterisk();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -503,7 +504,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "=";
-            SyntaxToken token    = _factory.Equal();
+            SyntaxToken token    = SyntaxFactory.Equal();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -518,7 +519,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "==";
-            SyntaxToken token    = _factory.DoubleEqual();
+            SyntaxToken token    = SyntaxFactory.DoubleEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -533,7 +534,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "!=";
-            SyntaxToken token    = _factory.ExclamationEqual();
+            SyntaxToken token    = SyntaxFactory.ExclamationEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -548,7 +549,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "!";
-            SyntaxToken token    = _factory.Exclamation();
+            SyntaxToken token    = SyntaxFactory.Exclamation();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -563,7 +564,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ">";
-            SyntaxToken token    = _factory.Greater();
+            SyntaxToken token    = SyntaxFactory.Greater();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -578,7 +579,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ">>";
-            SyntaxToken token    = _factory.DoubleGreater();
+            SyntaxToken token    = SyntaxFactory.DoubleGreater();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -593,7 +594,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ">>=";
-            SyntaxToken token    = _factory.DoubleGreaterEqual();
+            SyntaxToken token    = SyntaxFactory.DoubleGreaterEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -608,7 +609,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ">=";
-            SyntaxToken token    = _factory.GreaterEqual();
+            SyntaxToken token    = SyntaxFactory.GreaterEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -623,7 +624,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "<";
-            SyntaxToken token    = _factory.Lesser();
+            SyntaxToken token    = SyntaxFactory.Lesser();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -638,7 +639,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "<<";
-            SyntaxToken token    = _factory.DoubleLesser();
+            SyntaxToken token    = SyntaxFactory.DoubleLesser();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -653,7 +654,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "<<=";
-            SyntaxToken token    = _factory.DoubleLesserEqual();
+            SyntaxToken token    = SyntaxFactory.DoubleLesserEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -668,7 +669,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "<=";
-            SyntaxToken token    = _factory.LesserEqual();
+            SyntaxToken token    = SyntaxFactory.LesserEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -683,7 +684,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "(";
-            SyntaxToken token    = _factory.OpenParentheses();
+            SyntaxToken token    = SyntaxFactory.OpenParentheses();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -698,7 +699,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ")";
-            SyntaxToken token    = _factory.CloseParentheses();
+            SyntaxToken token    = SyntaxFactory.CloseParentheses();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -713,7 +714,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "{";
-            SyntaxToken token    = _factory.OpenBrace();
+            SyntaxToken token    = SyntaxFactory.OpenBrace();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -728,7 +729,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "}";
-            SyntaxToken token    = _factory.CloseBrace();
+            SyntaxToken token    = SyntaxFactory.CloseBrace();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -743,7 +744,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "[";
-            SyntaxToken token    = _factory.OpenBracket();
+            SyntaxToken token    = SyntaxFactory.OpenBracket();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -758,7 +759,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "]";
-            SyntaxToken token    = _factory.CloseBracket();
+            SyntaxToken token    = SyntaxFactory.CloseBracket();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -773,7 +774,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "+";
-            SyntaxToken token    = _factory.Plus();
+            SyntaxToken token    = SyntaxFactory.Plus();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -788,7 +789,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "+=";
-            SyntaxToken token    = _factory.PlusEqual();
+            SyntaxToken token    = SyntaxFactory.PlusEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -803,7 +804,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "++";
-            SyntaxToken token    = _factory.DoublePlus();
+            SyntaxToken token    = SyntaxFactory.DoublePlus();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -818,7 +819,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "-";
-            SyntaxToken token    = _factory.Minus();
+            SyntaxToken token    = SyntaxFactory.Minus();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -833,7 +834,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "-=";
-            SyntaxToken token    = _factory.MinusEqual();
+            SyntaxToken token    = SyntaxFactory.MinusEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -848,7 +849,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "--";
-            SyntaxToken token    = _factory.DoubleMinus();
+            SyntaxToken token    = SyntaxFactory.DoubleMinus();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -863,7 +864,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ",";
-            SyntaxToken token    = _factory.Comma();
+            SyntaxToken token    = SyntaxFactory.Comma();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -878,7 +879,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "%";
-            SyntaxToken token    = _factory.Percent();
+            SyntaxToken token    = SyntaxFactory.Percent();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -893,7 +894,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "%=";
-            SyntaxToken token    = _factory.PercentEqual();
+            SyntaxToken token    = SyntaxFactory.PercentEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -908,7 +909,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "&";
-            SyntaxToken token    = _factory.Ampersand();
+            SyntaxToken token    = SyntaxFactory.Ampersand();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -923,7 +924,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "&&";
-            SyntaxToken token    = _factory.DoubleAmpersand();
+            SyntaxToken token    = SyntaxFactory.DoubleAmpersand();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -938,7 +939,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "&=";
-            SyntaxToken token    = _factory.AmpersandEqual();
+            SyntaxToken token    = SyntaxFactory.AmpersandEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -953,7 +954,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ":";
-            SyntaxToken token    = _factory.Colon();
+            SyntaxToken token    = SyntaxFactory.Colon();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -968,7 +969,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "?";
-            SyntaxToken token    = _factory.Question();
+            SyntaxToken token    = SyntaxFactory.Question();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -983,7 +984,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "^";
-            SyntaxToken token    = _factory.Caret();
+            SyntaxToken token    = SyntaxFactory.Caret();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -998,7 +999,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "^=";
-            SyntaxToken token    = _factory.CaretEqual();
+            SyntaxToken token    = SyntaxFactory.CaretEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -1013,7 +1014,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "|";
-            SyntaxToken token    = _factory.Bar();
+            SyntaxToken token    = SyntaxFactory.Bar();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -1028,7 +1029,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "||";
-            SyntaxToken token    = _factory.DoubleBar();
+            SyntaxToken token    = SyntaxFactory.DoubleBar();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -1043,7 +1044,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = "|=";
-            SyntaxToken token    = _factory.BarEqual();
+            SyntaxToken token    = SyntaxFactory.BarEqual();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);
@@ -1058,7 +1059,7 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             string      expected = ".";
-            SyntaxToken token    = _factory.Dot();
+            SyntaxToken token    = SyntaxFactory.Dot();
 
             // Act
             CompilationUnit unit   = CompilationUnit.FromToken(token);

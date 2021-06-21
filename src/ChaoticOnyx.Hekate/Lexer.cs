@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 
 #endregion
@@ -17,7 +18,7 @@ namespace ChaoticOnyx.Hekate
         private readonly List<CodeIssue>    _issues          = new();
         private readonly List<SyntaxToken>  _leadTokensCache = new();
         private readonly TextContainer      _source;
-        private readonly IList<SyntaxToken> _tokens;
+        private readonly List<SyntaxToken> _tokens;
         private readonly List<SyntaxToken>  _trailTokensCache = new();
 
         /// <summary>
@@ -28,7 +29,7 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Проблемы обнаруженные в единице компиляции.
         /// </summary>
-        public IReadOnlyCollection<CodeIssue> Issues => _issues.AsReadOnly();
+        public IImmutableList<CodeIssue> Issues => _issues.ToImmutableList();
 
         /// <summary>
         ///     Создание нового лексера из текста.
@@ -46,9 +47,9 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         /// <param name="tokens">Набор токенов.</param>
         /// <param name="tabWidth">Ширина табуляции в файле.</param>
-        public Lexer(IList<SyntaxToken> tokens, int tabWidth = 4)
+        public Lexer(IImmutableList<SyntaxToken> tokens, int tabWidth = 4)
         {
-            _tokens = tokens;
+            _tokens = tokens.ToList();
             _source = new TextContainer(Emit(), tabWidth);
         }
 

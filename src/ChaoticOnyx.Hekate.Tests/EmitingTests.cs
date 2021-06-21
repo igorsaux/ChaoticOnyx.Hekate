@@ -41,6 +41,7 @@ hello_world()
 ";
 
             CompilationUnit unit = CompilationUnit.FromSource(expected);
+            unit.Parse(PreprocessorContext.Empty);
 
             // Act
             string result = unit.Emit();

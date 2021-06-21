@@ -1,7 +1,6 @@
 ﻿#region
 
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
 using Xunit;
 
 #endregion
@@ -15,14 +14,15 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             // Act
-            CompilationUnit                unit   = CompilationUnit.FromSource("\'");
-            IReadOnlyCollection<CodeIssue> errors = unit.Lexer.Issues;
+            CompilationUnit unit = CompilationUnit.FromSource("\'");
+            unit.Parse();
+            IImmutableList<CodeIssue> errors = unit.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
 
-            Assert.True(errors.First()
-                              .Id
+            Assert.True(errors[0]
+                            .Id
                         == IssuesId.MissingClosingSign);
         }
 
@@ -31,14 +31,15 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             // Act
-            CompilationUnit                unit   = CompilationUnit.FromSource("\"");
-            IReadOnlyCollection<CodeIssue> errors = unit.Lexer.Issues;
+            CompilationUnit unit = CompilationUnit.FromSource("\"");
+            unit.Parse();
+            IImmutableList<CodeIssue> errors = unit.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
 
-            Assert.True(errors.First()
-                              .Id
+            Assert.True(errors[0]
+                            .Id
                         == IssuesId.MissingClosingSign);
         }
 
@@ -47,14 +48,15 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             // Act
-            CompilationUnit                unit   = CompilationUnit.FromSource("/* Comment without end *");
-            IReadOnlyCollection<CodeIssue> errors = unit.Lexer.Issues;
+            CompilationUnit unit = CompilationUnit.FromSource("/* Comment without end *");
+            unit.Parse();
+            IImmutableList<CodeIssue> errors = unit.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
 
-            Assert.True(errors.First()
-                              .Id
+            Assert.True(errors[0]
+                            .Id
                         == IssuesId.MissingClosingSign);
         }
 
@@ -63,14 +65,15 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             // Act
-            CompilationUnit                unit   = CompilationUnit.FromSource("$token");
-            IReadOnlyCollection<CodeIssue> errors = unit.Lexer.Issues;
+            CompilationUnit unit = CompilationUnit.FromSource("$token");
+            unit.Parse();
+            IImmutableList<CodeIssue> errors = unit.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
 
-            Assert.True(errors.First()
-                              .Id
+            Assert.True(errors[0]
+                            .Id
                         == IssuesId.UnexpectedToken);
         }
 
@@ -79,14 +82,15 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             // Act
-            CompilationUnit                unit   = CompilationUnit.FromSource("#pragma");
-            IReadOnlyCollection<CodeIssue> errors = unit.Lexer.Issues;
+            CompilationUnit unit = CompilationUnit.FromSource("#pragma");
+            unit.Parse();
+            IImmutableList<CodeIssue> errors = unit.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
 
-            Assert.True(errors.First()
-                              .Id
+            Assert.True(errors[0]
+                            .Id
                         == IssuesId.UnknownDirective);
         }
     }
