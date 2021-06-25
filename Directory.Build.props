@@ -1,12 +1,11 @@
 <Project>
     <PropertyGroup>
         <ArtifactsDir>$(SolutionDir)artifacts\</ArtifactsDir>
-        <ArtifactsDir Condition="'$(SolutionDir)' == ''">..\..\artifacts\</ArtifactsDir>
         <DebugType Condition="'$(Configuration)' == 'Release'">None</DebugType>
     </PropertyGroup>
 
     <PropertyGroup>
-        <OutputPath>$(ArtifactsDir)bin/$(MSBuildProjectName)\$(Configuration)</OutputPath>
-        <BaseIntermediateOutputPath>$(ArtifactsDir)obj/$(MSBuildProjectName)\$(Configuration)</BaseIntermediateOutputPath>
+        <BaseOutputPath>$(ArtifactsDir)bin/$(MSBuildProjectName)\</BaseOutputPath>
+        <BaseIntermediateOutputPath>$(ArtifactsDir)obj/$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     </PropertyGroup>
 </Project>

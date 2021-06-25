@@ -18,7 +18,7 @@ namespace ChaoticOnyx.Hekate.Linter.Analyzers
             _fixMode             = context.TryToFix;
             List<SyntaxToken> tokens = unit.Lexer.Tokens.ToList();
 
-            if (unit.Context.Defines.FirstOrDefault(define => define.Text != "SPAN") == null)
+            if (unit.Context.Defines.FirstOrDefault(define => define.Text == "SPAN") == null)
             {
                 return new AnalysisResult(ImmutableList<CodeIssue>.Empty, null);
             }
