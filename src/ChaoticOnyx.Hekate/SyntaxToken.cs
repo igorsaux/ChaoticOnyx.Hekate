@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -15,9 +14,6 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public class SyntaxToken
     {
-        private readonly List<SyntaxToken> _leadTokens  = new();
-        private readonly List<SyntaxToken> _trailTokens = new();
-
         /// <summary>
         ///     Тип токена.
         /// </summary>
@@ -53,17 +49,17 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Возвращает true если имеет в хвостовых токенах конец линии.
         /// </summary>
-        public bool HasEndOfLine => _trailTokens.Any(t => t.Kind == SyntaxKind.EndOfLine);
+        public bool HasEndOfLine => Trails.Any(t => t.Kind == SyntaxKind.EndOfLine);
 
         /// <summary>
         ///     Ведущие токены.
         /// </summary>
-        public ReadOnlyCollection<SyntaxToken> Leads => _leadTokens.AsReadOnly();
+        public LinkedList<SyntaxToken> Leads { get; } = new();
 
         /// <summary>
         ///     Хвостовые токены.
         /// </summary>
-        public ReadOnlyCollection<SyntaxToken> Trails => _trailTokens.AsReadOnly();
+        public LinkedList<SyntaxToken> Trails { get; } = new();
 
         /// <summary>
         ///     Создание нового токена.
@@ -114,27 +110,40 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Добавить лидирующих токенов.
         /// </summary>
-        /// <param name="tokens"></param>
-        public void AddLeadTokens(params SyntaxToken[] tokens) => _leadTokens.AddRange(tokens);
+        public void AddLeadTokens(params SyntaxToken[] tokens)
+        {
+            foreach (SyntaxToken token in tokens)
+            {
+                Leads.AddLast(token);
+            }
+        }
 
         /// <summary>
         ///     Добавить хвостовых токенов.
         /// </summary>
-        /// <param name="tokens"></param>
-        public void AddTrailTokens(params SyntaxToken[] tokens) => _trailTokens.AddRange(tokens);
+        public void AddTrailTokens(params SyntaxToken[] tokens)
+        {
+            foreach (SyntaxToken token in tokens)
+            {
+                Trails.AddLast(token);
+            }
+        }
 
+        /// <summary>
+        ///     Выводит текст токена вместе с ведущими и хвостовыми токенами.
+        /// </summary>
         public string GetFullText()
         {
             StringBuilder builder = new();
 
-            foreach (var lead in _leadTokens)
+            foreach (SyntaxToken lead in Leads)
             {
                 builder.Append(lead.FullText);
             }
 
             builder.Append(Text);
 
-            foreach (var trail in _trailTokens)
+            foreach (SyntaxToken trail in Trails)
             {
                 builder.Append(trail.FullText);
             }

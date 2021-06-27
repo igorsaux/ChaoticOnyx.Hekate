@@ -9,11 +9,12 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public sealed class Preprocessor
     {
-        private readonly Stack<SyntaxToken>         _ifs      = new();
-        private readonly List<SyntaxToken>          _includes = new();
-        private readonly List<CodeIssue>            _issues   = new();
-        private          List<SyntaxToken>          _defines  = new();
-        private          TypeContainer<SyntaxToken> _tokens   = new();
+        private readonly Stack<SyntaxToken>           _ifs      = new();
+        private readonly List<SyntaxToken>            _includes = new();
+        private readonly List<CodeIssue>              _issues   = new();
+        private          List<SyntaxToken>            _defines  = new();
+        private          LinkedListNode<SyntaxToken>? _it;
+        private          LinkedList<SyntaxToken>      _tokens = new();
 
         public IImmutableList<CodeIssue> Issues => _issues.ToImmutableList();
 
@@ -25,18 +26,18 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Производит препроцессинг токенов.
         /// </summary>
-        public PreprocessorContext Preprocess(IImmutableList<SyntaxToken> tokens, PreprocessorContext? context = null)
+        public PreprocessorContext Preprocess(LinkedList<SyntaxToken> tokens, PreprocessorContext? context = null)
         {
-            _tokens       = new TypeContainer<SyntaxToken>(tokens.ToList());
+            _tokens       = tokens;
             (_, _defines) = context ?? PreprocessorContext.Empty;
             _includes.Clear();
             _issues.Clear();
             _ifs.Clear();
 
-            while (!_tokens.IsEnd)
+            for (_it = _tokens.First; _it != null; _it = _it.Next)
             {
-                SyntaxToken  token = _tokens.Read();
-                SyntaxToken? next  = _tokens.Peek();
+                SyntaxToken  token = _it.Value;
+                SyntaxToken? next  = _it.Next?.Value;
 
                 if (next is null)
                 {
@@ -128,11 +129,11 @@ namespace ChaoticOnyx.Hekate
         /// <returns>Возвращает true - если #endif был найден.</returns>
         private void SkipIf()
         {
-            while (!_tokens.IsEnd)
+            while (_it is not null)
             {
-                SyntaxToken? token = _tokens.Peek();
+                SyntaxToken? token = _it.Next?.Value;
 
-                if (token == null)
+                if (token is null)
                 {
                     return;
                 }
@@ -142,7 +143,7 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
 
-                _tokens.Advance();
+                _it = _it.Next;
             }
         }
     }

@@ -1,6 +1,6 @@
 #region
 
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -20,32 +20,23 @@ namespace ChaoticOnyx.Hekate.Tests
 // SingleLine Comment");
 
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 1);
-
-            Assert.True(tokens[0]
-                            .Kind
-                        == SyntaxKind.EndOfFile);
-
-            Assert.True(tokens[0]
-                        .Leads.Count
-                        == 4);
-
-            Assert.True(tokens[0]
-                        .Leads[0]
-                        .Kind
-                        == SyntaxKind.MultiLineComment);
-
-            Assert.True(tokens[0]
-                        .Leads.Count(t => t.Kind == SyntaxKind.EndOfLine)
-                        == 2);
-
-            Assert.True(tokens[0]
-                        .Leads[3]
-                        .Kind
-                        == SyntaxKind.SingleLineComment);
+            Assert.NotEmpty(tokens);
+            Assert.Single(tokens);
+            SyntaxToken token = tokens.First?.Value!;
+            Assert.NotNull(token);
+            Assert.True(token is { Kind: SyntaxKind.EndOfFile });
+            Assert.NotEmpty(token.Leads);
+            Assert.True(token.Leads is { Count: 4 });
+            LinkedListNode<SyntaxToken> firstLead = token.Leads.First!;
+            LinkedListNode<SyntaxToken> lastLead  = token.Leads.Last!;
+            Assert.NotNull(firstLead);
+            Assert.NotNull(lastLead);
+            Assert.True(firstLead!.Value is { Kind: SyntaxKind.MultiLineComment });
+            Assert.True(token.Leads.Count(t => t.Kind == SyntaxKind.EndOfLine) == 2);
+            Assert.True(lastLead!.Value is { Kind: SyntaxKind.SingleLineComment });
         }
 
         [Fact]
@@ -55,18 +46,15 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("literal");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 2);
-
-            Assert.True(tokens[0]
-                            .Kind
-                        == SyntaxKind.Identifier);
-
-            Assert.True(tokens[0]
-                            .Text
-                        == "literal");
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count: 2 });
+            SyntaxToken token = tokens.First!.Value!;
+            Assert.NotNull(tokens);
+            Assert.True(token is { Kind: SyntaxKind.Identifier });
+            Assert.True(token is { Text: "literal" });
         }
 
         [Fact]
@@ -76,18 +64,15 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("123");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 2);
-
-            Assert.True(tokens[0]
-                            .Kind
-                        == SyntaxKind.NumericalLiteral);
-
-            Assert.True(tokens[0]
-                            .Text
-                        == "123");
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count: 2 });
+            SyntaxToken token = tokens.First!.Value!;
+            Assert.NotNull(token);
+            Assert.True(token is { Kind: SyntaxKind.NumericalLiteral });
+            Assert.True(token is { Text: "123" });
         }
 
         [Fact]
@@ -97,18 +82,15 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("123.55");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 2);
-
-            Assert.True(tokens[0]
-                            .Kind
-                        == SyntaxKind.NumericalLiteral);
-
-            Assert.True(tokens[0]
-                            .Text
-                        == "123.55");
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count: 2 });
+            SyntaxToken token = tokens.First!.Value!;
+            Assert.NotNull(token);
+            Assert.True(token is { Kind: SyntaxKind.NumericalLiteral });
+            Assert.True(token is { Text: "123.55" });
         }
 
         [Fact]
@@ -118,14 +100,14 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("\"TextLiteral\"");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 2);
-
-            Assert.True(tokens[0]
-                            .Kind
-                        == SyntaxKind.TextLiteral);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count: 2 });
+            SyntaxToken token = tokens.First!.Value!;
+            Assert.NotNull(token);
+            Assert.True(token is { Kind: SyntaxKind.TextLiteral });
         }
 
         [Fact]
@@ -135,14 +117,14 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("\'PathLiteral/file.dm\'");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 2);
-
-            Assert.True(tokens[0]
-                            .Kind
-                        == SyntaxKind.PathLiteral);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count: 2 });
+            SyntaxToken token = tokens.First!.Value!;
+            Assert.NotNull(token);
+            Assert.True(token is { Kind: SyntaxKind.PathLiteral });
         }
 
         [Fact]
@@ -152,24 +134,20 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource(@"    // Comment");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
+            Assert.NotEmpty(tokens);
             Assert.True(tokens.Count == 1);
-
-            Assert.True(tokens[0]
-                        .Leads.Count
-                        == 2);
-
-            Assert.True(tokens[0]
-                        .Leads[0]
-                        .Kind
-                        == SyntaxKind.WhiteSpace);
-
-            Assert.True(tokens[0]
-                        .Leads[1]
-                        .Kind
-                        == SyntaxKind.SingleLineComment);
+            SyntaxToken token = tokens.First!.Value!;
+            Assert.NotNull(token);
+            Assert.True(token.Leads.Count == 2);
+            SyntaxToken lead1 = token.Leads.First!.Value!;
+            SyntaxToken lead2 = token.Leads.First.Next!.Value!;
+            Assert.NotNull(lead1);
+            Assert.NotNull(lead2);
+            Assert.True(lead1 is { Kind: SyntaxKind.WhiteSpace });
+            Assert.True(lead2 is { Kind: SyntaxKind.SingleLineComment });
         }
 
         [Theory]
@@ -185,10 +163,11 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("#include #ifndef #ifdef #endif #define #undef");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
-            Assert.True(tokens.Count == 7);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count: 7 });
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
         }
 
@@ -199,18 +178,17 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("#define TEST(X) ##x");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
+            Assert.NotEmpty(tokens);
             Assert.True(tokens.Count == 8);
-
-            Assert.True(tokens[6]
-                            .Kind
-                        == SyntaxKind.Identifier);
-
-            Assert.True(tokens[5]
-                            .Kind
-                        == SyntaxKind.ConcatDirective);
+            SyntaxToken lastLead    = tokens.Last!.Previous!.Value!;
+            SyntaxToken preLastLead = tokens.Last.Previous.Previous!.Value!;
+            Assert.NotNull(lastLead);
+            Assert.NotNull(preLastLead);
+            Assert.True(lastLead is { Kind   : SyntaxKind.Identifier });
+            Assert.True(preLastLead is { Kind: SyntaxKind.ConcatDirective });
         }
 
         [Theory]
@@ -235,9 +213,10 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("for new global throw catch try var verb proc in if else set as while");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
 
             // Assert
+            Assert.NotEmpty(tokens);
             Assert.True(tokens.Count == 16);
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
         }
@@ -295,10 +274,11 @@ namespace ChaoticOnyx.Hekate.Tests
             // Act
             CompilationUnit unit = CompilationUnit.FromSource("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ . ;");
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
-            int                         count  = tokens.Count(token => token.Kind == kind);
+            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            int                     count  = tokens.Count(token => token.Kind == kind);
 
             // Assert
+            Assert.NotEmpty(tokens);
             Assert.Equal(expectedCount, count);
         }
 
@@ -306,14 +286,15 @@ namespace ChaoticOnyx.Hekate.Tests
         public void EscapedTextTest()
         {
             // Arrange
-            const string text = @"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""";
+            const string Text = @"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""";
 
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource(text);
+            CompilationUnit unit = CompilationUnit.FromSource(Text);
             unit.Parse();
-            IImmutableList<SyntaxToken> tokens = unit.Tokens;
+            List<SyntaxToken> tokens = unit.Tokens.ToList();
 
             // Assert
+            Assert.NotEmpty(tokens);
             Assert.True(tokens.Count == 6);
 
             Assert.True(tokens[0]

@@ -26,7 +26,7 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Токены в этой единице компиляции.
         /// </summary>
-        public IImmutableList<SyntaxToken> Tokens => Lexer.Tokens;
+        public LinkedList<SyntaxToken> Tokens => Lexer.Tokens;
 
         private CompilationUnit(Lexer lexer, Preprocessor preprocessor)
         {

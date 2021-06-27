@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
 
 #endregion
@@ -18,13 +17,12 @@ namespace ChaoticOnyx.Hekate
         private readonly List<CodeIssue>   _issues          = new();
         private readonly List<SyntaxToken> _leadTokensCache = new();
         private readonly TextContainer     _source;
-        private readonly List<SyntaxToken> _tokens;
         private readonly List<SyntaxToken> _trailTokensCache = new();
 
         /// <summary>
         ///     Токены в единице компиляции.
         /// </summary>
-        public IImmutableList<SyntaxToken> Tokens => _tokens.ToImmutableList();
+        public LinkedList<SyntaxToken> Tokens { get; }
 
         /// <summary>
         ///     Проблемы обнаруженные в единице компиляции.
@@ -38,7 +36,7 @@ namespace ChaoticOnyx.Hekate
         /// <param name="tabWidth">Ширина табуляции в файле.</param>
         public Lexer(string source)
         {
-            _tokens = new List<SyntaxToken>();
+            Tokens  = new LinkedList<SyntaxToken>();
             _source = new TextContainer(source);
         }
 
@@ -49,7 +47,7 @@ namespace ChaoticOnyx.Hekate
         /// <param name="tabWidth">Ширина табуляции в файле.</param>
         public Lexer(IImmutableList<SyntaxToken> tokens)
         {
-            _tokens = tokens.ToList();
+            Tokens  = new LinkedList<SyntaxToken>(tokens);
             _source = new TextContainer(Emit());
         }
 
@@ -96,16 +94,16 @@ namespace ChaoticOnyx.Hekate
             };
 
         /// <summary>
-        ///     Выполнение лексического парсинга исходного кода. При вызове функции все данные с предыдущего парсинга обнуляются.
+        ///     Выполнение лексического парсинга исходного кода. При вызове функции старый лист очищается.
         /// </summary>
         public void Parse()
         {
-            _tokens.Clear();
+            Tokens.Clear();
 
             while (true)
             {
                 SyntaxToken token = Lex();
-                _tokens.Add(token);
+                Tokens.AddLast(token);
 
                 if (token.Kind == SyntaxKind.EndOfFile)
                 {
@@ -122,7 +120,7 @@ namespace ChaoticOnyx.Hekate
         {
             StringBuilder builder = new();
 
-            foreach (var token in _tokens)
+            foreach (var token in Tokens)
             {
                 builder.Append(token.FullText);
             }
@@ -175,10 +173,10 @@ namespace ChaoticOnyx.Hekate
                 return CreateTokenAndAdvance(SyntaxKind.EndOfFile, 0);
             }
 
-            var        span = _source.Peek();
-            bool        parsingResult;
-            SyntaxToken token;
-            var        spanNext = _source.Peek(2);
+            ReadOnlySpan<char> span = _source.Peek();
+            bool               parsingResult;
+            SyntaxToken        token;
+            ReadOnlySpan<char> spanNext = _source.Peek(2);
 
             switch (span[0])
             {
@@ -219,7 +217,7 @@ namespace ChaoticOnyx.Hekate
                         case '=':
                             return CreateTokenAndAdvance(SyntaxKind.GreaterEqual, 2);
                         case '>':
-                            var spanNextNext = _source.Peek(3);
+                            ReadOnlySpan<char> spanNextNext = _source.Peek(3);
 
                             return spanNextNext[0] switch
                             {
@@ -235,7 +233,7 @@ namespace ChaoticOnyx.Hekate
                         case '=':
                             return CreateTokenAndAdvance(SyntaxKind.LesserEqual, 2);
                         case '<':
-                            var spanNextNext = _source.Peek(3);
+                            ReadOnlySpan<char> spanNextNext = _source.Peek(3);
 
                             return spanNextNext[0] switch
                             {
@@ -387,7 +385,7 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
 
-                var span = _source.Peek();
+                ReadOnlySpan<char> span = _source.Peek();
 
                 if (!char.IsLetter(span[0]) && span[0] != '_' && !char.IsDigit(span[0]))
                 {
@@ -410,7 +408,7 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
 
-                var span = _source.Peek();
+                ReadOnlySpan<char> span = _source.Peek();
 
                 if (!char.IsDigit(span[0]) && span[0] != '.')
                 {
@@ -434,8 +432,8 @@ namespace ChaoticOnyx.Hekate
                     return false;
                 }
 
-                var span   = _source.Read();
-                var spanNext = _source.Peek();
+                ReadOnlySpan<char> span     = _source.Read();
+                ReadOnlySpan<char> spanNext = _source.Peek();
 
                 switch (span[0])
                 {
@@ -494,8 +492,8 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
 
-                var span   = _source.Peek();
-                var spanNext = _source.Peek(2);
+                ReadOnlySpan<char> span     = _source.Peek();
+                ReadOnlySpan<char> spanNext = _source.Peek(2);
 
                 switch (span[0])
                 {
@@ -573,7 +571,7 @@ namespace ChaoticOnyx.Hekate
         {
             while (!_source.IsEnd)
             {
-                var span = _source.Peek();
+                ReadOnlySpan<char> span = _source.Peek();
 
                 if (span[0] != ' ' && span[0] != '\t')
                 {
@@ -597,12 +595,12 @@ namespace ChaoticOnyx.Hekate
                     return false;
                 }
 
-                var span = _source.Read();
+                ReadOnlySpan<char> span = _source.Read();
 
                 switch (span[0])
                 {
                     case '*':
-                        var spanNext = _source.Peek();
+                        ReadOnlySpan<char> spanNext = _source.Peek();
 
                         if (spanNext.IsEmpty)
                         {
@@ -628,7 +626,7 @@ namespace ChaoticOnyx.Hekate
         {
             while (!_source.IsEnd)
             {
-                var span = _source.Peek();
+                ReadOnlySpan<char> span = _source.Peek();
 
                 if (span[0] == '\n')
                 {
@@ -643,7 +641,7 @@ namespace ChaoticOnyx.Hekate
         {
             StringBuilder result = new();
 
-            foreach (var token in _tokens)
+            foreach (var token in Tokens)
             {
                 result.Append($"{token.Text}");
             }

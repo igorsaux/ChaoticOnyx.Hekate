@@ -11,6 +11,11 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     internal sealed class TextContainer
     {
+        /// <summary>
+        ///     Коллекция контейнера.
+        /// </summary>
+        private readonly ReadOnlyMemory<char> _buffer;
+
         private int _offsetColumn   = 1;
         private int _offsetLine     = 1;
         private int _positionColumn = 1;
@@ -47,11 +52,6 @@ namespace ChaoticOnyx.Hekate
         public FileLine OffsetFilePosition => new(_offsetLine, _offsetColumn);
 
         public FileLine LexemeFilePosition => new(_positionLine, _positionColumn);
-
-        /// <summary>
-        ///     Коллекция контейнера.
-        /// </summary>
-        private readonly ReadOnlyMemory<char> _buffer;
 
         public TextContainer(string text)
         {
@@ -130,7 +130,7 @@ namespace ChaoticOnyx.Hekate
 
             for (int i = start; i < len; i++)
             {
-                var span = Peek();
+                ReadOnlySpan<char> span = Peek();
 
                 if (span[0] == '\n')
                 {
