@@ -9,23 +9,20 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public sealed record PreprocessorContext
     {
-        public IImmutableList<SyntaxToken> Includes { get; init; }
-        public IImmutableList<SyntaxToken> Defines  { get; init; }
-
-        /// <summary>
-        ///     Возвращает пустой контекст.
-        /// </summary>
-        public static PreprocessorContext Empty => new();
+        public List<SyntaxToken>  Includes { get; init; }
+        public List<SyntaxToken>  Defines  { get; init; }
+        public Stack<SyntaxToken> Ifs      { get; init; }
 
         /// <summary>
         ///     Создаёт новый контекст.
         /// </summary>
         /// <param name="includes"></param>
         /// <param name="defines"></param>
-        public PreprocessorContext(IImmutableList<SyntaxToken> includes, IImmutableList<SyntaxToken> defines)
+        public PreprocessorContext(List<SyntaxToken> includes, List<SyntaxToken> defines, Stack<SyntaxToken> ifs)
         {
             Includes = includes;
             Defines  = defines;
+            Ifs      = ifs;
         }
 
         /// <summary>
@@ -33,14 +30,16 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         public PreprocessorContext()
         {
-            Includes = ImmutableList<SyntaxToken>.Empty;
-            Defines  = ImmutableList<SyntaxToken>.Empty;
+            Includes = new List<SyntaxToken>();
+            Defines  = new List<SyntaxToken>();
+            Ifs      = new Stack<SyntaxToken>();
         }
 
-        public void Deconstruct(out List<SyntaxToken> includes, out List<SyntaxToken> defines)
+        public void Deconstruct(out List<SyntaxToken> includes, out List<SyntaxToken> defines, out Stack<SyntaxToken> ifs)
         {
-            includes = Includes.ToList();
-            defines  = Defines.ToList();
+            includes = Includes;
+            defines  = Defines;
+            ifs      = Ifs;
         }
     }
 }

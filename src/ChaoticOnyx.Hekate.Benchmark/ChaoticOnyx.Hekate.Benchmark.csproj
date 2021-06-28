@@ -5,9 +5,19 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-      <ProjectReference Include="..\ChaoticOnyx.Hekate.Linter\ChaoticOnyx.Hekate.Linter.csproj" />
+      <ProjectReference Include="..\ChaoticOnyx.Hekate.Server\ChaoticOnyx.Hekate.Server.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="artifacts\bin\ChaoticOnyx.Hekate.Benchmark\Release\net5.0\ChaoticOnyx.Hekate.Benchmark.deps.json" />
+      <_ContentIncludedByDefault Remove="artifacts\bin\ChaoticOnyx.Hekate.Benchmark\Release\net5.0\ChaoticOnyx.Hekate.Benchmark.runtimeconfig.dev.json" />
+      <_ContentIncludedByDefault Remove="artifacts\bin\ChaoticOnyx.Hekate.Benchmark\Release\net5.0\ChaoticOnyx.Hekate.Benchmark.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="artifacts\bin\ChaoticOnyx.Hekate.Benchmark\Release\net5.0\ChaoticOnyx.Hekate.Linter.deps.json" />
+      <_ContentIncludedByDefault Remove="artifacts\bin\ChaoticOnyx.Hekate.Benchmark\Release\net5.0\ChaoticOnyx.Hekate.Linter.runtimeconfig.dev.json" />
+      <_ContentIncludedByDefault Remove="artifacts\bin\ChaoticOnyx.Hekate.Benchmark\Release\net5.0\ChaoticOnyx.Hekate.Linter.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="artifacts\obj\ChaoticOnyx.Hekate.Benchmark\ChaoticOnyx.Hekate.Benchmark.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="artifacts\obj\ChaoticOnyx.Hekate.Benchmark\project.assets.json" />
     </ItemGroup>
 </Project>

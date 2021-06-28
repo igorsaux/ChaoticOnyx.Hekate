@@ -2,6 +2,7 @@
 using System.IO;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
+using ChaoticOnyx.Hekate.Server.Dm;
 
 namespace ChaoticOnyx.Hekate.Benchmark
 {
@@ -17,8 +18,8 @@ namespace ChaoticOnyx.Hekate.Benchmark
         [Benchmark]
         public void Parse()
         {
-            Linter.Environment env = new(new FileInfo(DmeFile));
-            env.Load();
+            ProjectEnvironment env = new(new FileInfo(DmeFile));
+            env.Parse();
         }
     }
 }

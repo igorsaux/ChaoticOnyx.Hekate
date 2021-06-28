@@ -9,32 +9,29 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public sealed class Preprocessor
     {
-        private readonly Stack<SyntaxToken>           _ifs      = new();
-        private readonly List<SyntaxToken>            _includes = new();
-        private readonly List<CodeIssue>              _issues   = new();
-        private          List<SyntaxToken>            _defines  = new();
+        private List<CodeIssue>              _issues = new();
         private          LinkedListNode<SyntaxToken>? _it;
-        private          LinkedList<SyntaxToken>      _tokens = new();
+        private          LinkedList<SyntaxToken>      _tokens  = new();
+        private          PreprocessorContext          _context = null!;
 
-        public IImmutableList<CodeIssue> Issues => _issues.ToImmutableList();
+        public List<CodeIssue> Issues => _issues;
 
         /// <summary>
         ///     Текущий контекст препроцессора.
         /// </summary>
-        public PreprocessorContext Context => new(_includes.ToImmutableList(), _defines.ToImmutableList());
+        public PreprocessorContext Context => _context;
 
         /// <summary>
         ///     Производит препроцессинг токенов.
         /// </summary>
         public PreprocessorContext Preprocess(LinkedList<SyntaxToken> tokens, PreprocessorContext? context = null)
         {
-            _tokens       = tokens;
-            (_, _defines) = context ?? PreprocessorContext.Empty;
-            _includes.Clear();
-            _issues.Clear();
-            _ifs.Clear();
+            _issues                      = new List<CodeIssue>();
+            _tokens                      = tokens;
+            _context                     = context ?? new PreprocessorContext();
+            var (includes, defines, ifs) = _context;
 
-            for (_it = _tokens.First; _it != null; _it = _it.Next)
+            for (_it = _tokens.First; _it != null; _it = _it?.Next)
             {
                 SyntaxToken  token = _it.Value;
                 SyntaxToken? next  = _it.Next?.Value;
@@ -47,17 +44,17 @@ namespace ChaoticOnyx.Hekate
                 switch (token.Kind)
                 {
                     case SyntaxKind.DefineDirective:
-                        _defines.Add(next);
+                        defines.Add(next);
 
                         break;
                     case SyntaxKind.IncludeDirective:
-                        _includes.Add(next);
+                        includes.Add(next);
 
                         break;
                     case SyntaxKind.IfDefDirective:
-                        _ifs.Push(token);
+                        ifs.Push(token);
 
-                        if (_defines.Any(t => t.Text == next.Text))
+                        if (defines.Any(t => t.Text == next.Text))
                         {
                             break;
                         }
@@ -66,9 +63,9 @@ namespace ChaoticOnyx.Hekate
 
                         break;
                     case SyntaxKind.IfNDefDirective:
-                        _ifs.Push(token);
+                        ifs.Push(token);
 
-                        if (_defines.Count == 0 || _defines.Any(t => t.Text != next.Text))
+                        if (defines.Count == 0 || defines.Any(t => t.Text != next.Text))
                         {
                             break;
                         }
@@ -77,11 +74,11 @@ namespace ChaoticOnyx.Hekate
 
                         break;
                     case SyntaxKind.UndefDirective:
-                        SyntaxToken? define = _defines.Find(t => t.Text == next.Text);
+                        SyntaxToken? define = defines.Find(t => t.Text == next.Text);
 
                         if (define != null)
                         {
-                            _defines.Remove(define);
+                            defines.Remove(define);
 
                             break;
                         }
@@ -90,18 +87,18 @@ namespace ChaoticOnyx.Hekate
 
                         break;
                     case SyntaxKind.EndIfDirective:
-                        if (_ifs.Count == 0)
+                        if (ifs.Count == 0)
                         {
                             _issues.Add(new CodeIssue(IssuesId.ExtraEndIf, token));
 
                             break;
                         }
 
-                        _ifs.Pop();
+                        ifs.Pop();
 
                         break;
                     case SyntaxKind.ElseDirective:
-                        if (_ifs.Count == 0)
+                        if (ifs.Count == 0)
                         {
                             _issues.Add(new CodeIssue(IssuesId.UnexpectedElse, token));
                         }
@@ -112,15 +109,15 @@ namespace ChaoticOnyx.Hekate
                 }
             }
 
-            if (_ifs.Count <= 0)
+            if (ifs.Count <= 0)
             {
-                return new PreprocessorContext(_includes.ToImmutableList(), _defines.ToImmutableList());
+                return Context;
             }
 
-            SyntaxToken last = _ifs.Last();
+            SyntaxToken last = ifs.Last();
             _issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
 
-            return new PreprocessorContext(_includes.ToImmutableList(), _defines.ToImmutableList());
+            return Context;
         }
 
         /// <summary>

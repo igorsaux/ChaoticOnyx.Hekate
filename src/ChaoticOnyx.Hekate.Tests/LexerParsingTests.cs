@@ -1,7 +1,9 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChaoticOnyx.Hekate.Scaffolds;
 using Xunit;
 
 #endregion
@@ -14,13 +16,15 @@ namespace ChaoticOnyx.Hekate.Tests
         public void CommentParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>(@"/* MultiLine Comment*/
+
+// SingleLine Comment".ToCharArray());
+
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource(@"/* MultiLine Comment*/
-
-// SingleLine Comment");
-
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -43,10 +47,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void IdentifierParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("literal".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("literal");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -61,10 +67,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void NumericalLiteralParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("123".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("123");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -79,10 +87,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void FloatNumericalLiteralParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("123.55".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("123.55");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -97,10 +107,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void TextLiteralParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("\"TextLiteral\"".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("\"TextLiteral\"");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -114,10 +126,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void PathLiteralParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("\'PathLiteral/file.dm\'".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("\'PathLiteral/file.dm\'");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -131,10 +145,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void SpacesParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>(@"    // Comment".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource(@"    // Comment");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -160,10 +176,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void DirectiveParsing(SyntaxKind kind)
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("#include #ifndef #ifdef #endif #define #undef".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("#include #ifndef #ifdef #endif #define #undef");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -175,10 +193,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void ConcatDirectiveParsing()
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("#define TEST(X) ##x".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("#define TEST(X) ##x");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -210,10 +230,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void KeywordParsing(SyntaxKind kind)
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("for new global throw catch try var verb proc in if else set as while".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("for new global throw catch try var verb proc in if else set as while");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -271,10 +293,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void CheckTokenParsing(SyntaxKind kind, int expectedCount = 1)
         {
             // Arrange
+            var text     = new ReadOnlyMemory<char>("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ . ;".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
+
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ . ;");
-            unit.Parse();
-            LinkedList<SyntaxToken> tokens = unit.Tokens;
+            scaffold.GetResult();
+            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
             int                     count  = tokens.Count(token => token.Kind == kind);
 
             // Assert
@@ -286,12 +310,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void EscapedTextTest()
         {
             // Arrange
-            const string Text = @"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""";
+            var text     = new ReadOnlyMemory<char>(@"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""".ToCharArray());
+            var scaffold = new TextToTokensScaffold(text);
 
             // Act
-            CompilationUnit unit = CompilationUnit.FromSource(Text);
-            unit.Parse();
-            List<SyntaxToken> tokens = unit.Tokens.ToList();
+            scaffold.GetResult();
+            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
 
             // Assert
             Assert.NotEmpty(tokens);

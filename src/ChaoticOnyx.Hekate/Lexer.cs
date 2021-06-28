@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Text;
 
 #endregion
@@ -14,42 +13,20 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public class Lexer
     {
-        private readonly List<CodeIssue>   _issues          = new();
-        private readonly List<SyntaxToken> _leadTokensCache = new();
-        private readonly TextContainer     _source;
+        private List<CodeIssue>   _issues           = new();
+        private readonly List<SyntaxToken> _leadTokensCache  = new();
+        private          TextContainer     _source           = new(ReadOnlyMemory<char>.Empty);
         private readonly List<SyntaxToken> _trailTokensCache = new();
 
         /// <summary>
         ///     Токены в единице компиляции.
         /// </summary>
-        public LinkedList<SyntaxToken> Tokens { get; }
+        public LinkedList<SyntaxToken> Tokens { get; private set; } = new();
 
         /// <summary>
         ///     Проблемы обнаруженные в единице компиляции.
         /// </summary>
-        public IImmutableList<CodeIssue> Issues => _issues.ToImmutableList();
-
-        /// <summary>
-        ///     Создание нового лексера из текста.
-        /// </summary>
-        /// <param name="source">Исходный код единицы компиляции.</param>
-        /// <param name="tabWidth">Ширина табуляции в файле.</param>
-        public Lexer(string source)
-        {
-            Tokens  = new LinkedList<SyntaxToken>();
-            _source = new TextContainer(source);
-        }
-
-        /// <summary>
-        ///     Создание нового лексера из набора токенов.
-        /// </summary>
-        /// <param name="tokens">Набор токенов.</param>
-        /// <param name="tabWidth">Ширина табуляции в файле.</param>
-        public Lexer(IImmutableList<SyntaxToken> tokens)
-        {
-            Tokens  = new LinkedList<SyntaxToken>(tokens);
-            _source = new TextContainer(Emit());
-        }
+        public List<CodeIssue> Issues => _issues;
 
         /// <summary>
         ///     Определение типа директивы препроцессора.
@@ -96,9 +73,11 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Выполнение лексического парсинга исходного кода. При вызове функции старый лист очищается.
         /// </summary>
-        public void Parse()
+        public void Parse(ReadOnlyMemory<char> source)
         {
-            Tokens.Clear();
+            _issues = new List<CodeIssue>();
+            _source = new TextContainer(source);
+            Tokens  = new LinkedList<SyntaxToken>();
 
             while (true)
             {
@@ -110,22 +89,6 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
             }
-        }
-
-        /// <summary>
-        ///     Превращение последовательности токенов в текст.
-        /// </summary>
-        /// <returns></returns>
-        public string Emit()
-        {
-            StringBuilder builder = new();
-
-            foreach (var token in Tokens)
-            {
-                builder.Append(token.FullText);
-            }
-
-            return builder.ToString();
         }
 
         /// <summary>

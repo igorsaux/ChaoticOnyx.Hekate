@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaoticOnyx.Hekate", "src\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaoticOnyx.Hekate.Tests", "src\ChaoticOnyx.Hekate.Tests\ChaoticOnyx.Hekate.Tests.csproj", "{4A749EE3-1BD1-4531-9A00-4DFFC223DDB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaoticOnyx.Hekate.Linter", "src\ChaoticOnyx.Hekate.Linter\ChaoticOnyx.Hekate.Linter.csproj", "{B172D41D-5827-4400-AB4B-0D97E09BFFEE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaoticOnyx.Hekate.Server", "src\ChaoticOnyx.Hekate.Server\ChaoticOnyx.Hekate.Server.csproj", "{17A4891B-FF63-47A3-A524-3DE45C5E525D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaoticOnyx.Hekate.Benchmark", "src\ChaoticOnyx.Hekate.Benchmark\ChaoticOnyx.Hekate.Benchmark.csproj", "{703E9313-3A10-495E-9886-5EE5BB4DB673}"
@@ -27,10 +25,6 @@ Global
 		{4A749EE3-1BD1-4531-9A00-4DFFC223DDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A749EE3-1BD1-4531-9A00-4DFFC223DDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A749EE3-1BD1-4531-9A00-4DFFC223DDB5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B172D41D-5827-4400-AB4B-0D97E09BFFEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B172D41D-5827-4400-AB4B-0D97E09BFFEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B172D41D-5827-4400-AB4B-0D97E09BFFEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B172D41D-5827-4400-AB4B-0D97E09BFFEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17A4891B-FF63-47A3-A524-3DE45C5E525D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17A4891B-FF63-47A3-A524-3DE45C5E525D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17A4891B-FF63-47A3-A524-3DE45C5E525D}.Release|Any CPU.ActiveCfg = Release|Any CPU

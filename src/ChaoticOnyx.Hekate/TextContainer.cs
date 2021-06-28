@@ -53,9 +53,9 @@ namespace ChaoticOnyx.Hekate
 
         public FileLine LexemeFilePosition => new(_positionLine, _positionColumn);
 
-        public TextContainer(string text)
+        public TextContainer(ReadOnlyMemory<char> text)
         {
-            _buffer = text.AsMemory();
+            _buffer = text;
             Length  = _buffer.Length;
         }
 

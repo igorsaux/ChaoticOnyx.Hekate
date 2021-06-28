@@ -5,9 +5,9 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChaoticOnyx.Hekate.Linter\ChaoticOnyx.Hekate.Linter.csproj" />
+    <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.19.2" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.19.2" />
+    <ProjectReference Include="..\ChaoticOnyx.Hekate\ChaoticOnyx.Hekate.csproj" />
   </ItemGroup>
 </Project>

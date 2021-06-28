@@ -1,5 +1,7 @@
 ﻿#region
 
+using System;
+using ChaoticOnyx.Hekate.Scaffolds;
 using Xunit;
 
 #endregion
@@ -40,11 +42,12 @@ obj
 hello_world()
 ";
 
-            CompilationUnit unit = CompilationUnit.FromSource(expected);
-            unit.Parse(PreprocessorContext.Empty);
+            TextToTokensScaffold scaffold1 = new(expected.AsMemory());
+            TokensToTextScaffold scaffold2 = new(scaffold1.GetResult());
 
             // Act
-            string result = unit.Emit();
+            string result = scaffold2.GetResult()
+                                     .ToString();
 
             // Assert
             Assert.Equal(expected, result);

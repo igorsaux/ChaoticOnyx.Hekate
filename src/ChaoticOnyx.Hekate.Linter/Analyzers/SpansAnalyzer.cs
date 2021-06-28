@@ -16,7 +16,7 @@ namespace ChaoticOnyx.Hekate.Linter.Analyzers
         {
             var (style, unit, _) = context;
             _fixMode             = context.TryToFix;
-            List<SyntaxToken> tokens = unit.Lexer.Tokens.ToList();
+            var tokens = unit.Lexer.Tokens;
 
             if (unit.Context.Defines.FirstOrDefault(define => define.Text == "SPAN") == null)
             {
@@ -28,9 +28,9 @@ namespace ChaoticOnyx.Hekate.Linter.Analyzers
                 _fixedTokens = new List<SyntaxToken>();
             }
 
-            for (int i = 0; i < tokens.Count; i++)
+            for (var it = tokens.First; it is not null; it = it.Next)
             {
-                SyntaxToken token = tokens[i];
+                SyntaxToken token = it.Value;
 
                 switch (token.Kind)
                 {
