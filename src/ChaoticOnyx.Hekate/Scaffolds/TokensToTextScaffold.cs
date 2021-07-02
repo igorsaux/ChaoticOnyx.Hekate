@@ -8,10 +8,7 @@ namespace ChaoticOnyx.Hekate.Scaffolds
     {
         private readonly LinkedList<SyntaxToken> _tokens;
 
-        public TokensToTextScaffold(LinkedList<SyntaxToken> tokens, Lexer? lexer = null) : base(lexer ?? new Lexer())
-        {
-            _tokens = tokens;
-        }
+        public TokensToTextScaffold(LinkedList<SyntaxToken> tokens, Lexer? lexer = null) : base(lexer ?? new Lexer()) => _tokens = tokens;
 
         public override Memory<char> GetResult()
         {

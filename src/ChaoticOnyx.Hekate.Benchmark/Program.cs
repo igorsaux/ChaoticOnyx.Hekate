@@ -7,7 +7,7 @@ namespace ChaoticOnyx.Hekate.Benchmark
     {
         public static void Main()
         {
-            Summary? summary = BenchmarkRunner.Run<ParsingEnvironmentBenchmark>();
+            Summary? _ = BenchmarkRunner.Run<ParsingEnvironmentBenchmark>();
         }
     }
 }

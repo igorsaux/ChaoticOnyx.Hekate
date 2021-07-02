@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace ChaoticOnyx.Hekate
 {
@@ -18,6 +16,7 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         /// <param name="includes"></param>
         /// <param name="defines"></param>
+        /// <param name="ifs"></param>
         public PreprocessorContext(List<SyntaxToken> includes, List<SyntaxToken> defines, Stack<SyntaxToken> ifs)
         {
             Includes = includes;

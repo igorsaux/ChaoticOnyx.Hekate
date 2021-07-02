@@ -13,10 +13,9 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public class Lexer
     {
-        private List<CodeIssue>   _issues           = new();
         private readonly List<SyntaxToken> _leadTokensCache  = new();
-        private          TextContainer     _source           = new(ReadOnlyMemory<char>.Empty);
         private readonly List<SyntaxToken> _trailTokensCache = new();
+        private          TextContainer     _source           = new(ReadOnlyMemory<char>.Empty);
 
         /// <summary>
         ///     Токены в единице компиляции.
@@ -26,7 +25,7 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Проблемы обнаруженные в единице компиляции.
         /// </summary>
-        public List<CodeIssue> Issues => _issues;
+        public List<CodeIssue> Issues { get; private set; } = new();
 
         /// <summary>
         ///     Определение типа директивы препроцессора.
@@ -42,6 +41,8 @@ namespace ChaoticOnyx.Hekate
                 "endif"   => SyntaxKind.EndIfDirective,
                 "undef"   => SyntaxKind.UndefDirective,
                 "else"    => SyntaxKind.ElseDirective,
+                "warning" => SyntaxKind.WarningDirective,
+                "error"   => SyntaxKind.ErrorDirective,
                 _         => SyntaxKind.Directive
             };
 
@@ -67,6 +68,7 @@ namespace ChaoticOnyx.Hekate
                 "set"    => SyntaxKind.SetKeyword,
                 "as"     => SyntaxKind.AsKeyword,
                 "while"  => SyntaxKind.WhileKeyword,
+                "return" => SyntaxKind.ReturnKeyword,
                 _        => SyntaxKind.Identifier
             };
 
@@ -75,7 +77,7 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         public void Parse(ReadOnlyMemory<char> source)
         {
-            _issues = new List<CodeIssue>();
+            Issues  = new List<CodeIssue>();
             _source = new TextContainer(source);
             Tokens  = new LinkedList<SyntaxToken>();
 
@@ -121,7 +123,7 @@ namespace ChaoticOnyx.Hekate
         /// <param name="id">Идентификатор проблемы.</param>
         /// <param name="token">Токен, с которым связана проблема.</param>
         /// <param name="args">Дополнительные аргументы, используются для форматирования сообщения об проблеме.</param>
-        private void MakeIssue(string id, SyntaxToken token, params object[] args) => _issues.Add(new CodeIssue(id, token, args));
+        private void MakeIssue(string id, SyntaxToken token, params object[] args) => Issues.Add(new CodeIssue(id, token, args));
 
         /// <summary>
         ///     Парсинг одного токена.
@@ -211,7 +213,23 @@ namespace ChaoticOnyx.Hekate
                 case ')':
                     return CreateTokenAndAdvance(SyntaxKind.CloseParenthesis, 1);
                 case '{':
-                    return CreateTokenAndAdvance(SyntaxKind.OpenBrace, 1);
+                    if (spanNext[0] != '"')
+                    {
+                        return CreateTokenAndAdvance(SyntaxKind.OpenBrace, 1);
+                    }
+
+                    // WARNING: CRINGE AHEAD
+                    // Люмокс, ебать спасибо тебе нахуй за три способа сделать строку 😘.
+                    _source.Advance();
+                    parsingResult = ParseDocumentTextLiteral();
+                    token         = CreateToken(SyntaxKind.TextLiteral);
+
+                    if (!parsingResult)
+                    {
+                        MakeIssue(IssuesId.MissingClosingSign, token, token.Text[0]);
+                    }
+
+                    return token;
                 case '}':
                     return CreateTokenAndAdvance(SyntaxKind.CloseBrace, 1);
                 case '[':
@@ -239,18 +257,18 @@ namespace ChaoticOnyx.Hekate
 
                     if (!parsingResult)
                     {
-                        MakeIssue(IssuesId.MissingClosingSign, token, token.Text);
+                        MakeIssue(IssuesId.MissingClosingSign, token, token.Text[0]);
                     }
 
                     return token;
                 case '\"':
                     _source.Advance();
-                    parsingResult = ParseTextLiteral();
+                    parsingResult = ParseTextLiteral(span);
                     token         = CreateToken(SyntaxKind.TextLiteral);
 
                     if (!parsingResult)
                     {
-                        MakeIssue(IssuesId.MissingClosingSign, token, token.Text);
+                        MakeIssue(IssuesId.MissingClosingSign, token, token.Text[0]);
                     }
 
                     return token;
@@ -300,21 +318,44 @@ namespace ChaoticOnyx.Hekate
                     token = CreateToken(SyntaxKind.Directive);
                     SetDirectiveKind(token);
 
-                    if (token.Kind != SyntaxKind.Directive)
+                    if (token.Kind == SyntaxKind.Directive)
                     {
-                        return token;
+                        token.Kind = SyntaxKind.Identifier;
                     }
-
-                    MakeIssue(IssuesId.UnknownDirective, token, token.Text);
 
                     return token;
                 case ';':
                     return CreateTokenAndAdvance(SyntaxKind.Semicolon, 1);
+                case '~':
+                    return spanNext[0] switch
+                    {
+                        '=' => CreateTokenAndAdvance(SyntaxKind.TildaEqual, 2),
+                        '~' => CreateTokenAndAdvance(SyntaxKind.TildaExclamation, 2),
+                        _   => CreateTokenAndAdvance(SyntaxKind.Tilda, 1)
+                    };
+                case '@':
+                    _source.Advance();
+
+                    if (_source.IsEnd)
+                    {
+                        return CreateToken(SyntaxKind.At);
+                    }
+
+                    _source.Advance();
+                    parsingResult = ParseRawTextLiteral(spanNext);
+                    token         = CreateToken(SyntaxKind.TextLiteral);
+
+                    if (!parsingResult)
+                    {
+                        MakeIssue(IssuesId.MissingClosingSign, token, token.Text[0]);
+                    }
+
+                    return token;
             }
 
             _source.Advance();
 
-            if (char.IsLetter(span[0]))
+            if (char.IsLetter(span[0]) || span[0] == '_')
             {
                 ParseIdentifier();
                 token = CreateToken(SyntaxKind.Identifier);
@@ -383,11 +424,16 @@ namespace ChaoticOnyx.Hekate
         }
 
         /// <summary>
-        ///     Парсинг текстового литерала.
+        ///     Парсинг текстового литерала. Учитывает интерполяцию.
         /// </summary>
-        /// <returns></returns>
-        private bool ParseTextLiteral()
+        /// <param name="closingSign">Закрывающий символ до которого необходимо парсить строку.</param>
+        /// <returns>true - если строка была полностью распарсена.</returns>
+        private bool ParseTextLiteral(ReadOnlySpan<char> closingSign)
         {
+            bool isInterpolating    = false;
+            int  interpolatingLevel = 0;
+            int  escapeSymbols      = 0;
+
             while (true)
             {
                 if (_source.IsEnd)
@@ -395,17 +441,147 @@ namespace ChaoticOnyx.Hekate
                     return false;
                 }
 
-                ReadOnlySpan<char> span     = _source.Read();
-                ReadOnlySpan<char> spanNext = _source.Peek();
+                bool               escaped = escapeSymbols != 0 && (escapeSymbols == 1 || escapeSymbols % 2 != 0);
+                ReadOnlySpan<char> span    = _source.Read();
+
+                if (span[0] == '\\')
+                {
+                    escapeSymbols++;
+                }
+                else
+                {
+                    escapeSymbols = 0;
+                }
+
+                if (escaped)
+                {
+                    continue;
+                }
 
                 switch (span[0])
                 {
-                    case '\\' when spanNext[0] == '\"':
-                        _source.Advance();
+                    case '[':
+                        interpolatingLevel++;
+                        isInterpolating = true;
 
-                        continue;
-                    case '\"':
-                        return true;
+                        break;
+                    case ']' when interpolatingLevel > 0:
+                        {
+                            interpolatingLevel--;
+
+                            if (interpolatingLevel == 0)
+                            {
+                                isInterpolating = false;
+                            }
+
+                            break;
+                        }
+                }
+
+                if (!isInterpolating && span[0] == closingSign[0])
+                {
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Оптимизированный вариант функции ParseTextLiteral. Не учитывает возможную интерполяцию.
+        /// </summary>
+        /// <param name="closingSign">Закрывающий символ до которого необходимо парсить строку.</param>
+        /// <returns></returns>
+        private bool ParseRawTextLiteral(ReadOnlySpan<char> closingSign)
+        {
+            int escapeSymbols = 0;
+
+            while (true)
+            {
+                if (_source.IsEnd)
+                {
+                    return false;
+                }
+
+                bool               escaped = escapeSymbols != 0 && (escapeSymbols == 1 || escapeSymbols % 2 != 0);
+                ReadOnlySpan<char> span    = _source.Read();
+
+                if (span[0] == '\\')
+                {
+                    escapeSymbols++;
+                }
+                else
+                {
+                    escapeSymbols = 0;
+                }
+
+                if (!escaped && span[0] == closingSign[0])
+                {
+                    return true;
+                }
+            }
+        }
+
+        private bool ParseDocumentTextLiteral()
+        {
+            bool isInterpolating    = false;
+            int  interpolatingLevel = 0;
+            int  indentLevel        = 1;
+            int  escapeSymbols      = 0;
+
+            while (true)
+            {
+                if (_source.IsEnd)
+                {
+                    return false;
+                }
+
+                bool               escaped = escapeSymbols != 0 && (escapeSymbols == 1 || escapeSymbols % 2 != 0);
+                ReadOnlySpan<char> span    = _source.Read();
+
+                if (span[0] == '\\')
+                {
+                    escapeSymbols++;
+                }
+                else
+                {
+                    escapeSymbols = 0;
+                }
+
+                if (escaped)
+                {
+                    continue;
+                }
+
+                switch (span[0])
+                {
+                    case '[':
+                        interpolatingLevel++;
+                        isInterpolating = true;
+
+                        break;
+                    case ']' when interpolatingLevel > 0:
+                        {
+                            interpolatingLevel--;
+
+                            if (interpolatingLevel == 0)
+                            {
+                                isInterpolating = false;
+                            }
+
+                            break;
+                        }
+                    case '{':
+                        indentLevel++;
+
+                        break;
+                    case '}':
+                        indentLevel--;
+
+                        break;
+                }
+
+                if (!isInterpolating && indentLevel == 0 && span[0] == '}')
+                {
+                    return true;
                 }
             }
         }

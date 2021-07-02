@@ -16,13 +16,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "// This is a comment\n";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.SingleLineComment(" This is a comment")
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -37,13 +37,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "/*\n  Hello!\n*/";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.MultiLineComment("\n  Hello!\n")
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -58,13 +58,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "var";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Identifier("var")
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -79,13 +79,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "\"Test\"";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.TextLiteral("Test")
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -100,7 +100,7 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "12 7.8 12.9";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.NumericalLiteral(12)
                              .WithTrails(SyntaxFactory.WhiteSpace(" ")),
@@ -110,7 +110,7 @@ namespace ChaoticOnyx.Hekate.Tests
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -125,13 +125,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "'sound/mysound.ogg'";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.PathLiteral("sound/mysound.ogg")
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -146,13 +146,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "for";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.ForKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -167,13 +167,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "new";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.NewKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -188,13 +188,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "global";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.GlobalKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -209,13 +209,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "throw";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.ThrowKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -230,13 +230,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "catch";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.CatchKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -251,13 +251,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "try";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.TryKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -272,13 +272,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "var";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.VarKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -293,13 +293,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "verb";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.VerbKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -314,13 +314,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "proc";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.ProcKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -335,13 +335,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "in";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.InKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -356,13 +356,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "if";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.IfKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -377,13 +377,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "else";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.ElseKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -398,13 +398,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "set";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.SetKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -419,13 +419,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "as";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.AsKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -440,13 +440,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "while";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.WhileKeyword()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -461,13 +461,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "#define";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DefineDirective()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -482,13 +482,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "#include";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.IncludeDirective()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -503,13 +503,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "#ifdef";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.IfDefDirective()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -524,13 +524,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "#ifndef";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.IfNDefDirective()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -545,13 +545,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "#endif";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.EndIfDirective()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -566,13 +566,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "/";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Slash()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -587,13 +587,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "\\=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.BackwardSlashEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -608,13 +608,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "/=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.SlashEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -629,13 +629,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "*";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Asterisk()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -650,13 +650,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "*=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.AsteriskEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -671,13 +671,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "**";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleAsterisk()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -692,13 +692,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Equal()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -713,13 +713,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "==";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -734,13 +734,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "!=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.ExclamationEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -755,13 +755,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "!";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Exclamation()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -776,13 +776,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ">";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Greater()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -797,13 +797,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ">>";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleGreater()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -818,13 +818,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ">>=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleGreaterEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -839,13 +839,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ">=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.GreaterEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -860,13 +860,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "<";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Lesser()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -881,13 +881,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "<<";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleLesser()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -902,13 +902,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "<<=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleLesserEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -923,13 +923,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "<=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.LesserEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -944,13 +944,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "(";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.OpenParentheses()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -965,13 +965,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ")";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.CloseParentheses()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -986,13 +986,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "{";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.OpenBrace()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1007,13 +1007,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "}";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.CloseBrace()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1028,13 +1028,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "[";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.OpenBracket()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1049,13 +1049,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "]";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.CloseBracket()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1070,13 +1070,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "+";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Plus()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1091,13 +1091,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "+=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.PlusEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1112,13 +1112,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "++";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoublePlus()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1133,13 +1133,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "-";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Minus()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1154,13 +1154,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "-=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.MinusEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1175,13 +1175,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "--";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleMinus()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1196,13 +1196,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ",";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Comma()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1217,13 +1217,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "%";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Percent()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1238,13 +1238,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "%=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.PercentEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1259,13 +1259,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "&";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Ampersand()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1280,13 +1280,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "&&";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleAmpersand()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1301,13 +1301,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "&=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.AmpersandEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1322,13 +1322,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ":";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Colon()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1343,13 +1343,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "?";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Question()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1364,13 +1364,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "^";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Caret()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1385,13 +1385,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "^=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.CaretEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1406,13 +1406,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "|";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Bar()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1427,13 +1427,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "||";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.DoubleBar()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1448,13 +1448,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = "|=";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.BarEqual()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();
@@ -1469,13 +1469,13 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             string expected = ".";
 
-            LinkedList<SyntaxToken>? tokens = new LinkedList<SyntaxToken>(new[]
+            LinkedList<SyntaxToken> tokens = new(new[]
             {
                 SyntaxFactory.Dot()
             });
 
             // Act
-            TokensToTextScaffold? scaffold = new TokensToTextScaffold(tokens);
+            TokensToTextScaffold scaffold = new(tokens);
 
             string result = scaffold.GetResult()
                                     .ToString();

@@ -10,10 +10,7 @@
         /// </summary>
         public Lexer Lexer { get; }
 
-        protected CodeScaffold(Lexer lexer)
-        {
-            Lexer = lexer;
-        }
+        protected CodeScaffold(Lexer lexer) => Lexer = lexer;
 
         public abstract T GetResult();
     }

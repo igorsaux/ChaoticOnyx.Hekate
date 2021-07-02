@@ -1,8 +1,7 @@
 ﻿#region
 
 using System;
-using System.Collections.Immutable;
-using System.Linq;
+using System.Collections.Generic;
 using ChaoticOnyx.Hekate.Scaffolds;
 using Xunit;
 
@@ -16,12 +15,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void Dm0001SingleQuote()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("\'".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char>  text     = new("\'".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
-            var errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -35,12 +34,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void Dm0001DoubleQuote()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("\"".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char>  text     = new("\"".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
-            var errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -54,12 +53,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void Dm0001MultiLineComment()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("/* Comment without end *".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char>  text     = new("/* Comment without end *".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
-            var errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -73,12 +72,12 @@ namespace ChaoticOnyx.Hekate.Tests
         public void Dm0002UnexpectedToken()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("$token".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char>  text     = new("$token".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
-            var errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.Lexer.Issues;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -86,25 +85,6 @@ namespace ChaoticOnyx.Hekate.Tests
             Assert.True(errors[0]
                             .Id
                         == IssuesId.UnexpectedToken);
-        }
-
-        [Fact]
-        public void Dm0003UnknownDirective()
-        {
-            // Arrange
-            var text     = new ReadOnlyMemory<char>("#pragma".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
-
-            // Act
-            scaffold.GetResult();
-            var errors = scaffold.Lexer.Issues;
-
-            // Assert
-            Assert.True(errors.Count == 1);
-
-            Assert.True(errors[0]
-                            .Id
-                        == IssuesId.UnknownDirective);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace ChaoticOnyx.Hekate.Server
 
         private static FileInfo FindDme(DirectoryInfo dir)
         {
-            FileInfo[]? files = dir.GetFiles();
+            FileInfo[] files = dir.GetFiles();
             FileInfo?   dme   = files.FirstOrDefault(file => file.Extension == ".dme");
 
             if (dme is null)
@@ -42,7 +42,7 @@ namespace ChaoticOnyx.Hekate.Server
                       .WithServices(services => services.AddLogging(configure => configure.SetMinimumLevel(LogLevel.Trace)))
                       .OnStarted(async (server, token) =>
                       {
-                          using IWorkDoneObserver? manager = await server.WorkDoneManager.Create(new WorkDoneProgressBegin
+                          using IWorkDoneObserver manager = await server.WorkDoneManager.Create(new WorkDoneProgressBegin
                           {
                               Title = "Hekate", Percentage = 0, Message = "Поиск файла среды..."
                           }, cancellationToken: token);
@@ -60,7 +60,7 @@ namespace ChaoticOnyx.Hekate.Server
                           foreach (var file in s_environment.Files)
                           {
                               List<CodeIssue>  issues      = file.Issues ?? new List<CodeIssue>();
-                              List<Diagnostic> diagnostics = new List<Diagnostic>();
+                              List<Diagnostic> diagnostics = new();
 
                               foreach (var issue in issues)
                               {
@@ -83,7 +83,7 @@ namespace ChaoticOnyx.Hekate.Server
                           }
                       });
 
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
             Log.Logger = new LoggerConfiguration().Enrich.FromLogContext()
                                                   .WriteTo.File("server-log.log", rollingInterval: RollingInterval.Day)

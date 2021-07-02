@@ -26,14 +26,15 @@ namespace ChaoticOnyx.Hekate.Server.Dm
                 UseSpan            => "Используйте макрос SPAN.",
 
                 // Встроенные ошибки.
-                IssuesId.MissingClosingSign      => "Отсутствует закрывающий знак для `{0}`.",
-                IssuesId.UnexpectedToken         => "Неожиданный токен `{0}`.",
-                IssuesId.UnknownDirective        => "Неизвестная директива `{0}`.",
-                IssuesId.UnknownMacrosDefinition => "Неизвестное определение макроса `{0}`.",
-                IssuesId.EndIfNotFound           => "#endif для `{0}` не найден.",
-                IssuesId.ExtraEndIf              => "Найден лишний #endif.",
-                IssuesId.UnexpectedElse          => "Лишний #else",
-                _                                => throw new NotImplementedException($"Неизвестный идентификатор ошибки: {id}")
+                IssuesId.MissingClosingSign => "Отсутствует закрывающий знак `{0}`.",
+                IssuesId.UnexpectedToken    => "Неожиданный токен `{0}`.",
+                IssuesId.UnknownDirective   => "Неизвестная директива `{0}`.",
+                IssuesId.ErrorDirective     => "Ошибка: `{0}`.",
+                IssuesId.WarningDirective   => "Предупреждение: `{0}`.",
+                IssuesId.EndIfNotFound      => "#endif для `{0}` не найден.",
+                IssuesId.ExtraEndIf         => "Найден лишний #endif.",
+                IssuesId.UnexpectedElse     => "Лишний #else",
+                _                           => throw new NotImplementedException($"Неизвестный идентификатор ошибки: {id}")
             };
 
         public const string MissingSpaceAfter = "DMSC0001";

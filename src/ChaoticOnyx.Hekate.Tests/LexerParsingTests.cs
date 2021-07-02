@@ -16,11 +16,11 @@ namespace ChaoticOnyx.Hekate.Tests
         public void CommentParsing()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>(@"/* MultiLine Comment*/
+            ReadOnlyMemory<char> text = new(@"/* MultiLine Comment*/
 
 // SingleLine Comment".ToCharArray());
 
-            var scaffold = new TextToTokensScaffold(text);
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -43,12 +43,15 @@ namespace ChaoticOnyx.Hekate.Tests
             Assert.True(lastLead!.Value is { Kind: SyntaxKind.SingleLineComment });
         }
 
-        [Fact]
-        public void IdentifierParsing()
+        [Theory]
+        [InlineData("literal")]
+        [InlineData("_someIdentifier")]
+        [InlineData("_some_underscored_identifier")]
+        public void IdentifierParsing(string expected)
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("literal".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new(expected.ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -60,15 +63,15 @@ namespace ChaoticOnyx.Hekate.Tests
             SyntaxToken token = tokens.First!.Value!;
             Assert.NotNull(tokens);
             Assert.True(token is { Kind: SyntaxKind.Identifier });
-            Assert.True(token is { Text: "literal" });
+            Assert.True(token.Text == expected);
         }
 
         [Fact]
         public void NumericalLiteralParsing()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("123".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("123".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -87,8 +90,8 @@ namespace ChaoticOnyx.Hekate.Tests
         public void FloatNumericalLiteralParsing()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("123.55".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("123.55".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -103,31 +106,58 @@ namespace ChaoticOnyx.Hekate.Tests
             Assert.True(token is { Text: "123.55" });
         }
 
-        [Fact]
-        public void TextLiteralParsing()
+        [Theory]
+        [InlineData("\"TextLiteral\"")]
+        [InlineData("\"\\t\"")]
+        [InlineData("\"#\"")]
+        [InlineData("\"\\n\"")]
+        public void TextLiteralParsing(string expected)
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("\"TextLiteral\"".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new(expected.ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult();
 
             // Assert
             Assert.NotEmpty(tokens);
+            Assert.Empty(scaffold.Lexer.Issues);
             Assert.True(tokens is { Count: 2 });
             SyntaxToken token = tokens.First!.Value!;
             Assert.NotNull(token);
             Assert.True(token is { Kind: SyntaxKind.TextLiteral });
+            Assert.Equal(token.Text, expected);
+        }
+
+        [Theory]
+        [InlineData("@\"Hello!\"")]
+        [InlineData("@1Hello!1")]
+        [InlineData("@|Hello!|")]
+        [InlineData("@NHello!N")]
+        public void RawTextLiteralParsing(string expected)
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new(expected.ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult();
+
+            // Assert
+            Assert.NotEmpty(tokens);
+            Assert.Empty(scaffold.Lexer.Issues);
+            SyntaxToken token = tokens.First!.Value;
+            Assert.True(token.Kind == SyntaxKind.TextLiteral);
+            Assert.Equal(token.Text, expected);
         }
 
         [Fact]
         public void PathLiteralParsing()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("\'PathLiteral/file.dm\'".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("\'PathLiteral/file.dm\'".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -145,8 +175,8 @@ namespace ChaoticOnyx.Hekate.Tests
         public void SpacesParsing()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>(@"    // Comment".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new(@"    // Comment".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -173,11 +203,13 @@ namespace ChaoticOnyx.Hekate.Tests
         [InlineData(SyntaxKind.EndIfDirective)]
         [InlineData(SyntaxKind.DefineDirective)]
         [InlineData(SyntaxKind.UndefDirective)]
+        [InlineData(SyntaxKind.WarningDirective)]
+        [InlineData(SyntaxKind.ErrorDirective)]
         public void DirectiveParsing(SyntaxKind kind)
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("#include #ifndef #ifdef #endif #define #undef".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("#include #ifndef #ifdef #endif #define #undef #warning #error".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -185,7 +217,7 @@ namespace ChaoticOnyx.Hekate.Tests
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.True(tokens is { Count: 7 });
+            Assert.True(tokens is { Count: 9 });
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
         }
 
@@ -193,8 +225,8 @@ namespace ChaoticOnyx.Hekate.Tests
         public void ConcatDirectiveParsing()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("#define TEST(X) ##x".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("#define TEST(X) ##x".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -230,8 +262,8 @@ namespace ChaoticOnyx.Hekate.Tests
         public void KeywordParsing(SyntaxKind kind)
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("for new global throw catch try var verb proc in if else set as while".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("for new global throw catch try var verb proc in if else set as while".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -290,11 +322,12 @@ namespace ChaoticOnyx.Hekate.Tests
         [InlineData(SyntaxKind.Semicolon)]
         [InlineData(SyntaxKind.Backslash)]
         [InlineData(SyntaxKind.BackSlashEqual)]
+        [InlineData(SyntaxKind.At)]
         public void CheckTokenParsing(SyntaxKind kind, int expectedCount = 1)
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ . ;".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("* *= \\= '' \"\" / == = =!!= >= > >> >>= <= < << <<= () {} [] + ++ += - -- -=,, ** & &=&& /= % %= : ? ^ ^= | |= || \\ . ; @".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
             scaffold.GetResult();
@@ -303,47 +336,140 @@ namespace ChaoticOnyx.Hekate.Tests
 
             // Assert
             Assert.NotEmpty(tokens);
+            Assert.Empty(scaffold.Lexer.Issues);
             Assert.Equal(expectedCount, count);
         }
 
         [Fact]
-        public void EscapedTextTest()
+        public void ParseEscapedText()
         {
             // Arrange
-            var text     = new ReadOnlyMemory<char>(@"var/a = ""chemical_reactions_list\[\""[reaction]\""\] = \""[chemical_reactions_list[reaction]]\""\n""".ToCharArray());
-            var scaffold = new TextToTokensScaffold(text);
+            ReadOnlyMemory<char> text     = new("\"N[pick(\"'\",\"`\")]ath reth sh'yro eth d'raggathnor!\"".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+            List<SyntaxToken> tokens = scaffold.GetResult()
+                                               .ToList();
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.True(tokens.Count == 6);
+            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.True(tokens.Count == 2);
 
             Assert.True(tokens[0]
                             .Kind
-                        == SyntaxKind.VarKeyword);
+                        == SyntaxKind.TextLiteral);
 
             Assert.True(tokens[1]
                             .Kind
-                        == SyntaxKind.Slash);
+                        == SyntaxKind.EndOfFile);
+        }
 
-            Assert.True(tokens[2]
-                            .Kind
-                        == SyntaxKind.Identifier);
+        [Fact]
+        public void ParseDocumentText()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new("{\"\"[txt]\"\"}".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
 
-            Assert.True(tokens[3]
-                            .Kind
-                        == SyntaxKind.Equal);
+            // Act
+            List<SyntaxToken> tokens = scaffold.GetResult()
+                                               .ToList();
 
-            Assert.True(tokens[4]
+            // Assert
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens.Count == 2);
+
+            Assert.True(tokens[0]
                             .Kind
                         == SyntaxKind.TextLiteral);
 
-            Assert.True(tokens[5]
+            Assert.True(tokens[1]
                             .Kind
                         == SyntaxKind.EndOfFile);
+        }
+
+        [Fact]
+        public void ParseEscapedText2()
+        {
+            // Arange
+            ReadOnlyMemory<char> text = new(@"/proc/pencode2html(t)
+t = replacetext(t, ""\n"", ""<BR>"")
+t = replacetext(t, ""\[center\]"", ""<center>"")
+t = replacetext(t, ""\[/center\]"", ""</center>"")
+t = replacetext(t, ""\[right\]"", ""<div style=\""text-align:right\"">"")
+t = replacetext(t, ""\[/right\]"", ""</div>"")
+t = replacetext(t, ""\[left\]"", ""<div style=\""text-align:left\"">"")
+t = replacetext(t, ""\[/left\]"", ""</div>"")
+t = replacetext(t, ""\[br\]"", ""<BR>"")
+t = replacetext(t, ""\[b\]"", ""<B>"")
+t = replacetext(t, ""\[/b\]"", ""</B>"")
+t = replacetext(t, ""\[i\]"", ""<I>"")
+t = replacetext(t, ""\[/i\]"", ""</I>"")
+t = replacetext(t, ""\[u\]"", ""<U>"")
+t = replacetext(t, ""\[/u\]"", ""</U>"")
+t = replacetext(t, ""\[time\]"", ""[stationtime2text()]"")
+t = replacetext(t, ""\[date\]"", ""[stationdate2text()]"")
+t = replacetext(t, ""\[large\]"", ""<font size=\""4\"">"")
+t = replacetext(t, ""\[/large\]"", ""</font>"")
+t = replacetext(t, ""\[field\]"", ""<!--paper_field-->"")
+t = replacetext(t, ""\[h1\]"", ""<H1>"")
+t = replacetext(t, ""\[/h1\]"", ""</H1>"")
+t = replacetext(t, ""\[h2\]"", ""<H2>"")
+t = replacetext(t, ""\[/h2\]"", ""</H2>"")
+t = replacetext(t, ""\[h3\]"", ""<H3>"")
+t = replacetext(t, ""\[/h3\]"", ""</H3>"")
+t = replacetext(t, ""\[*\]"", ""<li>"")
+t = replacetext(t, ""\[hr\]"", ""<HR>"")
+t = replacetext(t, ""\[small\]"", ""<font size = \""1\"">"")
+t = replacetext(t, ""\[/small\]"", ""</font>"")
+t = replacetext(t, ""\[medium\]"", ""<font size = \""2\"">"")
+t = replacetext(t, ""\[/medium\]"", ""</font>"")
+t = replacetext(t, ""\[list\]"", ""<ul>"")
+t = replacetext(t, ""\[/list\]"", ""</ul>"")
+t = replacetext(t, ""\[item\]"", ""<li>"")
+t = replacetext(t, ""\[/item\]"", ""</li>"")
+t = replacetext(t, ""\[ord\]"", ""<ol>"")
+t = replacetext(t, ""\[/ord\]"", ""</ol>"")
+t = replacetext(t, ""\[table\]"", ""<table border=1 cellspacing=0 cellpadding=3 style='border: 1px solid black;'>"")
+t = replacetext(t, ""\[/table\]"", ""</td></tr></table>"")
+t = replacetext(t, ""\[grid\]"", ""<table>"")
+t = replacetext(t, ""\[/grid\]"", ""</td></tr></table>"")
+t = replacetext(t, ""\[row\]"", ""</td><tr>"")
+t = replacetext(t, ""\[cell\]"", ""<td>"")
+t = replacetext(t, ""\[logo\]"", ""<img src = ntlogo.png>"")
+t = replacetext(t, ""\[bluelogo\]"", ""<img src = bluentlogo.png>"")
+t = replacetext(t, ""\[solcrest\]"", ""<img src = sollogo.png>"")
+t = replacetext(t, ""\[terraseal\]"", ""<img src = terralogo.png>"")
+t = replacetext(t, ""\[editorbr\]"", """")
+return t".ToCharArray());
+
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            List<SyntaxToken> tokens = scaffold.GetResult()
+                                               .ToList();
+
+            // Assert
+            Assert.NotEmpty(tokens);
+            Assert.Empty(scaffold.Lexer.Issues);
+        }
+
+        [Fact]
+        public void ParseEscapedText3()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new("var/static/list/json_escape = list(\"\\\\\" = \"\\\\\\\\\", \"\\\"\" = \"\\\\\\\"\", \"\\n\" = \"\\\\n\")+rus_unicode_conversion".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            List<SyntaxToken> tokens = scaffold.GetResult()
+                                               .ToList();
+
+            // Assert
+            Assert.NotEmpty(tokens);
+            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.True(tokens.Count == 25);
         }
     }
 }

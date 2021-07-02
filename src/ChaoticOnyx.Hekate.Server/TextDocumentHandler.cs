@@ -5,7 +5,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using Serilog;
 
 namespace ChaoticOnyx.Hekate.Server
 {
@@ -16,10 +15,7 @@ namespace ChaoticOnyx.Hekate.Server
             Pattern = "**/*.dm"
         });
 
-        public Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
-        {
-            return Unit.Task;
-        }
+        public Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken) => Unit.Task;
 
         TextDocumentChangeRegistrationOptions IRegistration<TextDocumentChangeRegistrationOptions, SynchronizationCapability>.GetRegistrationOptions(SynchronizationCapability capability, ClientCapabilities clientCapabilities)
             => new()

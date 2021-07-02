@@ -17,10 +17,7 @@ namespace ChaoticOnyx.Hekate.Server.Dm
         public  List<CodeIssue>?         Issues  { get; private set; }
         public  PreprocessorContext?     Context { get; private set; }
 
-        public CodeFile(FileInfo file)
-        {
-            File   = file;
-        }
+        public CodeFile(FileInfo file) => File = file;
 
         /// <summary>
         ///     Производит парсинг файла.
@@ -32,7 +29,7 @@ namespace ChaoticOnyx.Hekate.Server.Dm
             _code = new Memory<char>(System.IO.File.ReadAllText(File.FullName)
                                            .ToCharArray());
 
-            var scaffold   = new TextToTokensScaffold(_code, lexer);
+            TextToTokensScaffold scaffold = new(_code, lexer);
             Tokens = scaffold.GetResult();
             Issues = lexer.Issues;
 
@@ -69,8 +66,8 @@ namespace ChaoticOnyx.Hekate.Server.Dm
 
             Context = preprocessor.Preprocess(Tokens, resultContext);
 
-            Issues  = Issues?.Concat(preprocessor.Issues)
-                            .ToList();
+            Issues = Issues?.Concat(preprocessor.Issues)
+                           .ToList();
 
             return Context;
         }

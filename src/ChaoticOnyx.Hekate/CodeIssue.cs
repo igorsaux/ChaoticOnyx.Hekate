@@ -32,7 +32,7 @@ namespace ChaoticOnyx.Hekate
         /// <returns>Отформатированное сообщение об ошибке.</returns>
         public string FormatMessage(string filePath, string message)
         {
-            FileLine?     position = Token.FilePosition;
+            FileLine     position = Token.FilePosition;
             StringBuilder sb       = new(message.Length);
             sb.Append($"{filePath}:{position.Line.ToString()}:{position.Column.ToString()} [{Id}]: ");
             sb.AppendFormat(message, Arguments);

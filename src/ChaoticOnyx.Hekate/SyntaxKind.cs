@@ -48,6 +48,7 @@ namespace ChaoticOnyx.Hekate
         SetKeyword,
         AsKeyword,
         WhileKeyword,
+        ReturnKeyword,
 
         #endregion
 
@@ -61,6 +62,8 @@ namespace ChaoticOnyx.Hekate
         UndefDirective,
         ElseDirective,
         ConcatDirective,
+        WarningDirective,
+        ErrorDirective,
 
         #endregion
 
@@ -111,7 +114,11 @@ namespace ChaoticOnyx.Hekate
         BarEqual,
         Dot,
         Semicolon,
-        Backslash
+        Backslash,
+        Tilda,
+        TildaEqual,
+        TildaExclamation,
+        At
 
         #endregion
     }

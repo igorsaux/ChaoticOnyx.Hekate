@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -11,14 +10,11 @@ namespace ChaoticOnyx.Hekate.Server.Dm
         private Preprocessor   _preprocessor = new();
         public  List<CodeFile> Files { get; } = new();
 
-        public ProjectEnvironment(FileInfo dme)
-        {
-            Files.Add(new CodeFile(dme));
-        }
+        public ProjectEnvironment(FileInfo dme) => Files.Add(new CodeFile(dme));
 
         public void Parse()
         {
-            var dme = Files.FirstOrDefault((f) => f.File.Extension == ".dme");
+            CodeFile? dme = Files.FirstOrDefault(f => f.File.Extension == ".dme");
 
             if (dme is null)
             {
@@ -41,7 +37,7 @@ namespace ChaoticOnyx.Hekate.Server.Dm
             {
                 string includePath = include.Text[1..^1];
                 includePath = Path.GetFullPath(includePath, codeFile.File.DirectoryName!);
-                var includeCodeFile = new CodeFile(new FileInfo(includePath));
+                CodeFile includeCodeFile = new(new FileInfo(includePath));
                 ParseFile(includeCodeFile, context);
             }
         }

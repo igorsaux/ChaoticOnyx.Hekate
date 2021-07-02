@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace ChaoticOnyx.Hekate
@@ -9,27 +8,25 @@ namespace ChaoticOnyx.Hekate
     /// </summary>
     public sealed class Preprocessor
     {
-        private List<CodeIssue>              _issues = new();
-        private          LinkedListNode<SyntaxToken>? _it;
-        private          LinkedList<SyntaxToken>      _tokens  = new();
-        private          PreprocessorContext          _context = null!;
+        private LinkedListNode<SyntaxToken>? _it;
+        private LinkedList<SyntaxToken>      _tokens = new();
 
-        public List<CodeIssue> Issues => _issues;
+        public List<CodeIssue> Issues { get; private set; } = new();
 
         /// <summary>
         ///     Текущий контекст препроцессора.
         /// </summary>
-        public PreprocessorContext Context => _context;
+        public PreprocessorContext Context { get; private set; } = null!;
 
         /// <summary>
         ///     Производит препроцессинг токенов.
         /// </summary>
         public PreprocessorContext Preprocess(LinkedList<SyntaxToken> tokens, PreprocessorContext? context = null)
         {
-            _issues                      = new List<CodeIssue>();
+            Issues                       = new List<CodeIssue>();
             _tokens                      = tokens;
-            _context                     = context ?? new PreprocessorContext();
-            var (includes, defines, ifs) = _context;
+            Context                      = context ?? new PreprocessorContext();
+            var (includes, defines, ifs) = Context;
 
             for (_it = _tokens.First; _it != null; _it = _it?.Next)
             {
@@ -79,17 +76,13 @@ namespace ChaoticOnyx.Hekate
                         if (define != null)
                         {
                             defines.Remove(define);
-
-                            break;
                         }
-
-                        _issues.Add(new CodeIssue(IssuesId.UnknownMacrosDefinition, next, next.Text));
 
                         break;
                     case SyntaxKind.EndIfDirective:
                         if (ifs.Count == 0)
                         {
-                            _issues.Add(new CodeIssue(IssuesId.ExtraEndIf, token));
+                            Issues.Add(new CodeIssue(IssuesId.ExtraEndIf, token));
 
                             break;
                         }
@@ -100,8 +93,16 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.ElseDirective:
                         if (ifs.Count == 0)
                         {
-                            _issues.Add(new CodeIssue(IssuesId.UnexpectedElse, token));
+                            Issues.Add(new CodeIssue(IssuesId.UnexpectedElse, token));
                         }
+
+                        continue;
+                    case SyntaxKind.WarningDirective:
+                        Issues.Add(new CodeIssue(IssuesId.WarningDirective, token, next.Text));
+
+                        continue;
+                    case SyntaxKind.ErrorDirective:
+                        Issues.Add(new CodeIssue(IssuesId.ErrorDirective, token, next.Text));
 
                         continue;
                     default:
@@ -115,7 +116,7 @@ namespace ChaoticOnyx.Hekate
             }
 
             SyntaxToken last = ifs.Last();
-            _issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
+            Issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
 
             return Context;
         }

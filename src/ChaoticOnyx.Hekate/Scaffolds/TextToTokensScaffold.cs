@@ -10,10 +10,7 @@ namespace ChaoticOnyx.Hekate.Scaffolds
     {
         private readonly ReadOnlyMemory<char> _text;
 
-        public TextToTokensScaffold(ReadOnlyMemory<char> text, Lexer? lexer = null) : base(lexer ?? new Lexer())
-        {
-            _text     = text;
-        }
+        public TextToTokensScaffold(ReadOnlyMemory<char> text, Lexer? lexer = null) : base(lexer ?? new Lexer()) => _text = text;
 
         public override LinkedList<SyntaxToken> GetResult()
         {
