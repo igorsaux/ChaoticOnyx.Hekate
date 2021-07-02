@@ -92,6 +92,7 @@ namespace ChaoticOnyx.Hekate.Server
 
             LanguageServer server = await LanguageServer.From(ConfigureServer);
             await server.WaitForExit;
+
         }
     }
 }

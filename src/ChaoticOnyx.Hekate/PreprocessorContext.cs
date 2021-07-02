@@ -8,7 +8,7 @@ namespace ChaoticOnyx.Hekate
     public sealed record PreprocessorContext
     {
         public List<SyntaxToken>  Includes { get; init; }
-        public List<SyntaxToken>  Defines  { get; init; }
+        public Dictionary<string, string>      Defines  { get; init; }
         public Stack<SyntaxToken> Ifs      { get; init; }
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace ChaoticOnyx.Hekate
         /// <param name="includes"></param>
         /// <param name="defines"></param>
         /// <param name="ifs"></param>
-        public PreprocessorContext(List<SyntaxToken> includes, List<SyntaxToken> defines, Stack<SyntaxToken> ifs)
+        public PreprocessorContext(List<SyntaxToken> includes, Dictionary<string, string> defines, Stack<SyntaxToken> ifs)
         {
             Includes = includes;
             Defines  = defines;
@@ -30,11 +30,11 @@ namespace ChaoticOnyx.Hekate
         public PreprocessorContext()
         {
             Includes = new List<SyntaxToken>();
-            Defines  = new List<SyntaxToken>();
+            Defines  = new Dictionary<string, string>();
             Ifs      = new Stack<SyntaxToken>();
         }
 
-        public void Deconstruct(out List<SyntaxToken> includes, out List<SyntaxToken> defines, out Stack<SyntaxToken> ifs)
+        public void Deconstruct(out List<SyntaxToken> includes, out Dictionary<string, string> defines, out Stack<SyntaxToken> ifs)
         {
             includes = Includes;
             defines  = Defines;

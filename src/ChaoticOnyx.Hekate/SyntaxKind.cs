@@ -64,6 +64,8 @@ namespace ChaoticOnyx.Hekate
         ConcatDirective,
         WarningDirective,
         ErrorDirective,
+        IfDirective,
+        ElifDirective,
 
         #endregion
 

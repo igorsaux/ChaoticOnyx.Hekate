@@ -19,21 +19,25 @@ namespace ChaoticOnyx.Hekate.Server.Dm
             => id switch
             {
                 // Ошибки анализаторов.
-                MissingSpaceAfter  => "Отсутствует пробел после `{0}`.",
-                MissingSpaceBefore => "Отсутствует пробел перед `{0}`.",
-                ExtraSpaceAfter    => "Лишний пробел после `{0}`.",
-                ExtraSpaceBefore   => "Лишний пробел перед `{0}`.",
+                MissingSpaceAfter  => "Отсутствует пробел после {0}.",
+                MissingSpaceBefore => "Отсутствует пробел перед {0}.",
+                ExtraSpaceAfter    => "Лишний пробел после {0}.",
+                ExtraSpaceBefore   => "Лишний пробел перед {0}.",
                 UseSpan            => "Используйте макрос SPAN.",
 
                 // Встроенные ошибки.
-                IssuesId.MissingClosingSign => "Отсутствует закрывающий знак `{0}`.",
-                IssuesId.UnexpectedToken    => "Неожиданный токен `{0}`.",
-                IssuesId.UnknownDirective   => "Неизвестная директива `{0}`.",
-                IssuesId.ErrorDirective     => "Ошибка: `{0}`.",
-                IssuesId.WarningDirective   => "Предупреждение: `{0}`.",
-                IssuesId.EndIfNotFound      => "#endif для `{0}` не найден.",
+                IssuesId.MissingClosingSign => "Отсутствует закрывающий знак {0}.",
+                IssuesId.UnexpectedToken    => "Неожиданный токен {0}.",
+                IssuesId.ErrorDirective     => "Ошибка: {0}.",
+                IssuesId.WarningDirective   => "Предупреждение: {0}.",
+                IssuesId.EndIfNotFound      => "#endif для {0} не найден.",
                 IssuesId.ExtraEndIf         => "Найден лишний #endif.",
                 IssuesId.UnexpectedElse     => "Лишний #else",
+                IssuesId.ExpectedProc       => "Ожидалась функция",
+                IssuesId.ExpectedValue      => "Ожидалась переменная",
+                IssuesId.UnknownVariable    => "Неизвестная переменная препроцессора: {0}",
+                IssuesId.InvalidOperator    => "Неизвестный оператор: {0}",
+                IssuesId.VariableAlreadyDefined => "Переменная {0} уже была объявлена",
                 _                           => throw new NotImplementedException($"Неизвестный идентификатор ошибки: {id}")
             };
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using ChaoticOnyx.Hekate.Scaffolds;
 using Xunit;
 
 namespace ChaoticOnyx.Hekate.Tests
@@ -7,32 +9,10 @@ namespace ChaoticOnyx.Hekate.Tests
     {
         private static LinkedList<SyntaxToken> ParseText(string text)
         {
-            CompilationUnit unit = CompilationUnit.FromSource(text);
-            unit.Parse(PreprocessorContext.Empty);
+            Memory<char>         memory   = new(text.ToCharArray());
+            TextToTokensScaffold scaffold = new(memory, new Lexer());
 
-            return unit.Tokens;
-        }
-
-        [Fact]
-        public void UnknownMacrosDefinitionTest()
-        {
-            // Arrange
-            LinkedList<SyntaxToken> tokens       = ParseText("#undef macro");
-            Preprocessor            preprocessor = new();
-
-            // Act
-            preprocessor.Preprocess(tokens);
-
-            // Assert
-            Assert.True(preprocessor.Issues.Count == 1);
-
-            Assert.True(preprocessor.Issues[0]
-                                    .Id
-                        == IssuesId.UnknownMacrosDefinition);
-
-            Assert.True(preprocessor.Issues[0]
-                                    .Token.Text
-                        == "macro");
+            return scaffold.GetResult();
         }
 
         [Fact]
@@ -110,6 +90,7 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
+            Assert.Empty(preprocessor.Issues);
             Assert.True(context.Includes.Count == 2);
 
             Assert.True(context.Includes[0]
@@ -132,11 +113,9 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
+            Assert.Empty(preprocessor.Issues);
             Assert.True(context.Defines.Count == 1);
-
-            Assert.True(context.Defines[0]
-                               .Text
-                        == "macro");
+            Assert.True(context.Defines["macro"] == string.Empty);
         }
 
         [Fact]
@@ -152,7 +131,8 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(context.Defines.Count == 0);
+            Assert.Empty(preprocessor.Issues);
+            Assert.Empty(context.Defines);
         }
 
         [Fact]
@@ -170,15 +150,10 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
+            Assert.Empty(preprocessor.Issues);
             Assert.True(context.Defines.Count == 2);
-
-            Assert.True(context.Defines[0]
-                               .Text
-                        == "debug");
-
-            Assert.True(context.Defines[1]
-                               .Text
-                        == "macro");
+            Assert.True(context.Defines["debug"] == string.Empty);
+            Assert.True(context.Defines["macro"] == string.Empty);
         }
 
         [Fact]
@@ -196,7 +171,8 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(context.Defines.Count == 0);
+            Assert.Empty(preprocessor.Issues);
+            Assert.Empty(context.Defines);
         }
 
         [Fact]
@@ -213,11 +189,9 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(context.Defines.Count == 1);
-
-            Assert.True(context.Defines[0]
-                               .Text
-                        == "debug");
+            Assert.Empty(preprocessor.Issues);
+            Assert.NotEmpty(context.Defines);
+            Assert.True(context.Defines["debug"] == string.Empty);
         }
 
         [Fact]
@@ -235,7 +209,8 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(context.Defines.Count == 0);
+            Assert.Empty(preprocessor.Issues);
+            Assert.Empty(context.Defines);
         }
 
         [Fact]
@@ -255,16 +230,10 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Issues.Count == 0);
+            Assert.Empty(preprocessor.Issues);
             Assert.True(context.Defines.Count == 2);
-
-            Assert.True(context.Defines[0]
-                               .Text
-                        == "NOT_DEBUG_DEFINE");
-
-            Assert.True(context.Defines[1]
-                               .Text
-                        == "NOT_DEBUG_DEFINE2");
+            Assert.True(context.Defines["NOT_DEBUG_DEFINE"] == string.Empty);
+            Assert.True(context.Defines["NOT_DEBUG_DEFINE2"] == string.Empty);
         }
 
         [Fact]
@@ -287,25 +256,17 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context = preprocessor.Preprocess(tokens);
 
             // Assert
-            Assert.True(preprocessor.Issues.Count == 0);
+            Assert.Empty(preprocessor.Issues);
             Assert.True(context.Defines.Count == 3);
-
-            Assert.True(context.Defines[0]
-                               .Text
-                        == "TEST");
-
-            Assert.True(context.Defines[1]
-                               .Text
-                        == "TEST_DEFINE");
-
-            Assert.True(context.Defines[2]
-                               .Text
-                        == "NOT_DEBUG_DEFINE");
+            Assert.True(context.Defines["TEST"] == string.Empty);
+            Assert.True(context.Defines["TEST_DEFINE"] == string.Empty);
+            Assert.True(context.Defines["NOT_DEBUG_DEFINE"] == string.Empty);
         }
 
         [Fact]
         public void ContextTest()
         {
+            // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
 #ifdef TEST
 #define DEBUG
@@ -323,12 +284,262 @@ namespace ChaoticOnyx.Hekate.Tests
             PreprocessorContext context2 = preprocessor.Preprocess(tokens2, context1);
 
             // Assert
-            Assert.True(preprocessor.Issues.Count == 0);
+            Assert.Empty(preprocessor.Issues);
             Assert.True(context2.Defines.Count == 2);
+            Assert.True(context2.Defines["GOOD"] == string.Empty);
+        }
 
-            Assert.True(context2.Defines[1]
-                                .Text
-                        == "GOOD");
+        [Fact]
+        public void ComplexPreprocessTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#ifdef TESTING
+if(reference_find_on_fail[refID])
+	D.find_references()
+#ifdef GC_FAILURE_HARD_LOOKUP
+else
+	D.find_references()
+#endif
+reference_find_on_fail -= refID
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.Empty(ifs);
+            Assert.Empty(defines);
+        }
+
+        [Fact]
+        public void IfDirectivePreprocessorTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
+#if defined(TEST)
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.Empty(ifs);
+            Assert.True(defines.Count == 2);
+            Assert.True(defines["TEST"] == string.Empty);
+            Assert.True(defines["PASS"] == string.Empty);
+        }
+
+        [Fact]
+        public void IfDirectiveNegativePreprocessorTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#if !defined(TEST)
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.Empty(ifs);
+            Assert.True(defines.Count == 1);
+            Assert.True(defines["PASS"] == string.Empty);
+        }
+
+        [Fact]
+        public void ExpectedProcTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
+#if (TEST)
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, _, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.True(preprocessor.Issues.Count == 1);
+
+            Assert.True(preprocessor.Issues[0]
+                                    .Id
+                        == IssuesId.ExpectedProc);
+
+            Assert.Empty(ifs);
+        }
+
+        [Fact]
+        public void ExpectedValueTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
+#if defined()
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, _, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.True(preprocessor.Issues.Count == 1);
+
+            Assert.True(preprocessor.Issues[0]
+                                    .Id
+                        == IssuesId.ExpectedValue);
+
+            Assert.Empty(ifs);
+        }
+
+        [Fact]
+        public void DefineValuesTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define TRUE 1
+#define FALSE 0");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.ContainsKey("TRUE"));
+            Assert.True(defines.ContainsKey("FALSE"));
+            Assert.True(defines["TRUE"] == "1");
+            Assert.True(defines["FALSE"] == "0");
+        }
+
+        [Fact]
+        public void EqualityComparisonTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define TRUE 1
+#define ANOTHER_TRUE 1
+#if TRUE == ANOTHER_TRUE
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.ContainsKey("TRUE"));
+            Assert.True(defines.ContainsKey("ANOTHER_TRUE"));
+            Assert.True(defines["TRUE"] == "1");
+            Assert.True(defines["ANOTHER_TRUE"] == "1");
+            Assert.True(defines.ContainsKey("PASS"));
+        }
+
+        [Fact]
+        public void EqualityComparisonTest2()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define TRUE 1
+#define ANOTHER_TRUE 2
+#if TRUE == ANOTHER_TRUE
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.ContainsKey("TRUE"));
+            Assert.True(defines.ContainsKey("ANOTHER_TRUE"));
+            Assert.True(defines["TRUE"] == "1");
+            Assert.True(defines["ANOTHER_TRUE"] == "2");
+            Assert.True(!defines.ContainsKey("PASS"));
+        }
+
+        [Fact]
+        public void NotEqualComparisonTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define SOME_VAR 1
+#define VAR 2
+#if SOME_VAR != VAR
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.ContainsKey("SOME_VAR"));
+            Assert.True(defines.ContainsKey("VAR"));
+            Assert.True(defines["SOME_VAR"] == "1");
+            Assert.True(defines["VAR"] == "2");
+            Assert.True(defines.ContainsKey("PASS"));
+        }
+
+        [Fact]
+        public void NotEqualComparisonTest2()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define SOME_VAR 1
+#define VAR 1
+#if SOME_VAR != VAR
+#define PASS
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.ContainsKey("SOME_VAR"));
+            Assert.True(defines.ContainsKey("VAR"));
+            Assert.True(defines["SOME_VAR"] == "1");
+            Assert.True(defines["VAR"] == "1");
+            Assert.True(!defines.ContainsKey("PASS"));
+        }
+
+        [Fact]
+        public void AlreadyDefinedTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#define SOME_VAR 1
+#ifndef TEST
+#define SOME_VAR
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var _ = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.NotEmpty(preprocessor.Issues);
+
+            Assert.True(preprocessor.Issues[0]
+                                    .Id
+                        == IssuesId.VariableAlreadyDefined);
         }
     }
 }

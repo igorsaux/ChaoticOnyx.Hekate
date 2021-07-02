@@ -19,8 +19,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ChaoticOnyx.Hekate\ChaoticOnyx.Hekate.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="PreprocessorTests.cs" />
-  </ItemGroup>
 </Project>

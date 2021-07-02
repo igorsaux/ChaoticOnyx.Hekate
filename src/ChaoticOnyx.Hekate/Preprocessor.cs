@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ChaoticOnyx.Hekate
@@ -40,8 +41,23 @@ namespace ChaoticOnyx.Hekate
 
                 switch (token.Kind)
                 {
+                    // TODO: Добавить поддержку многострочников.
                     case SyntaxKind.DefineDirective:
-                        defines.Add(next);
+                        if (defines.ContainsKey(next.Text))
+                        {
+                            Issues.Add(new CodeIssue(IssuesId.VariableAlreadyDefined, next, next.Text));
+
+                            break;
+                        }
+
+                        string value = string.Empty;
+
+                        if (!next.HasEndOfLine)
+                        {
+                            value = _it.Next?.Next?.Value.Text ?? string.Empty;
+                        }
+
+                        defines.Add(next.Text, value);
 
                         break;
                     case SyntaxKind.IncludeDirective:
@@ -51,7 +67,7 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.IfDefDirective:
                         ifs.Push(token);
 
-                        if (defines.Any(t => t.Text == next.Text))
+                        if (defines.Any(t => t.Key == next.Text))
                         {
                             break;
                         }
@@ -62,7 +78,7 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.IfNDefDirective:
                         ifs.Push(token);
 
-                        if (defines.Count == 0 || defines.Any(t => t.Text != next.Text))
+                        if (defines.Count == 0 || defines.Any(t => t.Key != next.Text))
                         {
                             break;
                         }
@@ -71,11 +87,9 @@ namespace ChaoticOnyx.Hekate
 
                         break;
                     case SyntaxKind.UndefDirective:
-                        SyntaxToken? define = defines.Find(t => t.Text == next.Text);
-
-                        if (define != null)
+                        if (defines.ContainsKey(next.Text))
                         {
-                            defines.Remove(define);
+                            defines.Remove(next.Text);
                         }
 
                         break;
@@ -105,6 +119,25 @@ namespace ChaoticOnyx.Hekate
                         Issues.Add(new CodeIssue(IssuesId.ErrorDirective, token, next.Text));
 
                         continue;
+                    case SyntaxKind.IfDirective:
+                        ifs.Push(token);
+                        bool res = ComputeExpression(context!);
+
+                        if (!res)
+                        {
+                            SkipIf();
+                        }
+
+                        continue;
+                    case SyntaxKind.ElifDirective:
+                        res = ComputeExpression(context!);
+
+                        if (!res)
+                        {
+                            SkipIf();
+                        }
+
+                        continue;
                     default:
                         continue;
                 }
@@ -122,7 +155,125 @@ namespace ChaoticOnyx.Hekate
         }
 
         /// <summary>
-        ///     Пропускает все токены до первого нахождение #endif или #else.
+        ///     Вычисляет выражение.
+        /// </summary>
+        /// <param name="context">Контекст препроцессора.</param>
+        /// <returns>Результат выражения.</returns>
+        private bool ComputeExpression(PreprocessorContext context)
+        {
+            bool                         result  = false;
+            bool                         negated = false;
+            LinkedListNode<SyntaxToken>? proc;
+            LinkedListNode<SyntaxToken>? token     = _it?.Next;
+            LinkedListNode<SyntaxToken>? nextToken = _it?.Next?.Next;
+
+            if (token is null)
+            {
+                Issues.Add(new CodeIssue(IssuesId.ExpectedProc, _it?.Value!));
+
+                return false;
+            }
+
+            if (token.Value.Kind == SyntaxKind.Exclamation)
+            {
+                negated = true;
+                proc    = nextToken;
+            }
+            else
+            {
+                proc = token;
+            }
+
+            if (proc?.Value.Kind is not SyntaxKind.Identifier)
+            {
+                Issues.Add(new CodeIssue(IssuesId.ExpectedProc, _it?.Value!));
+
+                return false;
+            }
+
+            LinkedListNode<SyntaxToken>? parent = proc.Next;
+            LinkedListNode<SyntaxToken>? value  = parent?.Next;
+
+            if (value?.Value.Kind is not SyntaxKind.Identifier)
+            {
+                Issues.Add(new CodeIssue(IssuesId.ExpectedValue, proc.Value));
+
+                return false;
+            }
+
+            switch (proc.Value.Text)
+            {
+                case "defined":
+                    result = ComputeDefined(value, context);
+
+                    break;
+                default:
+                    value = proc;
+                    proc  = proc.Next;
+                    var rvalue = proc?.Next;
+
+                    return ComputeOperator(value, proc!, rvalue!, context);
+
+                    break;
+            }
+
+            if (negated)
+            {
+                return !result;
+            }
+
+            return result;
+        }
+
+        private bool ComputeOperator(LinkedListNode<SyntaxToken> leftToken, LinkedListNode<SyntaxToken> operatorToken, LinkedListNode<SyntaxToken> rightToken, PreprocessorContext context)
+        {
+            bool    hasLValue = context.Defines.ContainsKey(leftToken.Value.Text);
+
+            if (!hasLValue)
+            {
+                Issues.Add(new CodeIssue(IssuesId.UnknownVariable, leftToken.Value, leftToken.Value.Text));
+
+                return false;
+            }
+
+            bool hasRValue = context.Defines.ContainsKey(rightToken.Value.Text);
+
+            if (!hasRValue)
+            {
+                Issues.Add(new CodeIssue(IssuesId.UnknownVariable, rightToken.Value, rightToken.Value.Text));
+
+                return false;
+            }
+
+            string     lvalue = context.Defines[leftToken.Value.Text];
+            string rvalue = context.Defines[rightToken.Value.Text];
+
+            switch (operatorToken.Value.Text)
+            {
+                case "==":
+                    return lvalue == rvalue;
+                case "!=":
+                    return lvalue != rvalue;
+                default:
+                    Issues.Add(new CodeIssue(IssuesId.InvalidOperator, operatorToken.Value, operatorToken.Value.Text));
+
+                    return false;
+            }
+        }
+
+        /// <summary>
+        ///     Вычисляет функцию defined(X), где X - переменная.
+        /// </summary>
+        /// <param name="variable">X.</param>
+        /// <param name="context">Контекст препроцессора.</param>
+        /// <returns>true - если X уже был определён, иначе - false.</returns>
+        private static bool ComputeDefined(LinkedListNode<SyntaxToken> variable, PreprocessorContext context)
+        {
+            return context.Defines.ContainsKey(variable.Value.Text);
+        }
+
+        /// <summary>
+        ///     Пропускает все токены до первого нахождение #endif, #ifdef, #ifndef или #else.
         /// </summary>
         /// <returns>Возвращает true - если #endif был найден.</returns>
         private void SkipIf()
@@ -136,7 +287,7 @@ namespace ChaoticOnyx.Hekate
                     return;
                 }
 
-                if (token.Kind is SyntaxKind.EndIfDirective or SyntaxKind.ElseDirective)
+                if (token.Kind is SyntaxKind.EndIfDirective or SyntaxKind.ElseDirective or SyntaxKind.IfDefDirective or SyntaxKind.IfNDefDirective or SyntaxKind.IfDirective or SyntaxKind.ElifDirective)
                 {
                     return;
                 }

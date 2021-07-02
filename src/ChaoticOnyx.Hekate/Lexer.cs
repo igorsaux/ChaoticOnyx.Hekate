@@ -43,6 +43,8 @@ namespace ChaoticOnyx.Hekate
                 "else"    => SyntaxKind.ElseDirective,
                 "warning" => SyntaxKind.WarningDirective,
                 "error"   => SyntaxKind.ErrorDirective,
+                "if"      => SyntaxKind.IfDirective,
+                "elif"    => SyntaxKind.ElifDirective,
                 _         => SyntaxKind.Directive
             };
 
@@ -136,6 +138,13 @@ namespace ChaoticOnyx.Hekate
             if (_source.IsEnd)
             {
                 return CreateTokenAndAdvance(SyntaxKind.EndOfFile, 0);
+            }
+
+            if (Tokens.Last?.Value.Kind is SyntaxKind.WarningDirective or SyntaxKind.ErrorDirective)
+            {
+                SkipToEndOfLine();
+
+                return CreateToken(SyntaxKind.TextLiteral);
             }
 
             ReadOnlySpan<char> span = _source.Peek();

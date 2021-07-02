@@ -203,12 +203,10 @@ namespace ChaoticOnyx.Hekate.Tests
         [InlineData(SyntaxKind.EndIfDirective)]
         [InlineData(SyntaxKind.DefineDirective)]
         [InlineData(SyntaxKind.UndefDirective)]
-        [InlineData(SyntaxKind.WarningDirective)]
-        [InlineData(SyntaxKind.ErrorDirective)]
         public void DirectiveParsing(SyntaxKind kind)
         {
             // Arrange
-            ReadOnlyMemory<char> text     = new("#include #ifndef #ifdef #endif #define #undef #warning #error".ToCharArray());
+            ReadOnlyMemory<char> text     = new("#include #ifndef #ifdef #endif #define #undef".ToCharArray());
             TextToTokensScaffold scaffold = new(text);
 
             // Act
@@ -216,9 +214,86 @@ namespace ChaoticOnyx.Hekate.Tests
             LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
 
             // Assert
+            Assert.Empty(scaffold.Lexer.Issues);
             Assert.NotEmpty(tokens);
-            Assert.True(tokens is { Count: 9 });
+            Assert.True(tokens is { Count: 7 });
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
+        }
+
+        [Fact]
+        public void WarningDirectiveParsing()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new("#warning This is a warning".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            scaffold.GetResult();
+            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+
+            // Assert
+            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count  : 3 });
+            Assert.True(tokens[0] is { Kind: SyntaxKind.WarningDirective });
+            Assert.True(tokens[1] is { Kind: SyntaxKind.TextLiteral, Text: "This is a warning" });
+        }
+
+        [Fact]
+        public void ErrorDirectiveParsing()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new("#error This is a error".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            scaffold.GetResult();
+            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+
+            // Assert
+            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count  : 3 });
+            Assert.True(tokens[0] is { Kind: SyntaxKind.ErrorDirective });
+            Assert.True(tokens[1] is { Kind: SyntaxKind.TextLiteral, Text: "This is a error" });
+        }
+
+        [Fact]
+        public void IfDirectiveParsing()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new("#if defined(TEST)".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            scaffold.GetResult();
+            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+
+            // Assert
+            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count  : 6 });
+            Assert.True(tokens[0] is { Kind: SyntaxKind.IfDirective });
+            Assert.True(tokens[1] is { Kind: SyntaxKind.Identifier, Text: "defined" });
+            Assert.True(tokens[3] is { Kind: SyntaxKind.Identifier, Text: "TEST" });
+        }
+
+        [Fact]
+        public void ElseDirectiveParsing()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text     = new("#else".ToCharArray());
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            scaffold.GetResult();
+            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+
+            // Assert
+            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.NotEmpty(tokens);
+            Assert.True(tokens is { Count  : 2 });
+            Assert.True(tokens[0] is { Kind: SyntaxKind.ElseDirective });
         }
 
         [Fact]
