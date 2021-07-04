@@ -351,7 +351,7 @@ namespace ChaoticOnyx.Hekate
                     }
 
                     _source.Advance();
-                    parsingResult = ParseRawTextLiteral(spanNext);
+                    parsingResult = ParseRawTextLiteral(GetClosingPairSymbol(spanNext));
                     token         = CreateToken(SyntaxKind.TextLiteral);
 
                     if (!parsingResult)
@@ -795,6 +795,27 @@ namespace ChaoticOnyx.Hekate
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        ///     Возвращает закрывающий символ для пары.
+        /// </summary>
+        /// <returns></returns>
+        private ReadOnlySpan<char> GetClosingPairSymbol(ReadOnlySpan<char> openPair)
+        {
+            switch (openPair[0])
+            {
+                case '[':
+                    return "]";
+                case '{':
+                    return "}";
+                case '(':
+                    return ")";
+                case '<':
+                    return ">";
+                default:
+                    return openPair;
+            }
         }
     }
 }

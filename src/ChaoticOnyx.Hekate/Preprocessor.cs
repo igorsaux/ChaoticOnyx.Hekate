@@ -24,6 +24,7 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         public PreprocessorContext Preprocess(LinkedList<SyntaxToken> tokens, PreprocessorContext? context = null)
         {
+            bool skipElseBranches = false;
             Issues                       = new List<CodeIssue>();
             _tokens                      = tokens;
             Context                      = context ?? new PreprocessorContext();
@@ -67,8 +68,10 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.IfDefDirective:
                         ifs.Push(token);
 
-                        if (defines.Any(t => t.Key == next.Text))
+                        if (defines.ContainsKey(next.Text))
                         {
+                            skipElseBranches = true;
+
                             break;
                         }
 
@@ -78,8 +81,10 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.IfNDefDirective:
                         ifs.Push(token);
 
-                        if (defines.Count == 0 || defines.Any(t => t.Key != next.Text))
+                        if (defines.Count == 0 || !defines.ContainsKey(next.Text))
                         {
+                            skipElseBranches = true;
+
                             break;
                         }
 
@@ -105,6 +110,14 @@ namespace ChaoticOnyx.Hekate
 
                         break;
                     case SyntaxKind.ElseDirective:
+                        if (skipElseBranches)
+                        {
+                            SkipIf();
+                            skipElseBranches = false;
+
+                            break;
+                        }
+
                         if (ifs.Count == 0)
                         {
                             Issues.Add(new CodeIssue(IssuesId.UnexpectedElse, token));
@@ -130,6 +143,13 @@ namespace ChaoticOnyx.Hekate
 
                         continue;
                     case SyntaxKind.ElifDirective:
+                        if (skipElseBranches)
+                        {
+                            SkipIf();
+                            skipElseBranches = false;
+
+                            break;
+                        }
                         res = ComputeExpression(context!);
 
                         if (!res)
@@ -184,17 +204,10 @@ namespace ChaoticOnyx.Hekate
                 proc = token;
             }
 
-            if (proc?.Value.Kind is not SyntaxKind.Identifier)
-            {
-                Issues.Add(new CodeIssue(IssuesId.ExpectedProc, _it?.Value!));
-
-                return false;
-            }
-
             LinkedListNode<SyntaxToken>? parent = proc.Next;
             LinkedListNode<SyntaxToken>? value  = parent?.Next;
 
-            if (value?.Value.Kind is not SyntaxKind.Identifier)
+            if (value?.Value.Kind is not (SyntaxKind.Identifier or SyntaxKind.NumericalLiteral))
             {
                 Issues.Add(new CodeIssue(IssuesId.ExpectedValue, proc.Value));
 
@@ -227,26 +240,59 @@ namespace ChaoticOnyx.Hekate
 
         private bool ComputeOperator(LinkedListNode<SyntaxToken> leftToken, LinkedListNode<SyntaxToken> operatorToken, LinkedListNode<SyntaxToken> rightToken, PreprocessorContext context)
         {
-            bool    hasLValue = context.Defines.ContainsKey(leftToken.Value.Text);
+            int  lvalue = 0;
+            int  rvalue = 0;
+            bool result = false;
 
-            if (!hasLValue)
+            if (leftToken.Value.Kind is SyntaxKind.Identifier)
             {
-                Issues.Add(new CodeIssue(IssuesId.UnknownVariable, leftToken.Value, leftToken.Value.Text));
+                bool hasLValue = context.Defines.ContainsKey(leftToken.Value.Text);
+
+                if (!hasLValue)
+                {
+                    Issues.Add(new CodeIssue(IssuesId.UnknownVariable, leftToken.Value, leftToken.Value.Text));
+
+                    return false;
+                }
+
+                result = int.TryParse(context.Defines[leftToken.Value.Text], out lvalue);
+            }
+            else
+            {
+                result = int.TryParse(leftToken.Value.Text, out lvalue);
+            }
+
+            if (!result)
+            {
+                Issues.Add(new CodeIssue(IssuesId.CantCompareNotNumericalValues, leftToken.Value));
 
                 return false;
             }
 
-            bool hasRValue = context.Defines.ContainsKey(rightToken.Value.Text);
-
-            if (!hasRValue)
+            if (rightToken.Value.Kind is SyntaxKind.Identifier)
             {
-                Issues.Add(new CodeIssue(IssuesId.UnknownVariable, rightToken.Value, rightToken.Value.Text));
+                bool hasRValue = context.Defines.ContainsKey(rightToken.Value.Text);
+
+                if (!hasRValue)
+                {
+                    Issues.Add(new CodeIssue(IssuesId.UnknownVariable, rightToken.Value, rightToken.Value.Text));
+
+                    return false;
+                }
+
+                result = int.TryParse(context.Defines[rightToken.Value.Text], out rvalue);
+            }
+            else
+            {
+                result = int.TryParse(rightToken.Value.Text, out rvalue);
+            }
+
+            if (!result)
+            {
+                Issues.Add(new CodeIssue(IssuesId.CantCompareNotNumericalValues, rightToken.Value));
 
                 return false;
             }
-
-            string     lvalue = context.Defines[leftToken.Value.Text];
-            string rvalue = context.Defines[rightToken.Value.Text];
 
             switch (operatorToken.Value.Text)
             {
@@ -254,6 +300,14 @@ namespace ChaoticOnyx.Hekate
                     return lvalue == rvalue;
                 case "!=":
                     return lvalue != rvalue;
+                case ">":
+                    return lvalue > rvalue;
+                case ">=":
+                    return lvalue >= rvalue;
+                case "<":
+                    return lvalue < rvalue;
+                case "<=":
+                    return lvalue <= rvalue;
                 default:
                     Issues.Add(new CodeIssue(IssuesId.InvalidOperator, operatorToken.Value, operatorToken.Value.Text));
 

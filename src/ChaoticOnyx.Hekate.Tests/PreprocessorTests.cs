@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ChaoticOnyx.Hekate.Scaffolds;
 using Xunit;
 
@@ -357,30 +358,6 @@ reference_find_on_fail -= refID
         }
 
         [Fact]
-        public void ExpectedProcTest()
-        {
-            // Arrange
-            LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
-#if (TEST)
-#define PASS
-#endif");
-
-            Preprocessor preprocessor = new();
-
-            // Act
-            var (_, _, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
-
-            // Assert
-            Assert.True(preprocessor.Issues.Count == 1);
-
-            Assert.True(preprocessor.Issues[0]
-                                    .Id
-                        == IssuesId.ExpectedProc);
-
-            Assert.Empty(ifs);
-        }
-
-        [Fact]
         public void ExpectedValueTest()
         {
             // Arrange
@@ -540,6 +517,106 @@ reference_find_on_fail -= refID
             Assert.True(preprocessor.Issues[0]
                                     .Id
                         == IssuesId.VariableAlreadyDefined);
+        }
+
+        [Fact]
+        public void IfElseTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#ifndef DEBUG
+#define TEST 0
+#define DEBUG
+#else
+#define TEST 1
+#warning Test is 1
+#endif");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.Count == 2);
+            Assert.True(defines["TEST"] == "0");
+            Assert.True(defines.ContainsKey("DEBUG"));
+        }
+
+        [Fact]
+        public void WarningDirectiveTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens       = ParseText("#warning This is a warning");
+            Preprocessor            preprocessor = new();
+
+            // Act
+            var _ = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.NotEmpty(preprocessor.Issues);
+            Assert.True(preprocessor.Issues[0].Id == IssuesId.WarningDirective);
+        }
+
+        [Fact]
+        public void ErrorDirectiveTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens       = ParseText("#error This is a error");
+            Preprocessor            preprocessor = new();
+
+            // Act
+            var _ = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.NotEmpty(preprocessor.Issues);
+            Assert.True(preprocessor.Issues[0].Id == IssuesId.ErrorDirective);
+        }
+
+        [Theory]
+        [InlineData(1, "==", 1)]
+        [InlineData(1, "!=", 2)]
+        [InlineData(2, ">", 1)]
+        [InlineData(1, ">=", 1)]
+        [InlineData(5, ">=", 1)]
+        [InlineData(1, "<", 2)]
+        [InlineData(1, "<=", 1)]
+        [InlineData(1, "<=", 5)]
+        public void ComparisonTest(int lvalue, string op, int rvalue)
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens       = ParseText($@"#if {lvalue} {op} {rvalue}
+#define PASS
+#endif");
+            Preprocessor            preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.Count == 1);
+            Assert.True(defines.ContainsKey("PASS"));
+        }
+
+        [Fact]
+        public void DefineProcTest()
+        {
+            // Arrange
+            LinkedList<SyntaxToken> tokens = ParseText(@"#ifdef T_BOARD
+#error T_BOARD already defined elsewhere, we can't use it.
+#endif
+#define T_BOARD(name)	""circuit board ("" + (name) + "")""");
+
+            Preprocessor preprocessor = new();
+
+            // Act
+            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+
+            // Assert
+            Assert.Empty(preprocessor.Issues);
+            Assert.True(defines.Count == 1);
+            Assert.True(defines.ContainsKey("T_BOARD"));
         }
     }
 }

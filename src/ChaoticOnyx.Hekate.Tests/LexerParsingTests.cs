@@ -546,5 +546,22 @@ return t".ToCharArray());
             Assert.Empty(scaffold.Lexer.Issues);
             Assert.True(tokens.Count == 25);
         }
+
+        [Fact]
+        public void RawRegexStringParsingTest()
+        {
+            // Arrange
+            ReadOnlyMemory<char> text = new(@"regex(@{""([^\u0020-\u8000]+)""})
+	for(var/i in buttons)".ToCharArray());
+
+            TextToTokensScaffold scaffold = new(text);
+
+            // Act
+            List<SyntaxToken> tokens = scaffold.GetResult()
+                                               .ToList();
+
+            // Assert
+            Assert.Empty(scaffold.Lexer.Issues);
+        }
     }
 }

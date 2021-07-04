@@ -38,6 +38,7 @@ namespace ChaoticOnyx.Hekate.Server.Dm
                 IssuesId.UnknownVariable    => "Неизвестная переменная препроцессора: {0}",
                 IssuesId.InvalidOperator    => "Неизвестный оператор: {0}",
                 IssuesId.VariableAlreadyDefined => "Переменная {0} уже была объявлена",
+                IssuesId.CantCompareNotNumericalValues => "Нельзя сравнить не цифровое значение",
                 _                           => throw new NotImplementedException($"Неизвестный идентификатор ошибки: {id}")
             };
 
