@@ -1,4 +1,6 @@
-﻿namespace ChaoticOnyx.Hekate.Scaffolds
+﻿using System.Collections.Generic;
+
+namespace ChaoticOnyx.Hekate.Scaffolds
 {
     /// <summary>
     ///     Позволяет конвертировать код из одного представления в другое.

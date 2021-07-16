@@ -23,8 +23,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -54,8 +54,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -74,8 +74,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -94,8 +94,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -118,11 +118,11 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            LinkedList<SyntaxToken> tokens = scaffold.GetResult();
+            var (issues, tokens) = scaffold.GetResult();
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.True(tokens is { Count: 2 });
             SyntaxToken token = tokens.First!.Value!;
             Assert.NotNull(token);
@@ -142,11 +142,11 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            LinkedList<SyntaxToken> tokens = scaffold.GetResult();
+            var (issues, tokens) = scaffold.GetResult();
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             SyntaxToken token = tokens.First!.Value;
             Assert.True(token.Kind == SyntaxKind.TextLiteral);
             Assert.Equal(token.Text, expected);
@@ -160,8 +160,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -179,8 +179,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -210,11 +210,10 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            var (issues, tokens) = scaffold.GetResult();
 
             // Assert
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.NotEmpty(tokens);
             Assert.True(tokens is { Count: 7 });
             Assert.True(tokens.Count(t => t.Kind == kind) == 1);
@@ -228,15 +227,15 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+            var (issues, tokens) = scaffold.GetResult();
+            var tokensList = tokens.ToList();
 
             // Assert
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.NotEmpty(tokens);
-            Assert.True(tokens is { Count  : 3 });
-            Assert.True(tokens[0] is { Kind: SyntaxKind.WarningDirective });
-            Assert.True(tokens[1] is { Kind: SyntaxKind.TextLiteral, Text: "This is a warning" });
+            Assert.True(tokens is { Count      : 3 });
+            Assert.True(tokensList[0] is { Kind: SyntaxKind.WarningDirective });
+            Assert.True(tokensList[1] is { Kind: SyntaxKind.TextLiteral, Text: "This is a warning" });
         }
 
         [Fact]
@@ -247,15 +246,15 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+            var (issues, tokens) = scaffold.GetResult();
+            var tokensList = tokens.ToList();
 
             // Assert
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.NotEmpty(tokens);
-            Assert.True(tokens is { Count  : 3 });
-            Assert.True(tokens[0] is { Kind: SyntaxKind.ErrorDirective });
-            Assert.True(tokens[1] is { Kind: SyntaxKind.TextLiteral, Text: "This is a error" });
+            Assert.True(tokens is { Count      : 3 });
+            Assert.True(tokensList[0] is { Kind: SyntaxKind.ErrorDirective });
+            Assert.True(tokensList[1] is { Kind: SyntaxKind.TextLiteral, Text: "This is a error" });
         }
 
         [Fact]
@@ -266,16 +265,16 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+            var (issues, tokens) = scaffold.GetResult();
+            var tokensList = tokens.ToList();
 
             // Assert
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.NotEmpty(tokens);
-            Assert.True(tokens is { Count  : 6 });
-            Assert.True(tokens[0] is { Kind: SyntaxKind.IfDirective });
-            Assert.True(tokens[1] is { Kind: SyntaxKind.Identifier, Text: "defined" });
-            Assert.True(tokens[3] is { Kind: SyntaxKind.Identifier, Text: "TEST" });
+            Assert.True(tokens is { Count      : 6 });
+            Assert.True(tokensList[0] is { Kind: SyntaxKind.IfDirective });
+            Assert.True(tokensList[1] is { Kind: SyntaxKind.Identifier, Text: "defined" });
+            Assert.True(tokensList[3] is { Kind: SyntaxKind.Identifier, Text: "TEST" });
         }
 
         [Fact]
@@ -286,14 +285,14 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<SyntaxToken> tokens = scaffold.Lexer.Tokens.ToList();
+            var (issues, tokens) = scaffold.GetResult();
+            var tokensList = tokens.ToList();
 
             // Assert
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.NotEmpty(tokens);
-            Assert.True(tokens is { Count  : 2 });
-            Assert.True(tokens[0] is { Kind: SyntaxKind.ElseDirective });
+            Assert.True(tokens is { Count      : 2 });
+            Assert.True(tokensList[0] is { Kind: SyntaxKind.ElseDirective });
         }
 
         [Fact]
@@ -304,8 +303,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -341,8 +340,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
+            LinkedList<SyntaxToken> tokens = scaffold.GetResult()
+                                                     .Item2;
 
             // Assert
             Assert.NotEmpty(tokens);
@@ -405,13 +404,12 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            LinkedList<SyntaxToken> tokens = scaffold.Lexer.Tokens;
-            int                     count  = tokens.Count(token => token.Kind == kind);
+            var (issues, tokens) = scaffold.GetResult();
+            int count      = tokens.Count(token => token.Kind == kind);
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.Equal(expectedCount, count);
         }
 
@@ -423,19 +421,19 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            List<SyntaxToken> tokens = scaffold.GetResult()
-                                               .ToList();
+            var (issues, tokens) = scaffold.GetResult();
+            var tokensList = tokens.ToList();
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.True(tokens.Count == 2);
 
-            Assert.True(tokens[0]
+            Assert.True(tokensList[0]
                             .Kind
                         == SyntaxKind.TextLiteral);
 
-            Assert.True(tokens[1]
+            Assert.True(tokensList[1]
                             .Kind
                         == SyntaxKind.EndOfFile);
         }
@@ -448,18 +446,19 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            List<SyntaxToken> tokens = scaffold.GetResult()
-                                               .ToList();
+            var (issues, tokens) = scaffold.GetResult();
+            var tokensList = tokens.ToList();
 
             // Assert
             Assert.NotEmpty(tokens);
+            Assert.Empty(issues);
             Assert.True(tokens.Count == 2);
 
-            Assert.True(tokens[0]
+            Assert.True(tokensList[0]
                             .Kind
                         == SyntaxKind.TextLiteral);
 
-            Assert.True(tokens[1]
+            Assert.True(tokensList[1]
                             .Kind
                         == SyntaxKind.EndOfFile);
         }
@@ -522,12 +521,11 @@ return t".ToCharArray());
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            List<SyntaxToken> tokens = scaffold.GetResult()
-                                               .ToList();
+            var (issues, tokens) = scaffold.GetResult();
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
         }
 
         [Fact]
@@ -538,12 +536,11 @@ return t".ToCharArray());
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            List<SyntaxToken> tokens = scaffold.GetResult()
-                                               .ToList();
+            var (issues, tokens) = scaffold.GetResult();
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
             Assert.True(tokens.Count == 25);
         }
 
@@ -557,11 +554,10 @@ return t".ToCharArray());
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            List<SyntaxToken> tokens = scaffold.GetResult()
-                                               .ToList();
+            var (issues, _) = scaffold.GetResult();
 
             // Assert
-            Assert.Empty(scaffold.Lexer.Issues);
+            Assert.Empty(issues);
         }
     }
 }

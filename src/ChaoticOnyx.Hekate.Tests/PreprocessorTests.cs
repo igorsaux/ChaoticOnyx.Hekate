@@ -8,7 +8,7 @@ namespace ChaoticOnyx.Hekate.Tests
 {
     public class PreprocessorTests
     {
-        private static LinkedList<SyntaxToken> ParseText(string text)
+        private static (List<CodeIssue>, LinkedList<SyntaxToken>) ParseText(string text)
         {
             Memory<char>         memory   = new(text.ToCharArray());
             TextToTokensScaffold scaffold = new(memory, new Lexer());
@@ -21,7 +21,8 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#ifdef debug
-#define macro");
+#define macro")
+                .Item2;
 
             Preprocessor preprocessor = new();
 
@@ -41,7 +42,8 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#ifndef debug
-#define macro");
+#define macro")
+                .Item2;
 
             Preprocessor preprocessor = new();
 
@@ -63,7 +65,7 @@ namespace ChaoticOnyx.Hekate.Tests
             LinkedList<SyntaxToken> tokens = ParseText(@"#ifdef debug
 #define macro
 #endif
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
@@ -83,12 +85,12 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#include 'code/file1.dm'
-#include 'code/file2.dm'");
+#include 'code/file2.dm'").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -107,11 +109,11 @@ namespace ChaoticOnyx.Hekate.Tests
         public void DefineTest()
         {
             // Arrange
-            LinkedList<SyntaxToken> tokens       = ParseText("#define macro");
+            LinkedList<SyntaxToken> tokens       = ParseText("#define macro").Item2;
             Preprocessor            preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -124,12 +126,12 @@ namespace ChaoticOnyx.Hekate.Tests
         {
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#define macro
-#undef macro");
+#undef macro").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -143,12 +145,12 @@ namespace ChaoticOnyx.Hekate.Tests
             LinkedList<SyntaxToken> tokens = ParseText(@"#define debug
 #ifdef debug
 #define macro
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -164,12 +166,12 @@ namespace ChaoticOnyx.Hekate.Tests
             LinkedList<SyntaxToken> tokens = ParseText(@"#define debug
 #ifdef debug
 #undef debug
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -182,12 +184,12 @@ namespace ChaoticOnyx.Hekate.Tests
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#ifndef debug
 #define debug
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -202,12 +204,12 @@ namespace ChaoticOnyx.Hekate.Tests
             LinkedList<SyntaxToken> tokens = ParseText(@"#define macro
 #ifndef debug
 #undef macro
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -223,12 +225,12 @@ namespace ChaoticOnyx.Hekate.Tests
 #else
 #define NOT_DEBUG_DEFINE
 #define NOT_DEBUG_DEFINE2
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -249,12 +251,12 @@ namespace ChaoticOnyx.Hekate.Tests
 #define TEST_DEFINE
 #endif
 #define NOT_DEBUG_DEFINE
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context = preprocessor.Preprocess(tokens);
+            PreprocessorContext context = preprocessor.Preprocess(tokens).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -271,18 +273,18 @@ namespace ChaoticOnyx.Hekate.Tests
             LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
 #ifdef TEST
 #define DEBUG
-#endif");
+#endif").Item2;
 
             LinkedList<SyntaxToken> tokens2 = ParseText(@"#ifdef DEBUG
 #define GOOD
 #endif
-#undef TEST");
+#undef TEST").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            PreprocessorContext context1 = preprocessor.Preprocess(tokens);
-            PreprocessorContext context2 = preprocessor.Preprocess(tokens2, context1);
+            PreprocessorContext context1 = preprocessor.Preprocess(tokens).Item2;
+            PreprocessorContext context2 = preprocessor.Preprocess(tokens2, context1).Item2;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -302,12 +304,13 @@ else
 	D.find_references()
 #endif
 reference_find_on_fail -= refID
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -322,12 +325,13 @@ reference_find_on_fail -= refID
             LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
 #if defined(TEST)
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -343,12 +347,13 @@ reference_find_on_fail -= refID
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#if !defined(TEST)
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -364,12 +369,13 @@ reference_find_on_fail -= refID
             LinkedList<SyntaxToken> tokens = ParseText(@"#define TEST
 #if defined()
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, _, ifs) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.True(preprocessor.Issues.Count == 1);
@@ -386,12 +392,13 @@ reference_find_on_fail -= refID
         {
             // Arrange
             LinkedList<SyntaxToken> tokens = ParseText(@"#define TRUE 1
-#define FALSE 0");
+#define FALSE 0").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -409,12 +416,13 @@ reference_find_on_fail -= refID
 #define ANOTHER_TRUE 1
 #if TRUE == ANOTHER_TRUE
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -433,12 +441,13 @@ reference_find_on_fail -= refID
 #define ANOTHER_TRUE 2
 #if TRUE == ANOTHER_TRUE
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -457,12 +466,13 @@ reference_find_on_fail -= refID
 #define VAR 2
 #if SOME_VAR != VAR
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -481,12 +491,13 @@ reference_find_on_fail -= refID
 #define VAR 1
 #if SOME_VAR != VAR
 #define PASS
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -504,12 +515,13 @@ reference_find_on_fail -= refID
             LinkedList<SyntaxToken> tokens = ParseText(@"#define SOME_VAR 1
 #ifndef TEST
 #define SOME_VAR
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var _ = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.NotEmpty(preprocessor.Issues);
@@ -529,12 +541,13 @@ reference_find_on_fail -= refID
 #else
 #define TEST 1
 #warning Test is 1
-#endif");
+#endif").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -547,7 +560,7 @@ reference_find_on_fail -= refID
         public void WarningDirectiveTest()
         {
             // Arrange
-            LinkedList<SyntaxToken> tokens       = ParseText("#warning This is a warning");
+            LinkedList<SyntaxToken> tokens       = ParseText("#warning This is a warning").Item2;
             Preprocessor            preprocessor = new();
 
             // Act
@@ -562,7 +575,7 @@ reference_find_on_fail -= refID
         public void ErrorDirectiveTest()
         {
             // Arrange
-            LinkedList<SyntaxToken> tokens       = ParseText("#error This is a error");
+            LinkedList<SyntaxToken> tokens       = ParseText("#error This is a error").Item2;
             Preprocessor            preprocessor = new();
 
             // Act
@@ -587,11 +600,12 @@ reference_find_on_fail -= refID
             // Arrange
             LinkedList<SyntaxToken> tokens       = ParseText($@"#if {lvalue} {op} {rvalue}
 #define PASS
-#endif");
+#endif").Item2;
             Preprocessor            preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);
@@ -606,12 +620,13 @@ reference_find_on_fail -= refID
             LinkedList<SyntaxToken> tokens = ParseText(@"#ifdef T_BOARD
 #error T_BOARD already defined elsewhere, we can't use it.
 #endif
-#define T_BOARD(name)	""circuit board ("" + (name) + "")""");
+#define T_BOARD(name)	""circuit board ("" + (name) + "")""").Item2;
 
             Preprocessor preprocessor = new();
 
             // Act
-            var (_, defines, _) = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, context)      = preprocessor.Preprocess(tokens, new PreprocessorContext());
+            var (_, defines, ifs) = context;
 
             // Assert
             Assert.Empty(preprocessor.Issues);

@@ -19,8 +19,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<CodeIssue> errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.GetResult()
+                                             .Item1;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -38,8 +38,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<CodeIssue> errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.GetResult()
+                                             .Item1;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -57,8 +57,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<CodeIssue> errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.GetResult()
+                                             .Item1;
 
             // Assert
             Assert.True(errors.Count == 1);
@@ -76,8 +76,8 @@ namespace ChaoticOnyx.Hekate.Tests
             TextToTokensScaffold scaffold = new(text);
 
             // Act
-            scaffold.GetResult();
-            List<CodeIssue> errors = scaffold.Lexer.Issues;
+            List<CodeIssue> errors = scaffold.GetResult()
+                                             .Item1;
 
             // Assert
             Assert.True(errors.Count == 1);

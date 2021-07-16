@@ -20,12 +20,12 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Токены в единице компиляции.
         /// </summary>
-        public LinkedList<SyntaxToken> Tokens { get; private set; } = new();
+        private LinkedList<SyntaxToken> _tokens = new();
 
         /// <summary>
         ///     Проблемы обнаруженные в единице компиляции.
         /// </summary>
-        public List<CodeIssue> Issues { get; private set; } = new();
+        private List<CodeIssue> _issues = new();
 
         /// <summary>
         ///     Определение типа директивы препроцессора.
@@ -75,22 +75,22 @@ namespace ChaoticOnyx.Hekate
             };
 
         /// <summary>
-        ///     Выполнение лексического парсинга исходного кода. При вызове функции старый лист очищается.
+        ///     Выполнение лексического парсинга исходного кода.
         /// </summary>
-        public void Parse(ReadOnlyMemory<char> source)
+        public (List<CodeIssue>, LinkedList<SyntaxToken>) Parse(ReadOnlyMemory<char> source)
         {
-            Issues  = new List<CodeIssue>();
+            _issues  = new List<CodeIssue>();
             _source = new TextContainer(source);
-            Tokens  = new LinkedList<SyntaxToken>();
+            _tokens  = new LinkedList<SyntaxToken>();
 
             while (true)
             {
                 SyntaxToken token = Lex();
-                Tokens.AddLast(token);
+                _tokens.AddLast(token);
 
                 if (token.Kind == SyntaxKind.EndOfFile)
                 {
-                    return;
+                    return (_issues, _tokens);
                 }
             }
         }
@@ -125,7 +125,7 @@ namespace ChaoticOnyx.Hekate
         /// <param name="id">Идентификатор проблемы.</param>
         /// <param name="token">Токен, с которым связана проблема.</param>
         /// <param name="args">Дополнительные аргументы, используются для форматирования сообщения об проблеме.</param>
-        private void MakeIssue(string id, SyntaxToken token, params object[] args) => Issues.Add(new CodeIssue(id, token, args));
+        private void MakeIssue(string id, SyntaxToken token, params object[] args) => _issues.Add(new CodeIssue(id, token, args));
 
         /// <summary>
         ///     Парсинг одного токена.
@@ -140,7 +140,7 @@ namespace ChaoticOnyx.Hekate
                 return CreateTokenAndAdvance(SyntaxKind.EndOfFile, 0);
             }
 
-            if (Tokens.Last?.Value.Kind is SyntaxKind.WarningDirective or SyntaxKind.ErrorDirective)
+            if (_tokens.Last?.Value.Kind is SyntaxKind.WarningDirective or SyntaxKind.ErrorDirective)
             {
                 SkipToEndOfLine();
 
@@ -789,7 +789,7 @@ namespace ChaoticOnyx.Hekate
         {
             StringBuilder result = new();
 
-            foreach (var token in Tokens)
+            foreach (var token in _tokens)
             {
                 result.Append($"{token.Text}");
             }

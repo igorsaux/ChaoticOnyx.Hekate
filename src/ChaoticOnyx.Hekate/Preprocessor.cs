@@ -22,7 +22,7 @@ namespace ChaoticOnyx.Hekate
         /// <summary>
         ///     Производит препроцессинг токенов.
         /// </summary>
-        public PreprocessorContext Preprocess(LinkedList<SyntaxToken> tokens, PreprocessorContext? context = null)
+        public (List<CodeIssue>, PreprocessorContext) Preprocess(LinkedList<SyntaxToken> tokens, PreprocessorContext? context = null)
         {
             bool skipElseBranches = false;
             Issues                       = new List<CodeIssue>();
@@ -165,13 +165,13 @@ namespace ChaoticOnyx.Hekate
 
             if (ifs.Count <= 0)
             {
-                return Context;
+                return (Issues, Context);
             }
 
             SyntaxToken last = ifs.Last();
             Issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
 
-            return Context;
+            return (Issues, Context);
         }
 
         /// <summary>
@@ -226,8 +226,6 @@ namespace ChaoticOnyx.Hekate
                     var rvalue = proc?.Next;
 
                     return ComputeOperator(value, proc!, rvalue!, context);
-
-                    break;
             }
 
             if (negated)

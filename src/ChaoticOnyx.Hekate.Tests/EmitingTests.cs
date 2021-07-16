@@ -43,7 +43,9 @@ hello_world()
 ";
 
             TextToTokensScaffold scaffold1 = new(expected.AsMemory());
-            TokensToTextScaffold scaffold2 = new(scaffold1.GetResult());
+
+            TokensToTextScaffold scaffold2 = new(scaffold1.GetResult()
+                                                          .Item2);
 
             // Act
             string result = scaffold2.GetResult()

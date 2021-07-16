@@ -6,17 +6,17 @@ namespace ChaoticOnyx.Hekate.Scaffolds
     /// <summary>
     ///     Конвертирует текстовое представление в набор синтаксических токенов.
     /// </summary>
-    public sealed class TextToTokensScaffold : CodeScaffold<LinkedList<SyntaxToken>>
+    public sealed class TextToTokensScaffold : CodeScaffold<(List<CodeIssue>, LinkedList<SyntaxToken>)>
     {
         private readonly ReadOnlyMemory<char> _text;
 
         public TextToTokensScaffold(ReadOnlyMemory<char> text, Lexer? lexer = null) : base(lexer ?? new Lexer()) => _text = text;
 
-        public override LinkedList<SyntaxToken> GetResult()
+        public override (List<CodeIssue>, LinkedList<SyntaxToken>) GetResult()
         {
-            Lexer.Parse(_text);
+            var result = Lexer.Parse(_text);
 
-            return Lexer.Tokens;
+            return result;
         }
     }
 }
