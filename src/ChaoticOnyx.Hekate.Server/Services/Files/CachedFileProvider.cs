@@ -10,12 +10,12 @@ namespace ChaoticOnyx.Hekate.Server.Services.Files
     {
         private readonly Dictionary<string, CachedFile> _cachedFiles = new();
 
-        public new async Task<ReadOnlyMemory<char>> ReadAsync(FileInfo file, CancellationToken cancellationToken = default)
+        public override async Task<ReadOnlyMemory<char>> ReadAsync(FileInfo file, CancellationToken cancellationToken = default)
         {
             if (_cachedFiles.ContainsKey(file.FullName))
             {
-                var cached        = _cachedFiles[file.FullName];
-                var lastWriteTime = File.GetLastWriteTime(file.FullName);
+                CachedFile? cached        = _cachedFiles[file.FullName];
+                DateTime    lastWriteTime = File.GetLastWriteTime(file.FullName);
 
                 if (cached.LastWriteTime == lastWriteTime)
                 {
@@ -23,7 +23,7 @@ namespace ChaoticOnyx.Hekate.Server.Services.Files
                         .Text;
                 }
 
-                var newContent = await base.ReadAsync(file, cancellationToken);
+                ReadOnlyMemory<char> newContent = await base.ReadAsync(file, cancellationToken);
                 cached.Text          = newContent;
                 cached.LastWriteTime = File.GetLastWriteTime(file.FullName);
 
@@ -31,21 +31,21 @@ namespace ChaoticOnyx.Hekate.Server.Services.Files
             }
             else
             {
-                var newContent = await base.ReadAsync(file, cancellationToken);
+                ReadOnlyMemory<char> newContent = await base.ReadAsync(file, cancellationToken);
                 _cachedFiles.Add(file.FullName, new CachedFile(File.GetLastWriteTime(file.FullName), newContent));
 
                 return newContent;
             }
         }
 
-        public new async Task WriteAsync(FileInfo file, ReadOnlyMemory<char> text, CancellationToken cancellationToken = default)
+        public override async Task WriteAsync(FileInfo file, ReadOnlyMemory<char> text, CancellationToken cancellationToken = default)
         {
-            var writeTask = base.WriteAsync(file, text, cancellationToken);
+            Task? writeTask = base.WriteAsync(file, text, cancellationToken);
 
             if (_cachedFiles.ContainsKey(file.FullName))
             {
-                var cached = _cachedFiles[file.FullName];
-                cached.Text = text;
+                CachedFile? cached = _cachedFiles[file.FullName];
+                cached.Text          = text;
                 cached.LastWriteTime = DateTime.Now;
             }
             else
@@ -58,14 +58,14 @@ namespace ChaoticOnyx.Hekate.Server.Services.Files
 
         private sealed class CachedFile
         {
-            public CachedFile(DateTime lastWriteTime, ReadOnlyMemory<char> text)
-            {
-                this.LastWriteTime = lastWriteTime;
-                this.Text          = text;
-            }
-
             public DateTime             LastWriteTime { get; set; }
             public ReadOnlyMemory<char> Text          { get; set; }
+
+            public CachedFile(DateTime lastWriteTime, ReadOnlyMemory<char> text)
+            {
+                LastWriteTime = lastWriteTime;
+                Text          = text;
+            }
         }
     }
 }

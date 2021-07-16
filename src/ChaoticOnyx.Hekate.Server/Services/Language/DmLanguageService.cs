@@ -10,10 +10,9 @@ namespace ChaoticOnyx.Hekate.Server.Services.Language
 {
     public sealed class DmLanguageService : IDmLanguageService
     {
-        public Lexer        Lexer        { get; }
-        public Preprocessor Preprocessor { get; }
-
         private readonly IFileProvider _fileProvider;
+        public           Lexer         Lexer        { get; }
+        public           Preprocessor  Preprocessor { get; }
 
         public DmLanguageService(IFileProvider fileProvider)
         {
@@ -43,8 +42,8 @@ namespace ChaoticOnyx.Hekate.Server.Services.Language
 
         public async Task<CodeFile> ParseAsync(FileInfo file, PreprocessorContext? preprocessorContext = null, CancellationToken cancellationToken = default)
         {
-            var text = await _fileProvider.ReadAsync(file, cancellationToken);
-            var (lexerIssues, tokens)         = Lex(text);
+            ReadOnlyMemory<char> text = await _fileProvider.ReadAsync(file, cancellationToken);
+            var (lexerIssues, tokens) = Lex(text);
             cancellationToken.ThrowIfCancellationRequested();
             var (preprocessorIssues, context) = Preprocess(tokens, preprocessorContext);
 

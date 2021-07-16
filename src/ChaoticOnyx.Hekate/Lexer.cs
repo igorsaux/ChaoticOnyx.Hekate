@@ -117,15 +117,8 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         /// <param name="id">Идентификатор проблемы.</param>
         /// <param name="token">Токен, с которым связана проблема.</param>
-        private void MakeIssue(string id, SyntaxToken token) => MakeIssue(id, token, Array.Empty<object>());
-
-        /// <summary>
-        ///     Создание проблемы в коде.
-        /// </summary>
-        /// <param name="id">Идентификатор проблемы.</param>
-        /// <param name="token">Токен, с которым связана проблема.</param>
         /// <param name="args">Дополнительные аргументы, используются для форматирования сообщения об проблеме.</param>
-        private void MakeIssue(string id, SyntaxToken token, params object[] args) => _issues.Add(new CodeIssue(id, token, args));
+        private void MakeIssue(string id, SyntaxToken token, params object[] args) => _issues.Add(new CodeIssue(id, IssuesId.GetMessage(id), IssueSeverity.Error, token, args));
 
         /// <summary>
         ///     Парсинг одного токена.

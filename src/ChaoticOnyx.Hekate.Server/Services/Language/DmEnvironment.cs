@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,21 +18,29 @@ namespace ChaoticOnyx.Hekate.Server.Services.Language
             _languageService = languageService;
         }
 
-        public async Task ParseEnvironmentAsync(FileInfo dmeFile, CancellationToken cancellationToken = default)
+        public async Task ParseEnvironmentAsync(FileInfo dme, CancellationToken cancellationToken = default)
         {
             Files.Clear();
-            await ParseRecursiveAsync(dmeFile, new PreprocessorContext(), cancellationToken);
+            await ParseRecursiveAsync(dme, new PreprocessorContext(), cancellationToken);
         }
 
         public async Task ParseFileAsync(FileInfo file, CancellationToken cancellationToken = default)
         {
-            int  from          = Files.FindIndex(f => f.File.FullName == file.FullName);
-            Files.RemoveRange(from, Files.Count - from);
-            var lastFile = Files.LastOrDefault();
+            int codeFileIndex     = Files.FindIndex(f => f.File.FullName == file.FullName);
 
-            await ParseRecursiveAsync(file, lastFile?
-                                                .PreprocessorContext
-                                            ?? new PreprocessorContext(), cancellationToken);
+            if (codeFileIndex == -1)
+            {
+                throw new FileNotFoundException($"Файл {file.FullName} не найден.");
+            }
+
+            int previousFileIndex = Math.Max(0, codeFileIndex - 1);
+
+            var context = codeFileIndex == previousFileIndex
+                ? new PreprocessorContext()
+                : Files[previousFileIndex]
+                    .PreprocessorContext;
+
+            Files[codeFileIndex] = await _languageService.ParseAsync(file, context, cancellationToken);
         }
 
         private async Task ParseRecursiveAsync(FileInfo file, PreprocessorContext context, CancellationToken cancellationToken = default)

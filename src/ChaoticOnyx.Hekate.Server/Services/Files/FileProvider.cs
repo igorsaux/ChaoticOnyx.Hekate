@@ -7,17 +7,17 @@ namespace ChaoticOnyx.Hekate.Server.Services.Files
 {
     public class FileProvider : IFileProvider
     {
-        public async Task<ReadOnlyMemory<char>> ReadAsync(FileInfo file, CancellationToken cancellationToken = default)
+        public virtual async Task<ReadOnlyMemory<char>> ReadAsync(FileInfo file, CancellationToken cancellationToken = default)
         {
-            using var stream = file.OpenText();
-            string   text   = await stream.ReadToEndAsync();
+            using StreamReader? stream = file.OpenText();
+            string              text   = await stream.ReadToEndAsync();
 
             return text.AsMemory();
         }
 
-        public async Task WriteAsync(FileInfo file, ReadOnlyMemory<char> text, CancellationToken cancellationToken = default)
+        public virtual async Task WriteAsync(FileInfo file, ReadOnlyMemory<char> text, CancellationToken cancellationToken = default)
         {
-            await using var stream = file.CreateText();
+            await using StreamWriter? stream = file.CreateText();
             await stream.WriteAsync(text, cancellationToken);
         }
     }

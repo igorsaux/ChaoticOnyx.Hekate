@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ChaoticOnyx.Hekate.Server.Services.Language;
 using MediatR;
-using OmniSharp.Extensions.JsonRpc;
 
 namespace ChaoticOnyx.Hekate.Server.Handlers
 {
@@ -11,10 +10,7 @@ namespace ChaoticOnyx.Hekate.Server.Handlers
     {
         private readonly IDmEnvironmentService _dmEnvironment;
 
-        public ParseFileHandler(IDmEnvironmentService dmEnvironment)
-        {
-            _dmEnvironment = dmEnvironment;
-        }
+        public ParseFileHandler(IDmEnvironmentService dmEnvironment) => _dmEnvironment = dmEnvironment;
 
         public async Task<Unit> Handle(ParseFileRequest request, CancellationToken cancellationToken)
         {

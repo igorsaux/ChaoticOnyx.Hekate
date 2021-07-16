@@ -19,6 +19,8 @@ namespace ChaoticOnyx.Hekate
         /// </summary>
         public PreprocessorContext Context { get; private set; } = null!;
 
+        private void MakeIssue(string id, SyntaxToken token, params object[] args) => Issues.Add(new CodeIssue(id, IssuesId.GetMessage(id), IssueSeverity.Error, token, args));
+
         /// <summary>
         ///     Производит препроцессинг токенов.
         /// </summary>
@@ -46,7 +48,7 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.DefineDirective:
                         if (defines.ContainsKey(next.Text))
                         {
-                            Issues.Add(new CodeIssue(IssuesId.VariableAlreadyDefined, next, next.Text));
+                            MakeIssue(IssuesId.VariableAlreadyDefined, next, next.Text);
 
                             break;
                         }
@@ -101,7 +103,7 @@ namespace ChaoticOnyx.Hekate
                     case SyntaxKind.EndIfDirective:
                         if (ifs.Count == 0)
                         {
-                            Issues.Add(new CodeIssue(IssuesId.ExtraEndIf, token));
+                            MakeIssue(IssuesId.ExtraEndIf, token);
 
                             break;
                         }
@@ -120,16 +122,16 @@ namespace ChaoticOnyx.Hekate
 
                         if (ifs.Count == 0)
                         {
-                            Issues.Add(new CodeIssue(IssuesId.UnexpectedElse, token));
+                            MakeIssue(IssuesId.UnexpectedElse, token);
                         }
 
                         continue;
                     case SyntaxKind.WarningDirective:
-                        Issues.Add(new CodeIssue(IssuesId.WarningDirective, token, next.Text));
+                        MakeIssue(IssuesId.WarningDirective, token, next.Text);
 
                         continue;
                     case SyntaxKind.ErrorDirective:
-                        Issues.Add(new CodeIssue(IssuesId.ErrorDirective, token, next.Text));
+                        MakeIssue(IssuesId.ErrorDirective, token, next.Text);
 
                         continue;
                     case SyntaxKind.IfDirective:
@@ -150,6 +152,7 @@ namespace ChaoticOnyx.Hekate
 
                             break;
                         }
+
                         res = ComputeExpression(context!);
 
                         if (!res)
@@ -169,7 +172,7 @@ namespace ChaoticOnyx.Hekate
             }
 
             SyntaxToken last = ifs.Last();
-            Issues.Add(new CodeIssue(IssuesId.EndIfNotFound, last, last.Text));
+            MakeIssue(IssuesId.EndIfNotFound, last, last.Text);
 
             return (Issues, Context);
         }
@@ -189,7 +192,7 @@ namespace ChaoticOnyx.Hekate
 
             if (token is null)
             {
-                Issues.Add(new CodeIssue(IssuesId.ExpectedProc, _it?.Value!));
+                MakeIssue(IssuesId.ExpectedProc, _it?.Value!);
 
                 return false;
             }
@@ -209,7 +212,7 @@ namespace ChaoticOnyx.Hekate
 
             if (value?.Value.Kind is not (SyntaxKind.Identifier or SyntaxKind.NumericalLiteral))
             {
-                Issues.Add(new CodeIssue(IssuesId.ExpectedValue, proc.Value));
+                MakeIssue(IssuesId.ExpectedValue, proc.Value);
 
                 return false;
             }
@@ -248,7 +251,7 @@ namespace ChaoticOnyx.Hekate
 
                 if (!hasLValue)
                 {
-                    Issues.Add(new CodeIssue(IssuesId.UnknownVariable, leftToken.Value, leftToken.Value.Text));
+                    MakeIssue(IssuesId.UnknownVariable, leftToken.Value, leftToken.Value.Text);
 
                     return false;
                 }
@@ -262,7 +265,7 @@ namespace ChaoticOnyx.Hekate
 
             if (!result)
             {
-                Issues.Add(new CodeIssue(IssuesId.CantCompareNotNumericalValues, leftToken.Value));
+                MakeIssue(IssuesId.CantCompareNotNumericalValues, leftToken.Value);
 
                 return false;
             }
@@ -273,7 +276,7 @@ namespace ChaoticOnyx.Hekate
 
                 if (!hasRValue)
                 {
-                    Issues.Add(new CodeIssue(IssuesId.UnknownVariable, rightToken.Value, rightToken.Value.Text));
+                    MakeIssue(IssuesId.UnknownVariable, rightToken.Value, rightToken.Value.Text);
 
                     return false;
                 }
@@ -287,7 +290,7 @@ namespace ChaoticOnyx.Hekate
 
             if (!result)
             {
-                Issues.Add(new CodeIssue(IssuesId.CantCompareNotNumericalValues, rightToken.Value));
+                MakeIssue(IssuesId.CantCompareNotNumericalValues, rightToken.Value);
 
                 return false;
             }
@@ -307,7 +310,7 @@ namespace ChaoticOnyx.Hekate
                 case "<=":
                     return lvalue <= rvalue;
                 default:
-                    Issues.Add(new CodeIssue(IssuesId.InvalidOperator, operatorToken.Value, operatorToken.Value.Text));
+                    MakeIssue(IssuesId.InvalidOperator, operatorToken.Value, operatorToken.Value.Text);
 
                     return false;
             }

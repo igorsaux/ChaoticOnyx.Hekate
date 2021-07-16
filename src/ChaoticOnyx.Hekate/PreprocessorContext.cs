@@ -25,7 +25,7 @@ namespace ChaoticOnyx.Hekate
         }
 
         /// <summary>
-        ///     Создаёт пустой контект. Эквивалентно PreprocessorContext.Empty.
+        ///     Создаёт пустой контект.
         /// </summary>
         public PreprocessorContext()
         {
